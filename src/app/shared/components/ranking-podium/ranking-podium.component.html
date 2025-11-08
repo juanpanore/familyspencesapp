@@ -1,0 +1,31 @@
+<div class="podium-card" [class.podium-green]="color === 'green'" [class.podium-red]="color === 'red'">
+  <h2>{{ titulo }}</h2>
+  
+  <div *ngIf="rankingArray.length > 0; else noData" class="podium-container">
+    
+    <div *ngIf="rankingArray[1]" class="podium-place second">
+      <div class="podium-avatar">🥈</div>
+      <div class="podium-name">{{ rankingArray[1].name }}</div>
+      <div class="podium-value">{{ rankingArray[1].value | currency:'COP':'$' }}</div>
+      <div class="podium-bar"></div>
+    </div>
+
+    <div *ngIf="rankingArray[0]" class="podium-place first">
+      <div class="podium-avatar">🥇</div>
+      <div class="podium-name">{{ rankingArray[0].name }}</div>
+      <div class="podium-value">{{ rankingArray[0].value | currency:'COP':'$' }}</div>
+      <div class="podium-bar"></div>
+    </div>
+
+    <div *ngIf="rankingArray[2]" class="podium-place third">
+      <div class="podium-avatar">🥉</div>
+      <div class="podium-name">{{ rankingArray[2].name }}</div>
+      <div class="podium-value">{{ rankingArray[2].value | currency:'COP':'$' }}</div>
+      <div class="podium-bar"></div>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <p>No hay datos para este período.</p>
+  </ng-template>
+</div>

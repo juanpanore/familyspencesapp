@@ -1,0 +1,41 @@
+<div class="ranking-container">
+  
+  <div class="ranking-controls">
+    <h3>Gestión de Ranking</h3>
+    
+    <form [formGroup]="periodoForm" class="period-form">
+      <label for="periodo">Selecciona el Período:</label>
+      <input type="month" id="periodo" formControlName="periodo">
+    </form>
+
+    <div class="button-group">
+      <button (click)="onGenerar()" [disabled]="isLoading || periodoForm.invalid">
+        <span *ngIf="!isLoading">Generar Ranking</span>
+        <span *ngIf="isLoading">Generando...</span>
+      </button>
+      
+      <button (click)="onConsultar()" [disabled]="isLoading || periodoForm.invalid">
+        <span *ngIf="!isLoading">Consultar Ranking</span>
+        <span *ngIf="isLoading">Consultando...</span>
+      </button>
+    </div>
+    
+    <div *ngIf="mensaje" class="feedback-message">{{ mensaje }}</div>
+  </div>
+
+  <div class="ranking-results">
+    
+    <app-ranking-podium 
+      titulo="🏆 Ranking de Ingresos" 
+      color="green"
+      [data]="rankingIngresos">
+    </app-ranking-podium>
+
+    <app-ranking-podium 
+      titulo="💸 Ranking de Gastos" 
+      color="red"
+      [data]="rankingGastos">
+    </app-ranking-podium>
+    
+  </div>
+</div>
