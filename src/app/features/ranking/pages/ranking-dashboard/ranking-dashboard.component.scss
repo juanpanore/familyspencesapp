@@ -1,0 +1,65 @@
+/* Estilos para que se vea bien en dos columnas */
+.ranking-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.ranking-controls {
+  flex: 1;
+  min-width: 300px;
+}
+
+.ranking-results {
+  flex: 2;
+  min-width: 400px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Estilos para el formulario */
+.period-form {
+  margin: 20px 0;
+  input[type="month"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.feedback-message {
+  margin-top: 15px;
+  font-style: italic;
+  color: #555;
+}
+
+/* Estilos para las tarjetas */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+.podium-card h2 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.podium-card.green { border-top: 4px solid #4CAF50; }
+.podium-card.red { border-top: 4px solid #F44336; }
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .ranking-results {
+    grid-template-columns: 1fr;
+  }
+}

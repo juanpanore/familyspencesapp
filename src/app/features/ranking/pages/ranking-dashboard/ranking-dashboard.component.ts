@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RankingService } from '../../services/ranking.service';
+import { RankingEntry, RankingResponse } from '../../models/ranking.model';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ranking-dashboard',
@@ -10,13 +12,11 @@ import { RankingService } from '../../services/ranking.service';
 export class RankingDashboardComponent implements OnInit {
 
   periodoForm: FormGroup;
-  rankingGastos: any = null; 
-  rankingIngresos: any = null; 
+  rankingGastos: RankingEntry[] = []; // Datos para el podio de gastos
+  rankingIngresos: RankingEntry[] = []; // Datos para el podio de ingresos
+  
   isLoading = false;
-  mensaje = ''; 
-
-  // ID de familia (debe venir del auth.service, por ahora lo hardcodeamos)
-  familyId = '47e2a103-9c4f-4cb6-b96b-b71009c2ad53'; 
+  mensajeFeedback = ''; // Para mostrar feedback (ej. "Cálculo iniciado")
 
   constructor(
     private fb: FormBuilder,
@@ -25,12 +25,12 @@ export class RankingDashboardComponent implements OnInit {
     // Creamos el Formulario Reactivo
     this.periodoForm = this.fb.group({
       // formato YYYY-MM, ej: "2024-10"
-      periodo: [this.getPeriodoActual(), Validators.required] 
+      periodo: [this.getPeriodoActual(), Validators.required]
     });
   }
 
   ngOnInit(): void {
-    // Opcional: Cargar el ranking del mes actual al iniciar
+    // Cargar el ranking del mes actual al iniciar
     this.onConsultar();
   }
 
@@ -42,16 +42,16 @@ export class RankingDashboardComponent implements OnInit {
     
     const periodo = this.periodoForm.value.periodo;
     this.isLoading = true;
-    this.mensaje = 'Iniciando cálculo...';
+    this.mensajeFeedback = 'Iniciando cálculo...';
     
-    this.rankingService.generarRanking(this.familyId, periodo).subscribe({
+    this.rankingService.generarRanking(periodo).subscribe({
       next: (res) => {
         this.isLoading = false;
-        this.mensaje = '¡Cálculo enviado! Consulta en unos segundos.';
+        this.mensajeFeedback = '¡Cálculo enviado! Presiona "Consultar" en unos segundos.';
       },
       error: (err) => {
         this.isLoading = false;
-        this.mensaje = 'Error al generar: ' + err.message;
+        this.mensajeFeedback = 'Error al generar: ' + (err.error?.message || 'Error de servidor');
       }
     });
   }
@@ -64,34 +64,51 @@ export class RankingDashboardComponent implements OnInit {
 
     const periodo = this.periodoForm.value.periodo;
     this.isLoading = true;
-    this.mensaje = 'Consultando ranking...';
-    this.rankingGastos = null; // Limpiamos
-    this.rankingIngresos = null; // Limpiamos
+    this.mensajeFeedback = 'Consultando ranking...';
+    this.rankingGastos = []; // Limpiamos
+    this.rankingIngresos = []; // Limpiamos
 
     // Consultamos gastos
-    this.rankingService.consultarRankingGastos(this.familyId, periodo).subscribe({
-      next: (res) => {
-        this.rankingGastos = res.ranking; // { "ranking": { "Ana": 150, ... } }
+    this.rankingService.consultarRankingGastos(periodo).pipe(
+      map(response => this.transformarRanking(response)) // Convertimos el objeto a array
+    ).subscribe({
+      next: (data) => {
+        this.rankingGastos = data;
       },
-      error: (err) => {
-        this.mensaje = 'Error al consultar gastos.';
-        console.error(err);
-      }
+      error: (err) => this.handleError(err)
     });
 
     // Consultamos ingresos
-    this.rankingService.consultarRankingIngresos(this.familyId, periodo).subscribe({
-      next: (res) => {
+    this.rankingService.consultarRankingIngresos(periodo).pipe(
+      map(response => this.transformarRanking(response)) // Convertimos el objeto a array
+    ).subscribe({
+      next: (data) => {
+        this.rankingIngresos = data;
         this.isLoading = false;
-        this.mensaje = 'Consulta exitosa.';
-        this.rankingIngresos = res.ranking;
+        this.mensajeFeedback = data.length > 0 ? 'Consulta exitosa.' : 'No hay datos para este período.';
       },
-      error: (err) => {
-        this.isLoading = false;
-        this.mensaje = 'Error al consultar ingresos.';
-        console.error(err);
-      }
+      error: (err) => this.handleError(err)
     });
+  }
+  
+  // --- Métodos Helper ---
+
+  private handleError(err: any): void {
+    this.isLoading = false;
+    this.mensajeFeedback = 'Error al consultar: ' + (err.error?.message || 'Error de servidor');
+  }
+
+  // Convierte { "Ana": 100 } en [ { name: "Ana", value: 100 } ]
+  private transformarRanking(response: RankingResponse): RankingEntry[] {
+    if (!response.ranking) {
+      return [];
+    }
+    return Object.keys(response.ranking)
+      .map(key => ({
+        name: key,
+        value: response.ranking[key]
+      }))
+      .sort((a, b) => b.value - a.value); // Ordena de mayor a menor
   }
 
   // Helper para obtener el mes actual en formato "YYYY-MM"
