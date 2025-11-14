@@ -1,27 +1,32 @@
-<button (click)="toggleForm()">Añadir un nuevo gasto</button>
-
-<table *ngIf="expenses.length > 0" border="1" style="margin-top: 20px; width: 100%; text-align: left;">
-  <thead>
-    <tr>
-      <th>Título</th>
-      <th>Descripción</th>
-      <th>Periodo</th>
-      <th>Valor</th>
-      <th>Categoría</th>
-      <th>Responsable</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let expense of expenses">
-      <td>{{ expense.titulo }}</td>
-      <td>{{ expense.descripcion }}</td>
-      <td>{{ expense.periodo }}</td>
-      <td>{{ expense.valor }}</td>
-      <td>{{ expense.categoria }}</td>
-      <td>{{ expense.responsable }}</td>
-    </tr>
-  </tbody>
-</table>
+<div *ngIf="!showForm" style="text-align: center;">
+  <h2>Lista de Gastos</h2>
+  <table border="1" style="margin: 0 auto; width: 80%; border-collapse: collapse; text-align: center;">
+    <thead>
+      <tr>
+        <th style="background-color: #f0f8ff; padding: 10px;">Título</th>
+        <th style="background-color: #f0f8ff; padding: 10px;">Descripción</th>
+        <th style="background-color: #f0f8ff; padding: 10px;">Periodo</th>
+        <th style="background-color: #f0f8ff; padding: 10px;">Valor</th>
+        <th style="background-color: #f0f8ff; padding: 10px;">Categoría</th>
+        <th style="background-color: #f0f8ff; padding: 10px;">Responsable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="expenses.length === 0">
+        <td colspan="6" style="padding: 10px;">No hay gastos registrados.</td>
+      </tr>
+      <tr *ngFor="let expense of expenses">
+        <td style="padding: 10px;">{{ expense.titulo }}</td>
+        <td style="padding: 10px;">{{ expense.descripcion }}</td>
+        <td style="padding: 10px;">{{ expense.periodo }}</td>
+        <td style="padding: 10px;">{{ expense.valor }}</td>
+        <td style="padding: 10px;">{{ expense.categoria }}</td>
+        <td style="padding: 10px;">{{ expense.responsable }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <button (click)="toggleForm()" style="margin-top: 20px;">Añadir un nuevo gasto</button>
+</div>
 
 <div *ngIf="showForm">
   <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
@@ -53,7 +58,7 @@
 
     <div>
       <label for="valor">Valor:</label>
-      <input id="valor" type="text" formControlName="valor" pattern="\\d*" inputmode="numeric" style="-moz-appearance: textfield;" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+      <input id="valor" formControlName="valor" type="text" inputmode="numeric" (input)="onValorInput($event)">
       <div *ngIf="expenseForm.get('valor')?.invalid && expenseForm.get('valor')?.touched">
         <small *ngIf="expenseForm.get('valor')?.errors?.['required']">El valor es obligatorio.</small>
         <small *ngIf="expenseForm.get('valor')?.errors?.['min']">El valor debe ser mayor o igual a 0.</small>
