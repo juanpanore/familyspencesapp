@@ -1,0 +1,61 @@
+/* Center the form on the page */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 500px;
+  background-color: #f0f8ff; /* Light blue background */
+  border: 1px solid #87ceeb; /* Sky blue border */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the form elements */
+label {
+  font-weight: bold;
+  color: #4682b4; /* Steel blue */
+  margin-bottom: 5px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #87ceeb; /* Sky blue border */
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #4682b4; /* Steel blue focus */
+  box-shadow: 0 0 5px #4682b4;
+}
+
+button {
+  background-color: #4682b4; /* Steel blue */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:disabled {
+  background-color: #b0c4de; /* Light steel blue */
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #5a9bd6; /* Lighter steel blue */
+}
+
+/* Style validation messages */
+small {
+  color: #ff4500; /* Orange red for errors */
+  font-size: 12px;
+}
