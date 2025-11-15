@@ -29,7 +29,6 @@ export class ExpenseComponent implements OnInit {
     this.loadExpenses();
   }
 
-  // Updated the loadExpenses method to adapt the API response for the table
   loadExpenses(): void {
     const familyId = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
     this.expenseService.getExpenses(familyId).subscribe(
@@ -56,16 +55,15 @@ export class ExpenseComponent implements OnInit {
     this.showForm = !this.showForm;
   }
 
-  // Updated the onSubmit method to match the required payload structure
   onSubmit() {
     if (this.expenseForm.valid) {
       const newExpense = {
         title: this.expenseForm.value.titulo.trim(),
         description: this.expenseForm.value.descripcion.trim(),
         period: this.expenseForm.value.periodo,
-        value: parseFloat(this.expenseForm.value.valor), // Ensure value is a number
+        value: parseFloat(this.expenseForm.value.valor), 
         category: this.expenseForm.value.categoria.trim(),
-        responsible: this.expenseForm.value.responsable // Added responsible field
+        responsible: this.expenseForm.value.responsable
       };
       const familyId = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
       const mail = 'ana.gomez@email.com';
@@ -80,7 +78,7 @@ export class ExpenseComponent implements OnInit {
             titulo: response.title,
             descripcion: response.description,
             periodo: response.period,
-            valor: response.formattedValue || response.value, // Use formattedValue if available
+            valor: response.formattedValue || response.value,
             categoria: response.category,
             responsable: response.responsible
           });
@@ -102,13 +100,11 @@ export class ExpenseComponent implements OnInit {
     this.expenseForm.get('valor')?.setValue(numericValue);
   }
 
-  // Added the onCancel method to reset the form and return to the table view
   onCancel(): void {
     this.expenseForm.reset();
-    this.showForm = false; // Return to the table view
+    this.showForm = false;
   }
 
-  // Added the onEditExpense method to handle editing an expense
   onEditExpense(index: number): void {
     const expenseToEdit = this.expenses[index];
     this.expenseForm.setValue({
@@ -119,10 +115,9 @@ export class ExpenseComponent implements OnInit {
       categoria: expenseToEdit.categoria,
       responsable: expenseToEdit.responsable
     });
-    this.showForm = true; // Show the form for editing
+    this.showForm = true;
   }
 
-  // Added the onDeleteExpense method to handle deleting an expense
   onDeleteExpense(index: number): void {
     const confirmDelete = confirm('¿Está seguro de que desea eliminar este gasto?');
     if (confirmDelete) {
