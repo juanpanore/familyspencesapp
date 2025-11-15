@@ -8,13 +8,15 @@ import { ExpenseComponent } from './component/expense/expense.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ProductComponent } from './product/product.component';
 import {GoalsComponent} from "./goals/goals.component";
+import { RankingComponent } from './component/ranking/ranking.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ExpenseComponent,
     ProductComponent,
-    GoalsComponent
+    GoalsComponent,
+    RankingComponent
   ],
   imports: [
     BrowserModule,
