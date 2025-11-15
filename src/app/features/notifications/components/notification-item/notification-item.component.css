@@ -1,0 +1,12 @@
+.item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.unread {
+  background-color: #eef5ff;
+}
+
+.message {
+  margin: 0;
+}

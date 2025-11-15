@@ -1,0 +1,4 @@
+<div class="item" [class.unread]="!notification.read">
+  <p class="message">{{ notification.message }}</p>
+  <small>{{ notification.createdAt | date:'short' }}</small>
+</div>

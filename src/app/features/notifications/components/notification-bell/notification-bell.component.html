@@ -1,0 +1,12 @@
+<div class="bell-container">
+  <button class="bell-btn" (click)="toggleDropdown()">
+    🔔
+    <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+  </button>
+
+  <div class="dropdown" *ngIf="open">
+    <div class="notif-item" *ngFor="let n of latest">
+      {{ n.message }}
+    </div>
+  </div>
+</div>
