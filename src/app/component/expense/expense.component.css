@@ -2,21 +2,21 @@
 form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: normal;
   justify-content: center;
   margin: 0 auto;
   padding: 20px;
   max-width: 500px;
   background-color: #f0f8ff; /* Light blue background */
-  border: 1px solid #87ceeb; /* Sky blue border */
+  border: 1px solid #171a1b; /* Sky blue border */
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Style the form elements */
 label {
   font-weight: bold;
-  color: #4682b4; /* Steel blue */
+  color: #0b4166; /* Steel blue */
   margin-bottom: 5px;
 }
 
@@ -24,7 +24,7 @@ input, textarea, select {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #87ceeb; /* Sky blue border */
+  border: 1px solid #11384e; /* Sky blue border */
   border-radius: 5px;
   box-sizing: border-box;
 }
