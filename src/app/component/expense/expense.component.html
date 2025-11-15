@@ -9,19 +9,28 @@
         <th style="background-color: #f0f8ff; padding: 10px;">Valor</th>
         <th style="background-color: #f0f8ff; padding: 10px;">Categoría</th>
         <th style="background-color: #f0f8ff; padding: 10px;">Responsable</th>
+        <th style="background-color: #f0f8ff; padding: 10px;">Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngIf="expenses.length === 0">
-        <td colspan="6" style="padding: 10px;">No hay gastos registrados.</td>
+        <td colspan="7" style="padding: 10px;">No hay gastos registrados.</td>
       </tr>
-      <tr *ngFor="let expense of expenses">
+      <tr *ngFor="let expense of expenses; let i = index">
         <td style="padding: 10px;">{{ expense.titulo }}</td>
         <td style="padding: 10px;">{{ expense.descripcion }}</td>
         <td style="padding: 10px;">{{ expense.periodo }}</td>
         <td style="padding: 10px;">{{ expense.valor }}</td>
         <td style="padding: 10px;">{{ expense.categoria }}</td>
         <td style="padding: 10px;">{{ expense.responsable }}</td>
+        <td style="padding: 10px;">
+          <button (click)="onEditExpense(i)" style="background: none; border: none; cursor: pointer;">
+            <img src="assets/icons/edit-icon.png" alt="Editar" style="width: 20px; height: 20px;">
+          </button>
+          <button (click)="onDeleteExpense(i)" style="background: none; border: none; cursor: pointer;">
+            <img src="assets/icons/delete-icon.png" alt="Eliminar" style="width: 20px; height: 20px;">
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -87,7 +96,10 @@
       </div>
     </div>
 
-    <button type="submit" [disabled]="expenseForm.invalid">Guardar</button>
+    <div>
+      <button type="submit" [disabled]="expenseForm.invalid">Guardar</button>
+      <button type="button" (click)="onCancel()">Cancelar</button>
+    </div>
   </form>
 </div>
 
