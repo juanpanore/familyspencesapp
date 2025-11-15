@@ -6,11 +6,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ExpenseComponent } from './component/expense/expense.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ProductComponent } from './product/product.component';
+import {GoalsComponent} from "./goals/goals.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     ExpenseComponent,
+    ProductComponent,
+    GoalsComponent
   ],
   imports: [
     BrowserModule,
@@ -21,4 +25,4 @@ import { HttpClientModule } from '@angular/common/http';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
