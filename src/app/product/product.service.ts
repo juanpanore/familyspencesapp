@@ -17,7 +17,7 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  private baseUrl = 'http://localhost:8080/api/product';
+  private baseUrl = `${environment.apiUrl}/product`;
 
   // Obtener productos filtrando por nombre
   getProducts(nombre?: string): Observable<Product[]> {
