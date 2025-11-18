@@ -2,8 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-// Asegúrate de que los imports de formularios sean correctos
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -12,8 +11,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
-  // ✅ Declaración de propiedades (importante para que TypeScript no arroje errores TS2339)
   loginForm!: FormGroup;
   errorMessage: string = '';
   isLoading: boolean = false;
@@ -31,30 +28,51 @@ export class LoginComponent implements OnInit {
   private initForm(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe: [false]
     });
   }
 
+  get emailControl(): AbstractControl | null {
+    return this.loginForm.get('email');
+  }
+
+  get passwordControl(): AbstractControl | null {
+    return this.loginForm.get('password');
+  }
+
   onSubmit(): void {
+    this.errorMessage = '';
+
     if (this.loginForm.invalid) {
-      this.errorMessage = 'Por favor, introduce credenciales válidas.';
+      this.errorMessage = 'Por favor, completa todos los campos correctamente.';
       return;
     }
 
     this.isLoading = true;
-    const { email, password } = this.loginForm.value;
+    const { email, password, rememberMe } = this.loginForm.value;
 
-    this.authService.login({ email, password }).subscribe({
-      // ✅ response ahora infiere el tipo { token: string } correctamente del servicio
+    this.authService.login({ email, password }, rememberMe).subscribe({
       next: (response) => {
         this.isLoading = false;
-        // response.token ya está disponible sin errores
-        localStorage.setItem('auth_token', response.token);
+        this.authService.saveToken(response.token, rememberMe);
+        console.log('✅ Login exitoso');
         this.router.navigate(['/home']);
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error.message || 'Error de autenticación. Verifica tus credenciales.';
+
+        if (err.error && err.error.error) {
+          this.errorMessage = err.error.error;
+        } else if (err.status === 0) {
+          this.errorMessage = 'No se pudo conectar con el servidor.';
+        } else if (err.status === 401) {
+          this.errorMessage = 'Credenciales incorrectas.';
+        } else {
+          this.errorMessage = 'Error de autenticación.';
+        }
+
+        console.error('❌ Error:', err);
       }
     });
   }

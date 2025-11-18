@@ -3,80 +3,65 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { CookieService } from './cookie.service';
 
-// Interfaz para las credenciales de entrada
 export interface LoginUser {
   email: string;
   password: string;
 }
 
-// Interfaz para la respuesta exitosa
 interface LoginResponse {
   token: string;
-}
-
-// Interfaz para la respuesta de error
-interface ErrorResponse {
-  error: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // ⚠️ CORRECCIÓN: La URL correcta según tu backend
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = 'http://localhost:8080/api/users'; // ← Sin el "1"
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService
+  ) { }
 
-  /**
-   * Envía las credenciales y devuelve un Observable tipado como LoginResponse.
-   */
-  login(credentials: LoginUser): Observable<LoginResponse> {
+  login(credentials: LoginUser, rememberMe: boolean = false): Observable<LoginResponse> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
     return this.http.post<LoginResponse>(
-      `${this.apiUrl}/login`,
+      `${this.apiUrl}/login`,  // ← Debe ser /login, NO /login1
       credentials,
       { headers }
     );
   }
 
-  /**
-   * Guarda el token en localStorage
-   */
-  saveToken(token: string): void {
-    localStorage.setItem('auth_token', token);
+  saveToken(token: string, rememberMe: boolean = false): void {
+    this.cookieService.setToken(token, rememberMe);
   }
 
-  /**
-   * Obtiene el token de localStorage
-   */
   getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    return this.cookieService.getToken();
   }
 
-  /**
-   * Elimina el token (logout)
-   */
   logout(): void {
-    localStorage.removeItem('auth_token');
+    this.cookieService.deleteToken();
   }
 
-  /**
-   * Verifica si el usuario está autenticado
-   */
   isAuthenticated(): boolean {
     const token = this.getToken();
-    return token !== null && token !== '';
+    if (!token) return false;
+
+    const decoded = this.decodeToken();
+    if (decoded?.exp) {
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decoded.exp > currentTime;
+    }
+
+    return true;
   }
 
-  /**
-   * Decodifica el token JWT para obtener los datos del usuario
-   * Retorna el payload del token o null si es inválido
-   */
   decodeToken(): any {
     const token = this.getToken();
     if (!token) return null;
@@ -91,19 +76,23 @@ export class AuthService {
     }
   }
 
-  /**
-   * Obtiene el ID de la familia del token
-   */
   getFamilyId(): string | null {
     const decoded = this.decodeToken();
     return decoded?.idFamily || null;
   }
 
-  /**
-   * Obtiene el ID del usuario del token
-   */
   getUserId(): string | null {
     const decoded = this.decodeToken();
     return decoded?.idUser || null;
+  }
+
+  isTokenExpiringSoon(): boolean {
+    const decoded = this.decodeToken();
+    if (decoded?.exp) {
+      const currentTime = Math.floor(Date.now() / 1000);
+      const fiveMinutes = 5 * 60;
+      return (decoded.exp - currentTime) < fiveMinutes;
+    }
+    return false;
   }
 }
