@@ -8,6 +8,9 @@ import { ExpenseComponent } from './component/expense/expense.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ProductComponent } from './product/product.component';
 import {GoalsComponent} from "./goals/goals.component";
+import { ExpenseComponent } from './expense/expense.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -20,6 +23,7 @@ import {GoalsComponent} from "./goals/goals.component";
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    FormsModule,
     HttpClientModule
   ],
   providers: [],
