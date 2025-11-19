@@ -1,0 +1,188 @@
+<div class="income-wrapper">
+
+  <!-- CARD: FORMULARIO -->
+  <section class="card">
+
+    <div class="page-header">
+      <h1>Nuevo ingreso</h1>
+      <p *ngIf="currentUserName || familyName">
+        <ng-container *ngIf="currentUserName">
+          Usuario: {{ currentUserName }}
+        </ng-container>
+        <ng-container *ngIf="familyName">
+          — Familia: {{ familyName }}
+        </ng-container>
+      </p>
+    </div>
+
+    <form class="form" (ngSubmit)="saveIncome()" #incomeForm="ngForm">
+      <div class="form-grid">
+
+        <!-- COLUMNA 1: Título y Período (misma fila) -->
+        <div class="form-group">
+          <label for="title">Título</label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            [(ngModel)]="income.title"
+            required
+            placeholder="Ej: Salario Octubre"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="period">Período</label>
+          <input
+            id="period"
+            name="period"
+            type="text"
+            [(ngModel)]="income.period"
+            required
+            placeholder="Ej: 2024-10 o octubre"
+          />
+        </div>
+
+        <!-- COLUMNA 2: Descripción sola, ancho completo -->
+        <div class="form-group form-group--full">
+          <label for="description">Descripción</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            [(ngModel)]="income.description"
+            required
+            maxlength="500"
+            placeholder="Ej: Pago mensual, bonificaciones, etc."
+          ></textarea>
+        </div>
+
+        <!-- COLUMNA 3: Total, Responsable y Familia (misma fila, debajo de descripción) -->
+
+        <!-- Total -->
+        <div class="form-group">
+          <label for="total">Total</label>
+          <input
+            id="total"
+            name="total"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="income.total"
+            required
+          />
+        </div>
+
+        <!-- Responsable -->
+        <div class="form-group">
+          <label for="responsible">Responsable</label>
+          <select
+            id="responsible"
+            name="responsibleId"
+            [(ngModel)]="income.responsible.id"
+            required
+          >
+            <option value="" disabled>Selecciona un responsable</option>
+            <option *ngFor="let r of responsibles" [value]="r.id">
+              {{ r.fullName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="family">Familia</label>
+          <input
+            id="family"
+            type="text"
+            [value]="familyName || 'Sin familia asignada'"
+            readonly
+          />
+        </div>
+
+        <!-- COLUMNA 4: Botones, solos abajo -->
+        <div class="buttons form-group--full">
+          <button type="submit" [disabled]="incomeForm.invalid">
+            Guardar ingreso
+          </button>
+          <button type="button" class="secondary" (click)="resetForm()">
+            Limpiar
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+  <!-- CARD: LISTA DE INGRESOS -->
+  <section class="card">
+    <div class="list-header">
+      <div>
+        <h2 class="card-title">Ingresos registrados</h2>
+        <p class="card-subtitle">
+          Mostrando los últimos 5 ingresos registrados
+          <span *ngIf="familyName">de {{ familyName }}</span>.
+        </p>
+      </div>
+      <span *ngIf="loading" class="badge badge--loading">
+        Cargando...
+      </span>
+    </div>
+
+    <div class="table-wrapper">
+      <table
+        class="income-table"
+        *ngIf="latestFamilyIncomes.length > 0; else emptyState"
+      >
+        <thead>
+        <tr>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Período</th>
+          <th>Total</th>
+          <th>Responsable</th>
+          <th>Familia</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let inc of latestFamilyIncomes">
+          <td>
+            <div class="cell-main">
+              <span class="cell-title">{{ inc.title }}</span>
+            </div>
+          </td>
+          <td>{{ inc.description }}</td>
+          <td>{{ inc.period }}</td>
+          <td>{{ inc.total | number:'1.2-2' }}</td>
+          <td>
+            {{
+              inc.responsible?.fullName
+              || (inc.responsible?.firstName + ' ' + inc.responsible?.lastName)
+            }}
+          </td>
+          <td>{{ familyName }}</td>
+          <td>
+            <button
+              type="button"
+              class="danger"
+              (click)="deleteIncome(inc.id)"
+            >
+              Borrar
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <p class="empty">
+          No hay ingresos registrados para esta familia.
+        </p>
+      </ng-template>
+    </div>
+  </section>
+
+</div>
+
+
+
