@@ -1,0 +1,53 @@
+<div class="container">
+  <h2>Buscar productos</h2>
+
+  <!-- 🔍 BARRA DE BÚSQUEDA -->
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange($event)"
+      placeholder="Escribe para buscar productos..."
+    />
+  </div>
+
+  <!-- 📋 LISTA DE PRODUCTOS -->
+  <ul *ngIf="products.length > 0; else noResults">
+    <li *ngFor="let p of products" class="producto-item">
+      <strong>{{ p.producto }}</strong><br />
+      💵 {{ p.precio | currency:'USD':'symbol':'1.0-0' }}<br />
+      🏪 {{ p.negocio }}
+    </li>
+  </ul>
+
+  <ng-template #noResults>
+    <p>No hay productos disponibles.</p>
+  </ng-template>
+
+  <hr />
+
+  <!-- ➕ FORMULARIO PARA AGREGAR PRODUCTO -->
+  <h3>Agregar producto</h3>
+
+  <div class="add-form">
+    <input
+      type="text"
+      placeholder="Nombre del producto"
+      [(ngModel)]="newProduct.producto"
+    />
+
+    <input
+      type="number"
+      placeholder="Precio"
+      [(ngModel)]="newProduct.precio"
+    />
+
+    <input
+      type="text"
+      placeholder="Nombre del negocio"
+      [(ngModel)]="newProduct.negocio"
+    />
+
+    <button (click)="agregarProducto()">Agregar</button>
+  </div>
+</div>
