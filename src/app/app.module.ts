@@ -1,28 +1,41 @@
+// src/app/app.module.ts (Copia y pega este código COMPLETO)
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+// Módulos necesarios para la funcionalidad
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { IncomeComponent } from './income/income.component';
+
+// Módulos de la aplicación
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ProductComponent } from './product/product.component';
-import {GoalsComponent} from "./goals/goals.component";
-import { IncomeComponent } from './income/income.component';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+
+// Importación del LoginComponent
+import { LoginComponent } from './components/login/login.component';
+import { HomeComponent } from './components/home/home.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    ProductComponent,
-    GoalsComponent,
+    LoginComponent,
+    HomeComponent,
     IncomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+
+    // ⬅️ Módulos que resuelven todos los errores de "not a known element"
+    ReactiveFormsModule,
+    HttpClientModule,
+    RouterModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
