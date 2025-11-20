@@ -10,6 +10,8 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { Balance } from './balance/balance';
 import { TaskComponent } from './task/task.component';
+import { ProductComponent } from './product/product.component';
+import { GoalsComponent } from './goals/goals.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
@@ -19,6 +21,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
     HomeComponent,
     Balance,
     TaskComponent,
+    ProductComponent,
+    GoalsComponent,
     NotificationsComponent
   ],
   imports: [
