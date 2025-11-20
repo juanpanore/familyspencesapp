@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
+import { ProductComponent } from './product/product.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'tasks',
     component: TaskComponent
+  },
+  {
+    path: 'products',
+    component: ProductComponent
   },
   {
     path: '**',
