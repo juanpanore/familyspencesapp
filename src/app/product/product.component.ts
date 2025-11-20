@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService, Product } from './product.service';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-product',
@@ -9,58 +7,9 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 })
 export class ProductComponent implements OnInit {
 
-  products: Product[] = [];
-  searchTerm = '';
-  searchSubject = new Subject<string>();
-
-  // Campos para el nuevo producto
-  newProduct: Product = {
-    producto: '',
-    precio: 0,
-    negocio: ''
-  };
-
-  constructor(private productService: ProductService) {}
+  constructor() { }
 
   ngOnInit(): void {
-    // Búsqueda reactiva
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(term => {
-      this.loadProductos(term);
-    });
-
-    this.loadProductos();
   }
 
-  onSearchChange(value: string): void {
-    this.searchSubject.next(value);
-  }
-
-  loadProductos(nombre?: string): void {
-    this.productService.getProducts(nombre).subscribe({
-      next: data => this.products = data,
-      error: err => console.error('Error al cargar productos', err)
-    });
-  }
-
-  agregarProducto(): void {
-    if (!this.newProduct.producto || !this.newProduct.negocio || !this.newProduct.precio) {
-      alert('Por favor completa todos los campos');
-      return;
-    }
-
-    this.productService.addProduct(this.newProduct).subscribe({
-      next: () => {
-        this.loadProductos();
-        alert('Producto agregado correctamente');
-        this.newProduct = { producto: '', precio: 0, negocio: '' }; // limpiar formulario
-      },
-      error: err => {
-        console.error('Error al agregar producto', err);
-        alert('No se pudo agregar el producto');
-      }
-    });
-  }
 }

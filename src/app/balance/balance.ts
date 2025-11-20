@@ -1,35 +1,11 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-
-import { BalanceService, GeneralBalance } from '../service/balance/balance.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-balance',
+  imports: [],
   templateUrl: './balance.html',
-  styleUrls: ['./balance.css']
+  styleUrl: './balance.css',
 })
-export class Balance implements OnChanges {
-  @Input() familyId: string | null = null;
+export class Balance {
 
-  balanceData: GeneralBalance | null = null;
-
-  constructor(private balanceService: BalanceService) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['familyId'] && this.familyId) {
-      this.loadBalance();
-    }
-  }
-
-  loadBalance(): void {
-    if (!this.familyId) return;
-
-    this.balanceService.getGeneralBalance(this.familyId).subscribe({
-      next: (data) => {
-        this.balanceData = data;
-      },
-      error: (err) => {
-        console.error('Error loading balance:', err);
-      }
-    });
-  }
 }
