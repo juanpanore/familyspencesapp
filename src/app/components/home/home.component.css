@@ -138,3 +138,15 @@
   color: #7f8c8d;
   font-style: italic;
 }
+
+.nav-link-goals {
+  background-color: #2ecc71;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.nav-link-goals:hover {
+  background-color: #27ae60;
+  color: white !important;
+}
