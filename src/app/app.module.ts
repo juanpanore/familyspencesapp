@@ -11,6 +11,7 @@ import { HomeComponent } from './components/home/home.component';
 import { Balance } from './balance/balance';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
+import { GoalsComponent } from './goals/goals.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,9 @@ import { ProductComponent } from './product/product.component';
     HomeComponent,
     Balance,
     TaskComponent,
-    ProductComponent
+    ProductComponent,
+    GoalsComponent,
+    TaskComponent
   ],
   imports: [
     BrowserModule,
