@@ -1,0 +1,19 @@
+<div class="balance-container" *ngIf="balanceData; else noBalance">
+    <div class="card income">
+        <h3>Ingresos</h3>
+        <p>{{ balanceData?.totalIncome | currency }}</p>
+    </div>
+    <div class="card expense">
+        <h3>Gastos</h3>
+        <p>{{ balanceData?.totalExpenses | currency }}</p>
+    </div>
+    <div class="card total">
+        <h3>Balance Total</h3>
+        <p>{{ balanceData?.balance | currency }}</p>
+    </div>
+</div>
+<ng-template #noBalance>
+    <div class="no-data-message">
+        <p>No hay información de balance disponible para esta familia.</p>
+    </div>
+</ng-template>
