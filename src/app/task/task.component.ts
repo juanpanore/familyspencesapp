@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../services/task.service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { Task, Expense, Vacation } from '../models/task.model';
 
 @Component({
   selector: 'app-task',
@@ -12,29 +10,21 @@ import { Task, Expense, Vacation } from '../models/task.model';
 export class TaskComponent implements OnInit {
 
   familyId: string = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
-  idResponsible: string = 'f7c1acfa-62bb-4b7f-aaea-9cce2224c5f1';
+  idResponsible: string = 'f7c1acfa-62bb-4b7f-aaea-9cce2224c5f1'; 
 
-  tasks: Task[] = [];
-  expenses: Expense[] = [];
-  vacations: Vacation[] = [];
+  tasks: any[] = [];
+  expenses: any[] = [];
+  vacations: any[] = [];
 
-  showModal: boolean = false;
+  showModal: boolean = false; 
 
-  // Tipo para el formulario/creación de tarea en la UI
-  newTask: {
-    name: string;
-    description: string;
-    status: boolean;
-    creationDate?: string;
-    idExpenseve?: string;
-    idVacation?: string;
-  } = {
+  newTask: any = {
     name: '',
     description: '',
     status: false,
     creationDate: '',
-    idExpenseve: '',
-    idVacation: ''
+    idExpenseve: '',  // ✅ Nombre correcto del backend
+    idVacation: ''    // ✅ Cambiado de vacationId a idVacation
   };
 
   constructor(private taskService: TaskService, private http: HttpClient) {}
@@ -58,7 +48,7 @@ export class TaskComponent implements OnInit {
   }
 
   loadExpenses(): void {
-    this.http.get<Expense[]>(`${environment.apiUrl}/v1/rest/expenses/by-family/${this.familyId}`)
+    this.http.get<any[]>(`http://localhost:8080/api/v1/rest/expenses/by-family/${this.familyId}`)
       .subscribe({
         next: (data) => {
           this.expenses = data;
@@ -69,7 +59,7 @@ export class TaskComponent implements OnInit {
   }
 
   loadVacations(): void {
-    this.http.get<Vacation[]>(`${environment.apiUrl}/vacations`)
+    this.http.get<any[]>(`http://localhost:8080/api/vacations`)
       .subscribe({
         next: (data) => {
           this.vacations = data;
@@ -96,15 +86,23 @@ export class TaskComponent implements OnInit {
     }
 
     // ✅ Estructura correcta: el backend espera objetos con { id: "uuid" }
-    const taskData: Partial<Task> = {
+    const taskData: any = {
       name: this.newTask.name,
       description: this.newTask.description,
       status: this.newTask.status,
       creationDate: formattedDate,
       idResponsible: this.idResponsible,
-      idExpenseve: this.newTask.idExpenseve ? { id: this.newTask.idExpenseve } : null,
-      idVacations: this.newTask.idVacation ? { id: this.newTask.idVacation } : null
+      idExpenseve: {
+        id: this.newTask.idExpenseve  // Backend hace: task.getIdExpenseve().getId()
+      }
     };
+
+    // Solo agregar idVacations si tiene valor (como objeto)
+    if (this.newTask.idVacation) {
+      taskData.idVacations = {
+        id: this.newTask.idVacation  // Backend hace: task.getIdVacations().getId()
+      };
+    }
 
     // familyId se pasa por query param, no en el body
 
@@ -126,10 +124,9 @@ export class TaskComponent implements OnInit {
   }
 
   toggleStatus(task: any): void {
-    const updatedTask: Partial<Task> = { ...task, status: !task.status };
-    if (!task.id) return;
+    const updatedTask = { ...task, status: !task.status };
     this.taskService.updateTask(task.id, updatedTask, this.familyId).subscribe({
-      next: (res) => {
+      next: () => {
         task.status = !task.status;
         console.log('✅ Estado actualizado:', task);
       },
