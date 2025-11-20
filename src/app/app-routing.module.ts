@@ -1,13 +1,11 @@
+
+// src/app/app-routing.module.ts
+
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-<<<<<<< HEAD
-import { IncomeComponent } from './income/income.component';
-
-const routes: Routes = [
-  { path: 'income', component: IncomeComponent }
-=======
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
+import { TaskComponent } from './task/task.component';
 
 const routes: Routes = [
   {
@@ -24,10 +22,13 @@ const routes: Routes = [
     component: HomeComponent
   },
   {
+    path: 'tasks',
+    component: TaskComponent
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }
->>>>>>> 4f457781361994bd3db14ad97a717c4b6f84e99e
 ];
 
 @NgModule({
