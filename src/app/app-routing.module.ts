@@ -9,6 +9,8 @@ import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
+import { PetComponent } from './pet/pet.component';
+import { VacationComponent } from './vacation/vacation.component';
 
 const routes: Routes = [
   {
@@ -21,8 +23,8 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
-    path: 'register',  // ← NUEVA RUTA
-    component: LoginComponent  // ← Temporal, luego creas RegisterComponent
+    path: 'register',
+    component: LoginComponent
   },
   {
     path: 'home',
@@ -47,6 +49,14 @@ const routes: Routes = [
   {
     path: 'ranking',
     component: RankingComponent
+  },
+  {
+    path: 'pet',
+    component: PetComponent
+  },
+  {
+    path: 'vacation',
+    component: VacationComponent
   },
   {
     path: '**',

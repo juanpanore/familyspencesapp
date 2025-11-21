@@ -4,13 +4,22 @@
         <div class="navbar-brand">
             <span class="logo">FamilySpences</span>
         </div>
-        <div class="navbar-menu">
-            <a routerLink="/budget" class="nav-link nav-link-broken">Presupuesto</a>
-            <a routerLink="/tasks" class="nav-link nav-link-working">Tareas</a>
-            <a routerLink="/products" class="nav-link nav-link-working">Productos</a>
-            <a routerLink="/pet" class="nav-link nav-link-broken">Mascotas</a>
-            <a routerLink="/ranking" class="nav-link nav-link-working">Ranking</a>
-            <a routerLink="/goals" class="nav-link nav-link-goals">Metas</a>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <button class="dropbtn">Menú
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="dropdown-content">
+                    <a routerLink="/budget" class="dropdown-item">Presupuesto</a>
+                    <a routerLink="/tasks" class="dropdown-item">Tareas</a>
+                    <a routerLink="/products" class="dropdown-item">Productos</a>
+                    <a routerLink="/pet" class="dropdown-item">Mascotas</a>
+                    <a routerLink="/ranking" class="dropdown-item">Ranking</a>
+                    <a routerLink="/goals" class="dropdown-item">Metas</a>
+                    <a routerLink="/expense" class="dropdown-item">Gastos</a>
+                    <a routerLink="/vacation" class="dropdown-item">Vacaciones</a>
+                </div>
+            </div>
             <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
         </div>
     </nav>
@@ -29,18 +38,18 @@
                 <table class="expenses-table">
                     <thead>
                         <tr>
-                            <th>Concepto</th>
-                            <th>Monto</th>
-                            <th>Fecha</th>
-                            <th>Usuario</th>
+                            <th>Título</th>
+                            <th>Valor</th>
+                            <th>Periodo</th>
+                            <th>Responsable</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let expense of expensesList">
-                            <td>{{ expense.name }}</td>
-                            <td>{{ expense.amount | currency }}</td>
-                            <td>{{ expense.date | date:'shortDate' }}</td>
-                            <td>{{ expense.user }}</td>
+                            <td>{{ expense.title }}</td>
+                            <td>{{ expense.value | currency }}</td>
+                            <td>{{ expense.period }}</td>
+                            <td>{{ expense.responsible }}</td>
                         </tr>
                         <tr *ngIf="expensesList.length === 0">
                             <td colspan="4" class="text-center empty-state">
