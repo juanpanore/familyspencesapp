@@ -1,0 +1,69 @@
+.balance-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card p {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0 0;
+}
+
+/* Ingresos - Verde */
+.card.income {
+    border-bottom: 4px solid #2ecc71;
+}
+
+.card.income p {
+    color: #2ecc71;
+}
+
+/* Gastos - Rojo */
+.card.expense {
+    border-bottom: 4px solid #e74c3c;
+}
+
+.card.expense p {
+    color: #e74c3c;
+}
+
+/* Balance Total - Azul/Neutro */
+.card.total {
+    border-bottom: 4px solid #3498db;
+}
+
+.card.total p {
+    color: #3498db;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    color: #7f8c8d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}

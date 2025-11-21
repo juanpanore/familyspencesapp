@@ -1,0 +1,55 @@
+<div class="home-layout">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="logo">FamilySpences</span>
+        </div>
+        <div class="navbar-menu">
+            <a routerLink="/budget" class="nav-link nav-link-broken">Presupuesto</a>
+            <a routerLink="/tasks" class="nav-link nav-link-working">Tareas</a>
+            <a routerLink="/products" class="nav-link nav-link-working">Productos</a>
+            <a routerLink="/pet" class="nav-link nav-link-broken">Mascotas</a>
+            <a routerLink="/ranking" class="nav-link nav-link-working">Ranking</a>
+            <a routerLink="/goals" class="nav-link nav-link-goals">Metas</a>
+            <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Balance Section -->
+        <section class="balance-section">
+            <app-balance [familyId]="familyId"></app-balance>
+        </section>
+
+        <!-- Expenses Table -->
+        <section class="expenses-section">
+            <h2>Movimientos Recientes</h2>
+            <div class="table-responsive">
+                <table class="expenses-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let expense of expensesList">
+                            <td>{{ expense.name }}</td>
+                            <td>{{ expense.amount | currency }}</td>
+                            <td>{{ expense.date | date:'shortDate' }}</td>
+                            <td>{{ expense.user }}</td>
+                        </tr>
+                        <tr *ngIf="expensesList.length === 0">
+                            <td colspan="4" class="text-center empty-state">
+                                No se encontraron gastos recientes para esta familia.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
