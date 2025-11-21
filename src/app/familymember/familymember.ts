@@ -40,6 +40,8 @@ export class FamilymemberComponent implements OnInit {
   members: FamilyMember[] = [];
   relationships: Relationship[] = [];
   documentTypes: DocumentType[] = [];
+  showSuccessMessage = false;
+  maxDate: string='';
 
   isAddingMember = false;
 
@@ -50,6 +52,7 @@ export class FamilymemberComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.setMaxDate();
     this.buildForm();
     this.loadCatalogs();
     this.loadList();
@@ -103,10 +106,14 @@ export class FamilymemberComponent implements OnInit {
     this.form.reset();
   }
 
-  save(): void {
-    if (this.form.invalid) return;
+save(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const familyId = this.authService.getFamilyId();
+    console.log(familyId);
     if (!familyId) return;
 
     const payload: FamilyMember = {
@@ -117,12 +124,28 @@ export class FamilymemberComponent implements OnInit {
     };
 
     this.fmService.addFamilyMember(payload).subscribe({
-      next: () => {
-        this.isAddingMember = false;
-        this.form.reset();
-        this.loadList();
-      },
+next: () => {
+  this.showSuccessMessage = true;
+  this.isAddingMember = false;
+  this.form.reset();
+  this.loadList();
+  
+  setTimeout(() => {
+    const alertElement = document.querySelector('.success-alert');
+    if (alertElement) {
+      alertElement.classList.add('hiding');
+      setTimeout(() => {
+        this.showSuccessMessage = false;
+      }, 500);
+    }
+  }, 3000);
+},
       error: err => console.error('Error creando miembro', err)
     });
+  }
+
+  private setMaxDate(): void {
+    const today = new Date();
+    this.maxDate = today.toISOString().split('T')[0];
   }
 }
