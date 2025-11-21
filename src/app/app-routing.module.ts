@@ -9,6 +9,8 @@ import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
+import { PetComponent } from './pet/pet.component';
+import { VacationComponent } from './vacation/vacation.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 
 const routes: Routes = [
@@ -19,6 +21,10 @@ const routes: Routes = [
   },
   {
     path: 'login',
+    component: LoginComponent
+  },
+  {
+    path: 'register',
     component: LoginComponent
   },
   {
@@ -44,6 +50,14 @@ const routes: Routes = [
   {
     path: 'ranking',
     component: RankingComponent
+  },
+  {
+    path: 'pet',
+    component: PetComponent
+  },
+  {
+    path: 'vacation',
+    component: VacationComponent
   },
   {
     path: 'budget',

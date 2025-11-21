@@ -23,13 +23,18 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+
+    // Si ya está autenticado, redirigir a home
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/home']);
+    }
   }
 
   private initForm(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      rememberMe: [false] // Checkbox para "Recordarme"
     });
   }
 
@@ -39,6 +44,10 @@ export class LoginComponent implements OnInit {
 
   get passwordControl(): AbstractControl | null {
     return this.loginForm.get('password');
+  }
+
+  get rememberMeControl(): AbstractControl | null {
+    return this.loginForm.get('rememberMe');
   }
 
   onSubmit(): void {
@@ -55,8 +64,15 @@ export class LoginComponent implements OnInit {
     this.authService.login({ email, password }, rememberMe).subscribe({
       next: (response) => {
         this.isLoading = false;
+
+        // Guardar el token en cookie con la opción rememberMe
         this.authService.saveToken(response.token, rememberMe);
+
         console.log('✅ Login exitoso');
+        console.log('👤 Family ID:', this.authService.getFamilyId());
+        console.log('👤 User ID:', this.authService.getUserId());
+
+        // Navegar a home
         this.router.navigate(['/home']);
       },
       error: (err) => {
@@ -65,15 +81,19 @@ export class LoginComponent implements OnInit {
         if (err.error && err.error.error) {
           this.errorMessage = err.error.error;
         } else if (err.status === 0) {
-          this.errorMessage = 'No se pudo conectar con el servidor.';
+          this.errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
         } else if (err.status === 401) {
-          this.errorMessage = 'Credenciales incorrectas.';
+          this.errorMessage = 'Credenciales incorrectas. Verifica tu email y contraseña.';
         } else {
-          this.errorMessage = 'Error de autenticación.';
+          this.errorMessage = 'Error de autenticación. Por favor, intenta nuevamente.';
         }
 
-        console.error('❌ Error:', err);
+        console.error('❌ Error en login:', err);
       }
     });
+  }
+
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 }
