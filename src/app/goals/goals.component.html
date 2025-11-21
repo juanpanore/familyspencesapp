@@ -1,36 +1,26 @@
 <div class="goals-container">
   <div class="header-container">
-    <div class="breadcrumb">
-      ← Home
-    </div>
+    <button class="btn-home" (click)="goToHome()">← Home</button>
     <h1>Goals</h1>
     <p class="subtitle">Gestión de metas</p>
-    <p class="description">Crea, edita y consulta tus metas de ahorro. Filtra por familia o por categoría según lo
-      necesites.</p>
+    <p class="description">Crea, edita y consulta tus metas de ahorro. Filtra por categoría según lo necesites.</p>
   </div>
 
   <div class="filters-section">
-    <label>Familia</label>
-    <select [(ngModel)]="selectedFamilyFilter" (change)="applyFilters()">
-      <option value="">Todas las familias</option>
-    </select>
-
     <label>Categoría</label>
     <select [(ngModel)]="selectedCategoryFilter" (change)="applyFilters()">
       <option value="">Todas</option>
       <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
     </select>
 
-    <button class="btn-view-family" (click)="applyFilters()">🔍 Ver metas de familia</button>
-    <button class="btn-view-all" (click)="selectedFamilyFilter=''; selectedCategoryFilter=''; applyFilters()">📋 Ver
-      todas</button>
+    <button class="btn-view-all" (click)="selectedCategoryFilter=''; applyFilters()">📋 Ver todas</button>
   </div>
 
   <div class="uuid-section" *ngIf="familyId">
     <label>UUID de la meta (búsqueda exacta)</label>
     <input type="text" placeholder="Pega aquí el UUID..." [(ngModel)]="uuidSearch" />
     <button class="btn-modify" (click)="searchByUuid()">✏️ Modificar</button>
-    <button class="btn-delete" (click)="showCreateGoalForm()">+ Crear</button>
+    <button class="btn-create" (click)="showCreateGoalForm()">+ Crear</button>
   </div>
 
   <div class="table-container" *ngIf="filteredGoals.length > 0">
@@ -58,7 +48,7 @@
           <td>{{ goal.deadline | date:'dd/MM/yyyy, h:mm a' }}</td>
           <td class="actions-cell">
             <button class="btn-edit" (click)="showEditGoalForm(goal)">Editar</button>
-            <button class="btn-delete" (click)="deleteGoal(goal.id)">Borrar</button>
+            <button class="btn-delete" (click)="confirmDelete(goal.id)">Borrar</button>
           </td>
         </tr>
       </tbody>
@@ -66,7 +56,7 @@
   </div>
 
   <div class="empty-state" *ngIf="filteredGoals.length === 0">
-    <p>No tienes metas aún.</p>
+    <p>No tienes metas aún con esta categoria.</p>
     <button class="btn-create" (click)="showCreateGoalForm()">Crear Meta</button>
   </div>
 
@@ -116,6 +106,24 @@
           <button type="button" class="btn-cancel" (click)="cancelForm()">Cancelar</button>
         </div>
       </form>
+    </div>
+  </div>
+  <div class="notification-modal" *ngIf="showNotification">
+    <div class="notification-content" [ngClass]="notificationType">
+      <h3>{{ notificationTitle }}</h3>
+      <p>{{ notificationMessage }}</p>
+      <button class="btn-notification-ok" (click)="closeNotification()">Aceptar</button>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" *ngIf="showConfirmation">
+    <div class="confirmation-content">
+      <h3>{{ confirmationTitle }}</h3>
+      <p>{{ confirmationMessage }}</p>
+      <div class="confirmation-actions">
+        <button class="btn-confirm" (click)="onConfirm()">Aceptar</button>
+        <button class="btn-cancel-confirm" (click)="onCancelConfirm()">Cancelar</button>
+      </div>
     </div>
   </div>
 </div>

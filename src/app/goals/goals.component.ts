@@ -17,16 +17,23 @@ export class GoalsComponent implements OnInit {
   familyId: string | null = null;
   selectedGoal: Goal | null = null;
 
-
   showFormModal: boolean = false;
 
+  showNotification: boolean = false;
+  notificationTitle: string = '';
+  notificationMessage: string = '';
+  notificationType: string = 'success';
+
+  showConfirmation: boolean = false;
+  confirmationTitle: string = '';
+  confirmationMessage: string = '';
+  confirmCallback: (() => void) | null = null;
 
   categories: Category[] = [];
-
-
-  selectedFamilyFilter: string = '';
   selectedCategoryFilter: string = '';
   uuidSearch: string = '';
+
+  originalGoal: Goal | null = null;
 
   newGoal: Goal = {
     id: '',
@@ -46,9 +53,12 @@ export class GoalsComponent implements OnInit {
     private router: Router
   ) { }
 
+  goToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
   ngOnInit(): void {
     console.log('🔍 GoalsComponent: Inicializando...');
-
 
     const token = this.authService.getToken();
     console.log('🔑 Token disponible:', token ? 'SÍ' : 'NO');
@@ -114,9 +124,8 @@ export class GoalsComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredGoals = this.goals.filter(goal => {
-      const matchesFamily = !this.selectedFamilyFilter || goal.familyId === this.selectedFamilyFilter;
       const matchesCategory = !this.selectedCategoryFilter || goal.categoryId === this.selectedCategoryFilter;
-      return matchesFamily && matchesCategory;
+      return matchesCategory;
     });
   }
 
@@ -130,7 +139,7 @@ export class GoalsComponent implements OnInit {
         },
         (error) => {
           console.error('❌ Error al buscar la meta por UUID:', error);
-          alert('No se encontró ninguna meta con ese UUID');
+          this.showNotificationModal('Error', 'No se encontró ninguna meta con ese UUID', 'error');
         }
       );
     }
@@ -161,11 +170,11 @@ export class GoalsComponent implements OnInit {
           this.goals.push(goal);
           this.applyFilters();
           this.cancelForm();
-          alert('Meta creada exitosamente');
+          this.showNotificationModal('Éxito', 'Meta creada exitosamente', 'success');
         },
         (error) => {
           console.error('❌ Error al crear la meta:', error);
-          alert(`Error al crear la meta: ${error.error?.error || error.message}`);
+          this.showNotificationModal('Error', `Error al crear la meta: ${error.error?.error || error.message}`, 'error');
         }
       );
     }
@@ -174,11 +183,17 @@ export class GoalsComponent implements OnInit {
   showEditGoalForm(goal: Goal): void {
     console.log('✏️ Abriendo formulario para editar meta:', goal);
     this.selectedGoal = { ...goal };
+    this.originalGoal = { ...goal };
     this.showFormModal = true;
   }
 
   updateGoal(): void {
     if (this.selectedGoal) {
+      if (this.originalGoal && this.hasNoChanges(this.selectedGoal, this.originalGoal)) {
+        this.showNotificationModal('Información', 'No se ha realizado ningún cambio en la meta', 'warning');
+        return;
+      }
+
       console.log('✏️ Actualizando meta:', this.selectedGoal);
       this.goalService.updateGoal(
         this.familyId!,
@@ -194,29 +209,37 @@ export class GoalsComponent implements OnInit {
           }
           this.applyFilters();
           this.cancelForm();
-          alert('Meta actualizada exitosamente');
+          this.showNotificationModal('Éxito', 'Meta actualizada exitosamente', 'success');
         },
         (error) => {
           console.error('❌ Error al actualizar la meta:', error);
-          alert(`Error al actualizar la meta: ${error.error?.error || error.message}`);
+          this.showNotificationModal('Error', `Error al actualizar la meta: ${error.error?.error || error.message}`, 'error');
         }
       );
     }
   }
 
+  confirmDelete(goalId: string): void {
+    this.showConfirmationModal(
+      'Confirmar eliminación',
+      '¿Estás seguro de que deseas eliminar esta meta?',
+      () => this.deleteGoal(goalId)
+    );
+  }
+
   deleteGoal(goalId: string): void {
-    if (this.familyId && confirm('¿Estás seguro de que deseas eliminar esta meta?')) {
+    if (this.familyId) {
       console.log('🗑️ Eliminando meta:', goalId);
       this.goalService.deleteGoal(this.familyId, goalId).subscribe(
         () => {
           console.log('✅ Meta eliminada exitosamente');
           this.goals = this.goals.filter(goal => goal.id !== goalId);
           this.applyFilters();
-          alert('Meta eliminada exitosamente');
+          this.showNotificationModal('Éxito', 'Meta eliminada exitosamente', 'success');
         },
         (error) => {
           console.error('❌ Error al eliminar la meta:', error);
-          alert(`Error al eliminar la meta: ${error.error?.error || error.message}`);
+          this.showNotificationModal('Error', `Error al eliminar la meta: ${error.error?.error || error.message}`, 'error');
         }
       );
     }
@@ -224,6 +247,7 @@ export class GoalsComponent implements OnInit {
 
   cancelForm(): void {
     this.selectedGoal = null;
+    this.originalGoal = null;
     this.showFormModal = false;
     this.newGoal = {
       id: '',
@@ -235,5 +259,47 @@ export class GoalsComponent implements OnInit {
       deadline: '',
       dailyGoal: 0
     };
+  }
+
+  showNotificationModal(title: string, message: string, type: string = 'success'): void {
+    this.notificationTitle = title;
+    this.notificationMessage = message;
+    this.notificationType = type;
+    this.showNotification = true;
+  }
+
+  closeNotification(): void {
+    this.showNotification = false;
+  }
+
+  showConfirmationModal(title: string, message: string, callback: () => void): void {
+    this.confirmationTitle = title;
+    this.confirmationMessage = message;
+    this.confirmCallback = callback;
+    this.showConfirmation = true;
+  }
+
+  onConfirm(): void {
+    if (this.confirmCallback) {
+      this.confirmCallback();
+    }
+    this.showConfirmation = false;
+    this.confirmCallback = null;
+  }
+
+  onCancelConfirm(): void {
+    this.showConfirmation = false;
+    this.confirmCallback = null;
+  }
+
+  hasNoChanges(current: Goal, original: Goal): boolean {
+    return (
+      current.name === original.name &&
+      current.description === original.description &&
+      current.categoryId === original.categoryId &&
+      current.savingsCap === original.savingsCap &&
+      current.dailyGoal === original.dailyGoal &&
+      current.deadline === original.deadline
+    );
   }
 }

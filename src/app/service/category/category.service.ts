@@ -22,27 +22,22 @@ export class CategoryService {
         });
     }
 
-    // Obtener todas las categorías
     getAllCategories(): Observable<Category[]> {
         return this.http.get<Category[]>(this.apiUrl, { headers: this.getHeaders() });
     }
 
-    // Obtener categorías globales
     getGlobalCategories(): Observable<Category[]> {
         return this.http.get<Category[]>(`${this.apiUrl}/global`, { headers: this.getHeaders() });
     }
 
-    // Obtener categorías de una familia
     getFamilyCategories(familyId: string): Observable<Category[]> {
         return this.http.get<Category[]>(`${this.apiUrl}/family/${familyId}`, { headers: this.getHeaders() });
     }
 
-    // Obtener categorías disponibles para una familia (globales + propias)
     getCategoriesForFamily(familyId: string): Observable<Category[]> {
         return this.http.get<Category[]>(`${this.apiUrl}/for-family/${familyId}`, { headers: this.getHeaders() });
     }
 
-    // Obtener categoría por ID
     getCategoryById(id: string): Observable<Category> {
         return this.http.get<Category>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
     }
