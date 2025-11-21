@@ -6,6 +6,7 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
+import { FamilymemberComponent } from './familymember/familymember';
 
 const routes: Routes = [
   {
@@ -29,6 +30,10 @@ const routes: Routes = [
     path: 'products',
     component: ProductComponent
   },
+    {
+  path: 'family-members',
+  component: FamilymemberComponent
+},
   {
     path: '**',
     redirectTo: '/login'

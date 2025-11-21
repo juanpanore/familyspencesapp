@@ -13,6 +13,7 @@ import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { FamilymemberComponent } from './familymember/familymember';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
     TaskComponent,
     ProductComponent,
     GoalsComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    FamilymemberComponent
   ],
   imports: [
     BrowserModule,
