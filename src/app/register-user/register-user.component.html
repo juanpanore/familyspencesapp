@@ -1,0 +1,91 @@
+<div class="card">
+	<h2>Crear cuenta</h2>
+
+	<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+		<div class="row">
+			<div class="col">
+				<label>Nombre</label>
+				<input formControlName="firstName" placeholder="Nombre" />
+				<small class="error" *ngIf="field('firstName')?.touched && field('firstName')?.invalid">Requerido</small>
+			</div>
+			<div class="col">
+				<label>Apellido</label>
+				<input formControlName="lastName" placeholder="Apellido" />
+				<small class="error" *ngIf="field('lastName')?.touched && field('lastName')?.invalid">Requerido</small>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<label>Fecha de nacimiento</label>
+				<input type="date" formControlName="birthDate" />
+			</div>
+			<div class="col">
+				<label>Tipo de documento</label>
+				<select formControlName="documentTypeId">
+					<option value="">Seleccionar</option>
+					<option *ngFor="let d of documentTypes" [value]="d.id">{{d.type}}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<label>Documento</label>
+				<input formControlName="document" placeholder="Documento" />
+			</div>
+			<div class="col">
+				<label>Correo</label>
+				<input formControlName="email" placeholder="correo@ejemplo.com" />
+				<small class="error" *ngIf="field('email')?.touched && field('email')?.invalid">Correo inválido</small>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<label>Relación</label>
+				<select formControlName="relationshipId">
+					<option value="">Seleccionar</option>
+					<option *ngFor="let r of relationships" [value]="r.id">{{r.type}}</option>
+				</select>
+			</div>
+			<div class="col">
+				<label>Teléfono</label>
+				<input formControlName="phone" placeholder="Teléfono" />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<label>Tarjeta de crédito</label>
+				<input formControlName="creditCard" placeholder="**** **** **** ****" />
+			</div>
+			<div class="col">
+				<label>Dirección</label>
+				<input formControlName="address" placeholder="Dirección" />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<label>Contraseña</label>
+				<input type="password" formControlName="password" placeholder="Contraseña" />
+				<div class="pw-meter">
+					<div class="bar" [style.width.%]="(strengthScore() / 4) * 100"></div>
+				</div>
+			</div>
+			<div class="col">
+				<label>Confirmar contraseña</label>
+				<input type="password" formControlName="confirmPassword" placeholder="Repetir contraseña" />
+				<small class="error" *ngIf="form.hasError('passwordsMismatch') && field('confirmPassword')?.touched">Las contraseñas no coinciden</small>
+			</div>
+		</div>
+
+		<div class="actions">
+			<button type="submit" [disabled]="form.invalid || loading">{{ loading ? 'Enviando...' : 'Crear cuenta' }}</button>
+		</div>
+	</form>
+
+	<div class="message success" *ngIf="successMessage">{{ successMessage }}</div>
+	<div class="message error" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>
