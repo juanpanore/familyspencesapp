@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IncomeComponent } from './income/income.component';
+import { CategoryComponent } from './categories/category.component';
 
 const routes: Routes = [
-  { path: 'income', component: IncomeComponent }
+  { path: 'income', component: IncomeComponent },
+  { path: 'categories', component: CategoryComponent }
 ];
 
 @NgModule({

@@ -4,8 +4,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProductComponent } from './product/product.component';
-import {GoalsComponent} from "./goals/goals.component";
+import { GoalsComponent } from "./goals/goals.component";
 import { IncomeComponent } from './income/income.component';
+import { CategoryComponent } from './categories/category.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -14,7 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
     AppComponent,
     ProductComponent,
     GoalsComponent,
-    IncomeComponent
+    IncomeComponent,
+    CategoryComponent
   ],
   imports: [
     BrowserModule,
@@ -25,4 +27,4 @@ import { HttpClientModule } from '@angular/common/http';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
