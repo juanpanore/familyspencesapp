@@ -1,7 +1,7 @@
 /* ====== MODO OSCURO GENERAL ====== */
 :host {
   display: block;
-  background-color: #121212;
+  background-color: #f5f7fa;
   color: #e4e4e4;
   min-height: 100vh;
   padding: 2rem;
@@ -9,7 +9,7 @@
 }
 
 h2, h3 {
-  color: #ffffff;
+  color: #1e1e1e;
   margin-bottom: 1rem;
   font-weight: 600;
 }
@@ -18,29 +18,37 @@ h2, h3 {
 .container {
   max-width: 700px;
   margin: auto;
-  background: #1e1e1e;
+  background: #ffffff;
   padding: 2rem;
   border-radius: 12px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid #b3b1b1;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
 
 /* ====== BARRA DE BÚSQUEDA ====== */
 .search-bar input {
-  width: 100%;
+  width: 96%;
   padding: 0.9rem;
   font-size: 1rem;
-  color: #fff;
-  background: #2a2a2a;
-  border: 1px solid #3a3a3a;
+  color: #7c3aed;
+  background: #f5f7fa;
+  border: 1px solid #b3b1b1;
   border-radius: 8px;
   outline: none;
   transition: border 0.2s, background 0.2s;
 }
 
+input::placeholder{
+  color: #b3b1b1;
+}
+
 .search-bar input:focus {
-  border-color: #6ab6ff;
-  background: #333;
+  border-color: #7c3aed;
+  background: #7c3aed15;
+}
+
+.search-bar input:focus::placeholder{
+  color: #7c3aed00;
 }
 
 /* ====== LISTA DE PRODUCTOS ====== */
@@ -51,22 +59,29 @@ ul {
 }
 
 .producto-item {
-  background: #2a2a2a;
+  color: #f5f7fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
-  border: 1px solid #3a3a3a;
+  border: 1px solid #b3b1b1;
+  box-shadow: 0 0 10px 0 rgba(118, 75, 162, 0.493);
   transition: transform 0.15s, background 0.2s;
 }
 
+.producto-item:hover strong{
+  color: #7c3aed;
+}
+
 .producto-item:hover {
-  background: #333;
+  background: #f5f7fa;
   transform: translateY(-3px);
+  color: #7c3aed;
 }
 
 strong {
   font-size: 1.1rem;
-  color: #6ab6ff;
+  color: #f5f7fa;
 }
 
 /* ====== MENSAJE SIN RESULTADOS ====== */
@@ -86,22 +101,26 @@ p {
 .add-form input {
   padding: 0.9rem;
   font-size: 1rem;
-  color: #fff;
-  background: #2a2a2a;
-  border: 1px solid #3a3a3a;
+  color: #7c3aed;
+  background: #f5f7fa;
+  border: 1px solid #b3b1b1;
   border-radius: 8px;
   outline: none;
   transition: border 0.2s, background 0.2s;
 }
 
 .add-form input:focus {
-  border-color: #74d57f; /* verde suave */
-  background: #333;
+  border-color: #7c3aed;
+  background: #7c3aed15;
+}
+
+.add-form input:focus::placeholder {
+  color: #7c3aed00;
 }
 
 /* ====== BOTÓN AGREGAR ====== */
 .add-form button {
-  background: #3990ff;
+  background: #7c3aed;
   color: white;
   border: none;
   padding: 0.9rem;
@@ -113,7 +132,7 @@ p {
 }
 
 .add-form button:hover {
-  background: #2974d8;
+  background: #7c3aeddc;
 }
 
 .add-form button:active {

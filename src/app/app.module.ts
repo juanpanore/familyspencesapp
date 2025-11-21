@@ -16,7 +16,13 @@ import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { RegisterUserComponent } from './register-user/register-user.component';
+import { FamilymemberComponent } from './familymember/familymember';
 import { ExpenseComponent } from './component/expense/expense.component';
+import { VacationComponent } from './vacation/vacation.component';
+
+import { PetComponent } from './pet/pet.component';
+
+import { IncomeComponent } from './income/income.component';
 
 @NgModule({
   declarations: [
@@ -30,16 +36,20 @@ import { ExpenseComponent } from './component/expense/expense.component';
     RankingComponent,
     NotificationsComponent,
     RegisterUserComponent,
-    ExpenseComponent
+    ExpenseComponent,
+    VacationComponent,
+    PetComponent,
+    FamilymemberComponent,
+    IncomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    CommonModule,
     FormsModule,
-    RouterModule
+    CommonModule,
+    RouterModule,
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,26 +1,38 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 
-export interface DocumentType { id: string; type: string }
-export interface Relationship { id: string; type: string }
+export interface DocumentType { 
+  id: string;
+  type: string;
+}
 
-@Injectable({ providedIn: 'root' })
+export interface Relationship { 
+  id: string; 
+  type: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 export class RegisterUserService {
 
   private readonly base = 'http://localhost:8080/api';
 
-  // 🔥 Token quemado solo temporalmente
-  private readonly token = "eyJhbGciOiJIUzI1NiJ9.eyJpZFVzZXIiOiJjZGM1NWE1Mi1jMGRkLTRlNzctOWQyNi05Nzg0Yjk3Mzg4MDEiLCJpZEZhbWlseSI6IjQ3ZTJhMTAzLTljNGYtNGNiNi1iOTZiLWI3MTAwOWMyYWQ1MyIsImlhdCI6MTc2MzIxNzgyMSwiZXhwIjoxNzYzMzA0MjIxfQ.wk8RJLZz5Pbuv2-g_bLc9GV-SRUie0e6UXwcpEK166Q";
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService      // ← INYECTAMOS EL AUTHSERVICE
+  ) {}
 
-  
+  /** Obtener headers con token real de cookies */
   private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();  // ← TOKEN REAL
+
     return new HttpHeaders({
-      'Authorization': `Bearer ${this.token}`
+      'Authorization': `Bearer ${token}`
     });
   }
-
-  constructor(private http: HttpClient) {}
 
   /** Obtener tipos de documento */
   getDocumentTypes(): Observable<DocumentType[]> {
