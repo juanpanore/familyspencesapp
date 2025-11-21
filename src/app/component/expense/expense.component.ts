@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { ExpenseService } from '../../service/expense/expense.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-expense',
@@ -19,19 +20,27 @@ export class ExpenseComponent implements OnInit {
   });
   
   categorias = ['ALIMENTACIÓN', 'TRANSPORTE', 'EDUCACIÓN', 'ENTRETENIMIENTO', 'SALUD', 'VIVIENDA', 'OTROS'];
-  responsables = ['Juan', 'María', 'Pedro', 'Ana'];
+  responsables: any[]= [];
   showForm = false;
   expenses: any[] = [];
+  familyId: string | null = null;
+  isEditing: boolean = false;
+  editingIndex: number | null = null;
 
-  constructor(private expenseService: ExpenseService) { }
+  constructor(private expenseService: ExpenseService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.loadExpenses();
+    this.loadMembers();
   }
 
   loadExpenses(): void {
-    const familyId = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
-    this.expenseService.getExpenses(familyId).subscribe(
+    this.familyId = this.authService.getFamilyId();
+    if (!this.familyId) {
+      console.error("familyId es null");
+    return;
+      }
+    this.expenseService.getExpenses(this.familyId).subscribe(
       (data) => {
         this.expenses = data.map(expense => ({
           id: expense.id,
@@ -49,6 +58,26 @@ export class ExpenseComponent implements OnInit {
       }
     );
   }
+
+    loadMembers(): void {
+    this.familyId = this.authService.getFamilyId();
+    if (!this.familyId) {
+      console.error("familyId es null");
+    return;
+      }
+    this.expenseService.getMembers(this.familyId).subscribe(
+      (data) => {
+        this.responsables = data.map(responsable => ({
+          id: responsable.id,
+          titulo: responsable.email,
+        }));
+        console.log('Expenses loaded and adapted:', this.expenses);
+      },
+      (error) => {
+        console.error('Error loading expenses:', error);
+      }
+    );
+  }
   
 
   toggleForm(): void {
@@ -57,6 +86,38 @@ export class ExpenseComponent implements OnInit {
 
   onSubmit() {
     if (this.expenseForm.valid) {
+
+      if(this.isEditing && this.editingIndex !== null) {
+        const updatedExpense = this.expenseForm.value;
+        const original = this.expenses[this.editingIndex!];
+
+        const expense = {
+          title: this.expenseForm.value.titulo.trim(),
+          description: this.expenseForm.value.descripcion.trim(),
+          period: this.expenseForm.value.periodo,
+          value: parseFloat(this.expenseForm.value.valor), 
+          category: this.expenseForm.value.categoria.trim(),
+          responsible: this.expenseForm.value.responsable
+        };
+
+        console.log(JSON.stringify(expense));
+
+        this.expenseService.updateExpense(original.id,expense.responsible, expense).subscribe(
+        (response: any) => {
+          console.log('Expense updated:', response);
+          this.expenseForm.reset();
+          this.showForm = false;
+          this.isEditing = false;
+          this.editingIndex = null;
+        },
+        (error: any) => {
+          console.error('Error updating expense:', error);
+        }
+      );
+      }
+      
+      
+      else {
       const newExpense = {
         title: this.expenseForm.value.titulo.trim(),
         description: this.expenseForm.value.descripcion.trim(),
@@ -65,13 +126,15 @@ export class ExpenseComponent implements OnInit {
         category: this.expenseForm.value.categoria.trim(),
         responsible: this.expenseForm.value.responsable
       };
-      const familyId = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
-      const mail = 'ana.gomez@email.com';
-
+      this.familyId = this.authService.getFamilyId();
+      
+      if (!this.familyId) {
+      console.error("familyId es null");
+        return;
+      }
       console.log('Payload being sent:', newExpense);
       console.log(JSON.stringify(newExpense));
-
-      this.expenseService.addExpense(newExpense, familyId, mail).subscribe(
+      this.expenseService.addExpense(newExpense, this.familyId, newExpense.responsible).subscribe(
         (response: any) => {
           console.log('Expense added:', response);
           this.expenses.push({
@@ -89,6 +152,9 @@ export class ExpenseComponent implements OnInit {
           console.error('Error adding expense:', error);
         }
       );
+    }
+
+
     } else {
       console.log('Formulario inválido');
     }
@@ -103,10 +169,14 @@ export class ExpenseComponent implements OnInit {
   onCancel(): void {
     this.expenseForm.reset();
     this.showForm = false;
+    this.isEditing = false;
+    this.editingIndex = null;
   }
 
   onEditExpense(index: number): void {
     const expenseToEdit = this.expenses[index];
+    this.isEditing = true;
+    this.editingIndex = index;
     this.expenseForm.setValue({
       titulo: expenseToEdit.titulo,
       descripcion: expenseToEdit.descripcion,
@@ -115,6 +185,7 @@ export class ExpenseComponent implements OnInit {
       categoria: expenseToEdit.categoria,
       responsable: expenseToEdit.responsable
     });
+
     this.showForm = true;
   }
 
