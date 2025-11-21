@@ -16,6 +16,7 @@ import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { RegisterUserComponent } from './register-user/register-user.component';
+import { ExpenseComponent } from './component/expense/expense.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { RegisterUserComponent } from './register-user/register-user.component';
     GoalsComponent,
     RankingComponent,
     NotificationsComponent,
-    RegisterUserComponent
+    RegisterUserComponent,
+    ExpenseComponent
   ],
   imports: [
     BrowserModule,
