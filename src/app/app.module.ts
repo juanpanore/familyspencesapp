@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -14,6 +13,9 @@ import { Balance } from './balance/balance';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
+import { RankingComponent } from './component/ranking/ranking.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { ExpenseComponent } from './component/expense/expense.component';
 
 import { PetComponent } from './pet/pet.component';
 
@@ -26,8 +28,9 @@ import { PetComponent } from './pet/pet.component';
     TaskComponent,
     ProductComponent,
     GoalsComponent,
-    PetComponent,
-    TaskComponent
+    RankingComponent,
+    NotificationsComponent,
+    ExpenseComponent
   ],
   imports: [
     BrowserModule,
@@ -37,8 +40,9 @@ import { PetComponent } from './pet/pet.component';
     RouterModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule,
     HttpClientModule,
+    CommonModule,
+    FormsModule,
     RouterModule
   ],
   providers: [],
