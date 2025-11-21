@@ -10,9 +10,9 @@
 
 /* === ESTILO GENERAL DE LA PÁGINA === */
 body {
-  background: linear-gradient(to bottom, #e6f2ff, #ffffff);
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
   font-family: 'Roboto', 'Segoe UI', sans-serif;
-  color: #11384e;
+  color: #1a1a1a;
   padding: 0;
   position: relative;
   overflow-x: hidden;
@@ -56,7 +56,7 @@ body::before {
 /* === BARRA SUPERIOR === */
 .top-bar {
   width: 100%;
-  background: linear-gradient(135deg, #1e6eb5 0%, #2c7fc2 50%, #5a9bd6 100%);
+  background: linear-gradient(135deg, #6d28d9 0%, #a78bfa 100%);
   padding: 15px 30px;
   display: flex;
   justify-content: flex-start;
@@ -89,7 +89,7 @@ body::before {
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #1e6eb5;
+  color: #ffffff;
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
@@ -119,13 +119,13 @@ body::before {
 
 /* === TÍTULOS === */
 h2 {
-  color: #1e6eb5; 
+  color: #6d28d9; 
   font-size: 32px; 
   text-align: center; 
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   margin: 20px 0 30px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 8px #a78bfa44;
   animation: fadeInText 0.8s ease forwards;
 }
 
@@ -143,14 +143,13 @@ form {
   padding: 40px 50px;
   max-width: 1200px;
   width: 100%;
-  background: linear-gradient(145deg, #2c7fc2 0%, #1e6eb5 100%);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%);
+  color: #1a1a1a;
+  border: 2px solid #6d28d9;
   border-radius: 18px;
   box-shadow: 0 12px 35px rgba(30, 110, 181, 0.4);
   font-family: 'Roboto', sans-serif;
   transition: all 0.4s ease;
-  color: #ffffff;
-  transform: scale(0.95);
   opacity: 0;
   animation: fadeInForm 0.8s forwards 0.3s;
   position: relative;
@@ -170,7 +169,7 @@ form:hover {
 /* === LABELS === */
 label {
   font-weight: 600;
-  color: #ffffff; 
+  color: #1a1a1a; 
   margin-bottom: 10px;
   font-size: 16px;
   font-family: 'Poppins', sans-serif;
@@ -183,14 +182,14 @@ input, textarea, select {
   width: 100%;
   padding: 16px 20px;
   margin-bottom: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #a78bfa;
   border-radius: 12px;
   box-sizing: border-box;
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.95);
-  color: #11384e;
+  background: #f3e8ff;
+  color: #1a1a1a;
 }
 
 input:hover, textarea:hover, select:hover {
@@ -199,11 +198,8 @@ input:hover, textarea:hover, select:hover {
 }
 
 input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: scale(1.01);
-  background: #ffffff;
+  border-color: #6d28d9;
+  box-shadow: 0 0 0 4px #a78bfa44;
 }
 
 textarea {
@@ -221,10 +217,10 @@ select {
 
 /* === BOTONES === */
 button {
-  background: linear-gradient(135deg, #5a9bd6 0%, #4682b4 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #6d28d9 0%, #a78bfa 100%);
+  color: #fff;
   padding: 15px 30px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #a78bfa;
   border-radius: 12px;
   cursor: pointer;
   font-size: 16px;
@@ -254,10 +250,10 @@ button:hover::after {
 }
 
 button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6aaee6 0%, #5a9bd6 100%);
+  background: linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%);
+  border-color: #6d28d9;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
 button:active:not(:disabled) {
@@ -273,7 +269,7 @@ button:disabled {
 
 /* === MENSAJES DE ERROR === */
 small {
-  color: #ffeb3b; 
+  color: #ffb3e6;
   font-size: 14px;
   margin-top: -16px;
   margin-bottom: 15px;
@@ -297,11 +293,9 @@ table {
   border-spacing: 0;
   text-align: center;
   font-family: 'Roboto', sans-serif;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 35px rgba(30, 110, 181, 0.25);
-  border: 2px solid rgba(30, 110, 181, 0.2);
+  background: #f3e8ff;
+  border: 2px solid #a78bfa;
+  box-shadow: 0 10px 35px #a78bfa33;
   animation: fadeInTable 0.8s ease forwards;
   table-layout: auto;
   font-size: 16px;
@@ -313,8 +307,8 @@ table {
 }
 
 thead tr {
-  background: linear-gradient(135deg, #1e6eb5 0%, #2c7fc2 50%, #5a9bd6 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #6d28d9 0%, #a78bfa 100%);
+  color: #fff;
 }
 
 th {
@@ -333,7 +327,7 @@ th {
 td {
   padding: 18px 25px;
   border-bottom: 1px solid rgba(209, 224, 224, 0.4);
-  color: #11384e;
+  color: #1a1a1a;
   font-size: 16px;
   font-weight: 500;
   vertical-align: middle;
@@ -341,15 +335,15 @@ td {
 
 tbody tr {
   transition: all 0.3s ease;
-  background: #ccf3fecc;
+  background: #ede9fe;
 }
 
 tbody tr:nth-child(even) {
-  background-color: #aed9ff;
+  background-color: #e9d5ff;
 }
 
 tbody tr:hover {
-  background: linear-gradient(90deg, rgba(224, 240, 255, 0.95) 0%, rgba(230, 242, 255, 0.95) 100%);
+  background: linear-gradient(90deg, #f3e8ff 0%, #ede9fe 100%);
   transform: scale(1.005);
   box-shadow: 0 4px 15px rgba(30, 110, 181, 0.2);
 }
@@ -410,9 +404,9 @@ td button .icon {
   display: block;
   margin: 30px auto;
   padding: 18px 45px;
-  background: linear-gradient(135deg, #1e6eb5 0%, #2c7fc2 100%);
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #6d28d9 0%, #a78bfa 100%);
+  color: #fff;
+  border: 2px solid #a78bfa;
   border-radius: 12px;
   font-weight: 700;
   font-size: 18px;
@@ -424,10 +418,10 @@ td button .icon {
 }
 
 .add-expense-btn:hover {
-  background: linear-gradient(135deg, #2c7fc2 0%, #3a8fd3 100%);
+  background: linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%);
+  border-color: #6d28d9;
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(30, 110, 181, 0.5);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .add-expense-btn:active {
