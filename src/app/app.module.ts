@@ -30,7 +30,8 @@ import { PetComponent } from './pet/pet.component';
     GoalsComponent,
     RankingComponent,
     NotificationsComponent,
-    ExpenseComponent
+    ExpenseComponent,
+    PetComponent
   ],
   imports: [
     BrowserModule,
