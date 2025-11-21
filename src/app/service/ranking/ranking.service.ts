@@ -1,29 +1,40 @@
-// src/app/service/ranking/ranking.service.ts
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+
+export interface RankingApiResponse {
+  ranking: Record<string, number>;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class RankingService {
 
-  // ATENCIÓN: Usando el token de ExpenseService. Esto debe ser reemplazado por un servicio de Auth.
-  private readonly token = "eyJhbGciOiJIUzI1NiJ9.eyJpZFVzZXIiOiJjZGM1NWE1Mi1jMGRkLTRlNzctOWQyNi05Nzg0Yjk3Mzg4MDEiLCJpZEZhbWlseSI6IjQ3ZTJhMTAzLTljNGYtNGNiNi1iOTZiLWI3MTAwOWMyYWQ1MyIsImlhdCI6MTc2MzIyMzI4NCwiZXhwIjoxNzYzMzA5Njg0fQ.mH7k5fSdw3SMWjSo_rpYGEFAajaAgdhIQ86zOiXJfzw";
   private readonly apiUrl = 'http://localhost:8080/api/family';
 
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
+
   private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
     return new HttpHeaders({
-      'Authorization': `Bearer ${this.token}`
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     });
   }
 
-  constructor(private http: HttpClient) { }
 
-  
+
   calculateRanking(familyId: string, period: string): Observable<any> {
     return this.http.post<any>(
-      `http://localhost:8080/api/family/ranking/calculate/${familyId}/${period}`,
+
+      `${this.apiUrl}/ranking/calculate/${familyId}/${period}`,
+      {},
       { headers: this.getHeaders() }
     );
   }
@@ -33,7 +44,7 @@ export class RankingService {
    */
   getRankingExpenses(familyId: string, period: string): Observable<Record<string, number>> {
     return this.http.get<Record<string, number>>(
-      `http://localhost:8080/api/family/ranking/expenses/${familyId}/by-period/${period}`,
+      `${this.apiUrl}/ranking/expenses/${familyId}/by-period/${period}`,
       { headers: this.getHeaders() }
     );
   }
@@ -43,7 +54,31 @@ export class RankingService {
    */
   getRankingIncome(familyId: string, period: string): Observable<Record<string, number>> {
     return this.http.get<Record<string, number>>(
-      `http://localhost:8080/api/family/ranking/income/${familyId}/by-period/${period}`,
+      `${this.apiUrl}/ranking/income/${familyId}/by-period/${period}`,
+      { headers: this.getHeaders() }
+    );
+  }
+  
+  downloadRankingExcel(familyId: string, period: string): Observable<Blob> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post(
+      `${this.apiUrl}/rankingExcel/${familyId}/${period}`,
+      {},
+      { 
+        headers: headers,
+        responseType: 'blob'
+      }
+    );
+  }
+
+  
+  deleteRanking(familyId: string, period: string): Observable<any> {
+    return this.http.delete<any>(
+      `${this.apiUrl}/ranking/delete/${familyId}/${period}`,
       { headers: this.getHeaders() }
     );
   }
