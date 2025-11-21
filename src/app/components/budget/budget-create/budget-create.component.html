@@ -1,0 +1,62 @@
+<div class="create-wrapper">
+  <div class="modal-header">
+    <div>
+      <p class="eyebrow">Nuevo budget</p>
+      <h2>Crear presupuesto</h2>
+      <p class="subtitle">Define el periodo y el monto. El responsable se asignará automáticamente.</p>
+    </div>
+    <button class="icon-btn" type="button" (click)="close()">✕</button>
+  </div>
+
+  <div class="content">
+    <div class="info">
+      <div class="badge">Responsable fijo</div>
+      <h4>David Muñetones</h4>
+      <p>El presupuesto quedará asociado a este responsable para mantener consistencia en los reportes.</p>
+    </div>
+
+    <form [formGroup]="budgetForm" (ngSubmit)="onSubmit()" class="form">
+      <div class="field">
+        <label for="period">Periodo</label>
+        <input
+          id="period"
+          type="month"
+          formControlName="period"
+          [class.invalid]="budgetForm.get('period')?.invalid && budgetForm.get('period')?.touched"
+        />
+        <small *ngIf="budgetForm.get('period')?.invalid && budgetForm.get('period')?.touched">
+          Selecciona un periodo válido
+        </small>
+      </div>
+
+      <div class="field">
+        <label for="budgetAmount">Monto presupuestado</label>
+        <div class="input-prefix">
+          <span>COP</span>
+          <input
+            id="budgetAmount"
+            type="number"
+            formControlName="budgetAmount"
+            min="0"
+            step="1000"
+            placeholder="0"
+            [class.invalid]="budgetForm.get('budgetAmount')?.invalid && budgetForm.get('budgetAmount')?.touched"
+          />
+        </div>
+        <small *ngIf="budgetForm.get('budgetAmount')?.invalid && budgetForm.get('budgetAmount')?.touched">
+          Ingresa un monto mayor a cero
+        </small>
+      </div>
+
+      <div *ngIf="error" class="alert">{{ error }}</div>
+
+      <div class="actions">
+        <button class="ghost" type="button" (click)="close()" [disabled]="loading">Cancelar</button>
+        <button class="primary" type="submit" [disabled]="loading">
+          <span *ngIf="loading" class="dot-loader"></span>
+          Crear budget
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

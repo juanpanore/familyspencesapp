@@ -1,8 +1,7 @@
 // src/app/components/budget/budget-create/budget-create.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { BudgetService } from '../../../service/budget/budget.service';
 
 @Component({
@@ -11,55 +10,70 @@ import { BudgetService } from '../../../service/budget/budget.service';
   styleUrls: ['./budget-create.component.css']
 })
 export class BudgetCreateComponent implements OnInit {
+  @Output() closed = new EventEmitter<void>();
+  @Output() budgetCreated = new EventEmitter<any>();
+
+  private readonly responsibleId = '04ecbbc6-3df7-45b3-87ed-9822d7ed2f86';
+
   budgetForm: FormGroup;
   loading = false;
   error: string | null = null;
-  successMessage: string | null = null;
-  familyId: string = '';
-  familyMembers: any[] = []; // Se debe cargar desde un servicio de usuarios
 
   constructor(
     private fb: FormBuilder,
-    private budgetService: BudgetService,
-    private router: Router
+    private budgetService: BudgetService
   ) {
     this.budgetForm = this.fb.group({
       period: ['', [Validators.required]],
-      budgetAmount: ['', [Validators.required, Validators.min(0.01)]],
-      responsibleId: ['', [Validators.required]]
+      budgetAmount: ['', [Validators.required, Validators.min(0.01)]]
     });
   }
 
   ngOnInit(): void {
-    this.familyId = localStorage.getItem('familyId') || '';
-
-    if (!this.familyId) {
-      this.error = 'No se encontró el ID de la familia. Por favor, inicie sesión nuevamente.';
-      return;
-    }
-
-    // TODO: Cargar miembros de la familia desde tu servicio
-    // this.loadFamilyMembers();
-
-    // Datos de ejemplo para pruebas
-    this.familyMembers = [
-      { id: 'user-1', fullName: 'Usuario de Prueba 1' },
-      { id: 'user-2', fullName: 'Usuario de Prueba 2' }
-    ];
+    const today = new Date();
+    const defaultMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    this.budgetForm.patchValue({ period: defaultMonth });
   }
 
   onSubmit(): void {
-    if (this.budgetForm.invalid) {
+    if (this.loading) return;
 
+    if (this.budgetForm.invalid) {
+      this.budgetForm.markAllAsTouched();
       return;
     }
 
     this.loading = true;
     this.error = null;
-    this.successMessage = null;
 
     const formValue = this.budgetForm.value;
+    const payload = {
+      period: this.formatPeriodForApi(formValue.period),
+      budgetAmount: Number(formValue.budgetAmount),
+      responsibleId: this.responsibleId
+    };
 
-}
+    this.budgetService.saveBudget(payload).subscribe({
+      next: resp => {
+        this.loading = false;
+        this.budgetCreated.emit(resp);
+        this.close();
+      },
+      error: err => {
+        console.error(err);
+        this.error = 'No pudimos crear el budget, intenta nuevamente.';
+        this.loading = false;
+      }
+    });
+  }
+
+  close(): void {
+    this.closed.emit();
+  }
+
+  private formatPeriodForApi(value: string): string {
+    if (!value) return '';
+    return value.length === 7 ? `${value}-01` : value;
+  }
 }
 
