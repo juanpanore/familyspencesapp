@@ -15,6 +15,7 @@ import { VacationComponent } from './vacation/vacation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { IncomeComponent } from './income/income.component';
 import { CategoryComponent } from './category/category.component';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 
 const routes: Routes = [
   {
@@ -77,6 +78,10 @@ const routes: Routes = [
   {
     path: 'categories',
     component: CategoryComponent
+  },
+  {
+    path: 'budget',
+    component: BudgetListComponent
   },
   {
     path: '**',
