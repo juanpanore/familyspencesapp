@@ -61,6 +61,7 @@ export class TaskComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error cargando tareas:', err);
+        this.tasks = [];
         this.isLoading = false;
       }
     });
@@ -70,7 +71,10 @@ export class TaskComponent implements OnInit {
     this.http.get<Expense[]>(`http://localhost:8080/api/v1/rest/expenses/by-family/${this.familyId}`)
       .subscribe({
         next: (data) => this.expenses = data,
-        error: (err) => console.error('❌ Error cargando expenses:', err)
+        error: (err) => {
+          console.error('❌ Error cargando expenses:', err);
+          this.expenses = [];
+        }
       });
   }
 
@@ -78,7 +82,10 @@ export class TaskComponent implements OnInit {
     this.http.get<Vacation[]>(`http://localhost:8080/api/vacations`)
       .subscribe({
         next: (data) => this.vacations = data,
-        error: (err) => console.error('❌ Error cargando vacations:', err)
+        error: (err) => {
+          console.error('❌ Error cargando vacations:', err);
+          this.vacations = [];
+        }
       });
   }
 
@@ -108,7 +115,7 @@ export class TaskComponent implements OnInit {
         console.log('✅ Tarea creada:', createdTask);
         this.tasks.push(createdTask);
         this.closeModal();
-        this.loadTasks(); // Reload to ensure consistency
+        this.loadTasks();
         this.isLoading = false;
       },
       error: (err) => {
@@ -123,14 +130,14 @@ export class TaskComponent implements OnInit {
     if (!task.id) return;
     const updatedTask = { ...task, status: !task.status };
 
-    // Optimistic update
+
     task.status = !task.status;
 
     this.taskService.updateTask(task.id, updatedTask, this.familyId).subscribe({
       next: () => console.log('✅ Estado actualizado'),
       error: (err) => {
         console.error('❌ Error actualizando tarea:', err);
-        task.status = !task.status; // Revert on error
+        task.status = !task.status;
       }
     });
   }

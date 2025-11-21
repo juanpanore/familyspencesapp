@@ -6,7 +6,7 @@ import { Task, CreateTaskDTO } from '../models/task.model';
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = 'http://localhost:8080/api/v1/rest/tasks';
+  private apiUrl = 'http://localhost:8080/api/tasks';
   constructor(private http: HttpClient) { }
   getTasks(familyId: string): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.apiUrl}?familyId=${familyId}`);
