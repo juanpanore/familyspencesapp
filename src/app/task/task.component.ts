@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TaskService } from '../services/task.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { ExpenseService } from '../service/expense/expense.service';
 import { Task, Expense, Vacation, CreateTaskDTO } from '../models/task.model';
 
 @Component({
@@ -21,13 +22,22 @@ export class TaskComponent implements OnInit {
   vacations: Vacation[] = [];
 
   showModal: boolean = false;
+  showDeleteDialog: boolean = false;
+  taskToDelete: Task | null = null;
+
+  toastMessage: string = '';
+  toastTitle: string = '';
+  toastType: 'success' | 'error' = 'success';
+  showToast: boolean = false;
+
   taskForm: FormGroup;
 
   constructor(
     private taskService: TaskService,
     private http: HttpClient,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private expenseService: ExpenseService
   ) {
     this.taskForm = this.fb.group({
       name: ['', Validators.required],
@@ -37,6 +47,26 @@ export class TaskComponent implements OnInit {
       idExpenseve: [''],
       idVacation: ['']
     });
+
+    this.taskForm.get('idExpenseve')?.valueChanges.subscribe(value => {
+      const vacationControl = this.taskForm.get('idVacation');
+      if (value) {
+        vacationControl?.setValue('', { emitEvent: false });
+        vacationControl?.disable({ emitEvent: false });
+      } else {
+        vacationControl?.enable({ emitEvent: false });
+      }
+    });
+
+    this.taskForm.get('idVacation')?.valueChanges.subscribe(value => {
+      const expenseControl = this.taskForm.get('idExpenseve');
+      if (value) {
+        expenseControl?.setValue('', { emitEvent: false });
+        expenseControl?.disable({ emitEvent: false });
+      } else {
+        expenseControl?.enable({ emitEvent: false });
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -44,7 +74,7 @@ export class TaskComponent implements OnInit {
     this.idResponsible = this.authService.getUserId() || '';
 
     if (!this.familyId || !this.idResponsible) {
-      console.error('❌ No se pudo obtener la información de autenticación (familyId o userId)');
+      console.error(' No se pudo obtener la información de autenticación (familyId o userId)');
     }
 
     this.loadTasks();
@@ -60,7 +90,7 @@ export class TaskComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('❌ Error cargando tareas:', err);
+        console.error(' Error cargando tareas:', err);
         this.tasks = [];
         this.isLoading = false;
       }
@@ -68,11 +98,13 @@ export class TaskComponent implements OnInit {
   }
 
   loadExpenses(): void {
-    this.http.get<Expense[]>(`http://localhost:8080/api/v1/rest/expenses/by-family/${this.familyId}`)
+    this.expenseService.getExpenses(this.familyId)
       .subscribe({
-        next: (data) => this.expenses = data,
+        next: (data) => {
+          this.expenses = data;
+        },
         error: (err) => {
-          console.error('❌ Error cargando expenses:', err);
+          console.error(' Error cargando expenses:', err);
           this.expenses = [];
         }
       });
@@ -83,7 +115,7 @@ export class TaskComponent implements OnInit {
       .subscribe({
         next: (data) => this.vacations = data,
         error: (err) => {
-          console.error('❌ Error cargando vacations:', err);
+          console.error(' Error cargando vacations:', err);
           this.vacations = [];
         }
       });
@@ -107,21 +139,28 @@ export class TaskComponent implements OnInit {
       idVacations: formValue.idVacation ? { id: formValue.idVacation } : null
     };
 
-    console.log('📤 Enviando taskData:', taskData);
-
     this.isLoading = true;
     this.taskService.createTask(taskData, this.familyId).subscribe({
       next: (createdTask) => {
-        console.log('✅ Tarea creada:', createdTask);
+        console.log(`[v0] Tarea "${createdTask.name}" creada exitosamente`);
         this.tasks.push(createdTask);
         this.closeModal();
         this.loadTasks();
         this.isLoading = false;
+        this.showToastNotification(
+          'Tarea creada',
+          `"${createdTask.name}" ha sido creada correctamente`,
+          'success'
+        );
       },
       error: (err) => {
-        console.error('❌ Error creando tarea:', err);
-        alert(`Error: ${err.error?.message || 'No se pudo crear la tarea'}`);
+        console.error(' Error creando tarea:', err);
         this.isLoading = false;
+        this.showToastNotification(
+          'Error',
+          err.error?.message || 'No se pudo crear la tarea',
+          'error'
+        );
       }
     });
   }
@@ -129,35 +168,79 @@ export class TaskComponent implements OnInit {
   toggleStatus(task: Task): void {
     if (!task.id) return;
     const updatedTask = { ...task, status: !task.status };
+    const nuevoEstado = !task.status;
 
-
-    task.status = !task.status;
+    task.status = nuevoEstado;
 
     this.taskService.updateTask(task.id, updatedTask, this.familyId).subscribe({
-      next: () => console.log('✅ Estado actualizado'),
+      next: () => {
+        console.log(`[v0] Tarea "${task.name}" cambiada a: ${nuevoEstado ? 'COMPLETADA' : 'PENDIENTE'}`);
+        this.showToastNotification(
+          nuevoEstado ? 'Tarea completada' : 'Tarea marcada como pendiente',
+          `"${task.name}" ${nuevoEstado ? 'ha sido completada' : 'está ahora pendiente'}`,
+          'success'
+        );
+      },
       error: (err) => {
-        console.error('❌ Error actualizando tarea:', err);
+        console.error(' Error actualizando tarea:', err);
         task.status = !task.status;
+        this.showToastNotification(
+          'Error',
+          'No se pudo actualizar el estado de la tarea',
+          'error'
+        );
       }
     });
   }
 
-  deleteTask(taskId: string | undefined): void {
-    if (!taskId) return;
-    if (!confirm('¿Seguro que deseas eliminar esta tarea?')) return;
+  openDeleteDialog(task: Task): void {
+    this.taskToDelete = task;
+    this.showDeleteDialog = true;
+  }
+
+  closeDeleteDialog(): void {
+    this.showDeleteDialog = false;
+    this.taskToDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.taskToDelete || !this.taskToDelete.id) return;
+
+    const taskName = this.taskToDelete.name;
+    const taskId = this.taskToDelete.id;
 
     this.taskService.deleteTask(taskId, this.familyId).subscribe({
       next: () => {
-        console.log('✅ Tarea eliminada:', taskId);
+        console.log(` Tarea "${taskName}" eliminada exitosamente`);
         this.tasks = this.tasks.filter(t => t.id !== taskId);
+        this.closeDeleteDialog();
+        this.showToastNotification(
+          'Tarea eliminada',
+          `"${taskName}" ha sido eliminada correctamente`,
+          'success'
+        );
       },
-      error: (err) => console.error('❌ Error eliminando tarea:', err)
+      error: (err) => {
+        console.error(' Error eliminando tarea:', err);
+        this.closeDeleteDialog();
+        this.showToastNotification(
+          'Error',
+          'No se pudo eliminar la tarea',
+          'error'
+        );
+      }
     });
   }
 
-  toggleStatusInForm(): void {
-    const currentStatus = this.taskForm.get('status')?.value;
-    this.taskForm.get('status')?.setValue(!currentStatus);
+  showToastNotification(title: string, message: string, type: 'success' | 'error'): void {
+    this.toastTitle = title;
+    this.toastMessage = message;
+    this.toastType = type;
+    this.showToast = true;
+
+    setTimeout(() => {
+      this.showToast = false;
+    }, 3000);
   }
 
   openModal(): void {
@@ -174,5 +257,15 @@ export class TaskComponent implements OnInit {
       idExpenseve: '',
       idVacation: ''
     });
+    this.taskForm.get('idExpenseve')?.enable({ emitEvent: false });
+    this.taskForm.get('idVacation')?.enable({ emitEvent: false });
+  }
+
+  get isExpenseSelected(): boolean {
+    return !!this.taskForm.get('idExpenseve')?.value;
+  }
+
+  get isVacationSelected(): boolean {
+    return !!this.taskForm.get('idVacation')?.value;
   }
 }

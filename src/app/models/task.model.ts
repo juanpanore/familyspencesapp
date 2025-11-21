@@ -1,7 +1,14 @@
 export interface Expense {
     id: string;
-    name: string;
-    amount?: number;
+    title: string;
+    description?: string;
+    period?: string;
+    responsible?: string;
+    value: number;
+    category?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    familyId?: string;
 }
 export interface Vacation {
     id: string;
