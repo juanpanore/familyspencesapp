@@ -35,6 +35,8 @@ const routes: Routes = [
   {
     path: 'goals',
     component: GoalsComponent
+  },
+  {
     path: 'expense',
     component: ExpenseComponent
   },

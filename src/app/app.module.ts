@@ -15,6 +15,7 @@ import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { ExpenseComponent } from './component/expense/expense.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
     ProductComponent,
     GoalsComponent,
     RankingComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    ExpenseComponent
   ],
   imports: [
     BrowserModule,
