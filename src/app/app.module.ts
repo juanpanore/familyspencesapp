@@ -22,6 +22,7 @@ import { VacationComponent } from './vacation/vacation.component';
 import { PetComponent } from './pet/pet.component';
 
 import { IncomeComponent } from './income/income.component';
+import { CategoryComponent } from './category/category.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { IncomeComponent } from './income/income.component';
     VacationComponent,
     PetComponent,
     FamilymemberComponent,
-    IncomeComponent
+    IncomeComponent,
+    CategoryComponent
   ],
   imports: [
     BrowserModule,
