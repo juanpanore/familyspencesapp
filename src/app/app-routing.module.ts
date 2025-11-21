@@ -2,6 +2,8 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ExpenseComponent } from './component/expense/expense.component';
+import { RankingComponent } from './component/ranking/ranking.component';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
@@ -33,6 +35,14 @@ const routes: Routes = [
   {
     path: 'goals',
     component: GoalsComponent
+  },
+  {
+    path: 'expense',
+    component: ExpenseComponent
+  },
+  {
+    path: 'ranking',
+    component: RankingComponent
   },
   {
     path: '**',
