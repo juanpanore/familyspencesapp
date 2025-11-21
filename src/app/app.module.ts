@@ -17,6 +17,8 @@ import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ExpenseComponent } from './component/expense/expense.component';
 
+import { PetComponent } from './pet/pet.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,11 +30,16 @@ import { ExpenseComponent } from './component/expense/expense.component';
     GoalsComponent,
     RankingComponent,
     NotificationsComponent,
-    ExpenseComponent
+    ExpenseComponent,
+    PetComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
+    CommonModule,  
+    RouterModule,
+    HttpClientModule,
     ReactiveFormsModule,
     HttpClientModule,
     CommonModule,
