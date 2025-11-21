@@ -1,0 +1,140 @@
+.home-layout {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-brand .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #3498db;
+}
+
+.nav-link-working {
+  background-color: #2ecc71;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.nav-link-working:hover {
+  background-color: #27ae60;
+  color: white !important;
+}
+
+.nav-link-broken {
+  background-color: #e74c3c;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.nav-link-broken:hover {
+  background-color: #c0392b;
+  color: white !important;
+}
+
+.btn-logout {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+  background-color: #27ae60;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.balance-section {
+  margin-bottom: 2rem;
+}
+
+.expenses-section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.expenses-section h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #f0f2f5;
+  padding-bottom: 0.5rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.expenses-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.expenses-table th,
+.expenses-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.expenses-table th {
+  background-color: #f8f9fa;
+  color: #666;
+  font-weight: 600;
+}
+
+.expenses-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.empty-state {
+  padding: 2rem;
+  color: #7f8c8d;
+  font-style: italic;
+}
