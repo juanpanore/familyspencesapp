@@ -93,7 +93,7 @@
         <label for="responsable">Responsable:</label>
         <select id="responsable" formControlName="responsable">
           <option value="" disabled>Seleccione un responsable</option>
-          <option *ngFor="let responsable of responsables" [value]="responsable">{{ responsable }}</option>
+          <option *ngFor="let responsable of responsables" [value]="responsable.titulo">{{ responsable.titulo }}</option>
         </select>
         <div *ngIf="expenseForm.get('responsable')?.invalid && expenseForm.get('responsable')?.touched">
           <small>El responsable es obligatorio.</small>

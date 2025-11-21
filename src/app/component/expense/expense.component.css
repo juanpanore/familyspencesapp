@@ -341,11 +341,11 @@ td {
 
 tbody tr {
   transition: all 0.3s ease;
-  background: #ffffff;
+  background: #ccf3fecc;
 }
 
 tbody tr:nth-child(even) {
-  background-color: rgba(245, 248, 255, 0.8);
+  background-color: #aed9ff;
 }
 
 tbody tr:hover {
@@ -441,9 +441,6 @@ td button .icon {
   margin: 0;
 }
 
-.no-arrows {
-  -moz-appearance: textfield;
-}
 
 /* === RESPONSIVE === */
 @media (max-width: 1024px) {
