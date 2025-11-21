@@ -1,76 +1,138 @@
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast" [class.toast-success]="toastType === 'success'" [class.toast-error]="toastType === 'error'">
+    <div class="toast-header">
+      <svg *ngIf="toastType === 'success'" class="toast-icon" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <svg *ngIf="toastType === 'error'" class="toast-icon" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="toast-title">{{ toastTitle }}</span>
+    </div>
+    <p class="toast-message">{{ toastMessage }}</p>
+  </div>
+</div>
+
+<div class="dialog-overlay" *ngIf="showDeleteDialog" (click)="closeDeleteDialog()">
+  <div class="dialog-content" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3 class="dialog-title">¿Eliminar categoría?</h3>
+      <p class="dialog-description">
+        Esta acción no se puede deshacer. La categoría será eliminada permanentemente.
+      </p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-outline" (click)="closeDeleteDialog()">Cancelar</button>
+      <button class="btn btn-destructive" (click)="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" *ngIf="showModal">
   <div class="modal-content">
-    <h3>{{ isEditing ? 'Edit Category' : 'New Category' }}</h3>
-
-    <form (ngSubmit)="saveCategory()" class="form">
+    <div class="card-header">
+      <h3 class="card-title">{{ isEditing ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
+      <p class="card-description">Complete el formulario para {{ isEditing ? 'actualizar la' : 'crear una nueva' }}
+        categoría</p>
+    </div>
+    <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="form-grid">
       <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" id="name" [(ngModel)]="selectedCategory.name" name="name" placeholder="Category Name"
-          required>
+        <label>Nombre <span class="text-destructive">*</span></label>
+        <input formControlName="name" placeholder="Ej: Comida, Transporte" />
+        <div class="error-msg" *ngIf="categoryForm.get('name')?.touched && categoryForm.get('name')?.invalid">
+          El nombre es obligatorio
+        </div>
+      </div>
+
+      <div class="grid-cols-2">
+        <div class="form-group">
+          <label>Tipo <span class="text-destructive">*</span></label>
+          <select formControlName="type">
+            <option *ngFor="let type of categoryTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Periodo <span class="text-destructive">*</span></label>
+          <select formControlName="budgetPeriod">
+            <option *ngFor="let period of budgetPeriods" [value]="period">{{ period }}</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="type">Type:</label>
-        <select id="type" [(ngModel)]="selectedCategory.type" name="type" required>
-          <option *ngFor="let type of categoryTypes" [value]="type">{{ type }}</option>
-        </select>
+        <label>Límite de Presupuesto</label>
+        <input type="number" formControlName="budgetLimit" placeholder="0.00" />
       </div>
 
-      <div class="form-group">
-        <label for="budgetLimit">Budget Limit:</label>
-        <input type="number" id="budgetLimit" [(ngModel)]="selectedCategory.budgetLimit" name="budgetLimit"
-          placeholder="0.00">
-      </div>
-
-      <div class="form-group">
-        <label for="budgetPeriod">Budget Period:</label>
-        <select id="budgetPeriod" [(ngModel)]="selectedCategory.budgetPeriod" name="budgetPeriod">
-          <option *ngFor="let period of budgetPeriods" [value]="period">{{ period }}</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="icon">Icon (Emoji):</label>
-        <input type="text" id="icon" [(ngModel)]="selectedCategory.icon" name="icon" placeholder="🍔">
-      </div>
-
-      <div class="form-group">
-        <label for="color">Color:</label>
-        <input type="color" id="color" [(ngModel)]="selectedCategory.color" name="color">
+      <div class="grid-cols-2">
+        <div class="form-group">
+          <label>Icono (Emoji)</label>
+          <input formControlName="icon" placeholder="🍔" />
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="color" formControlName="color" style="width: 50px; padding: 2px; height: 40px;" />
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">{{ categoryForm.get('color')?.value
+              }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="modal-buttons">
-        <button type="submit">{{ isEditing ? 'Update' : 'Create' }}</button>
-        <button type="button" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid || isLoading">
+          {{ isLoading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
+        </button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="isLoading">
+          Cancelar
+        </button>
       </div>
     </form>
   </div>
 </div>
 
-<div class="category-container">
+<div class="tasks-container">
   <div class="header-row">
-    <h2>📂 Categories</h2>
-    <button class="btn-create-top" (click)="openModal()">➕ New Category</button>
+    <h2>📂 Categorías</h2>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="task-count">{{ categories.length }} {{ categories.length === 1 ? 'categoría' : 'categorías' }}</span>
+      <button class="btn-create-top" (click)="openModal()">➕ Nueva categoría</button>
+    </div>
   </div>
 
-  <div *ngIf="categories.length === 0" class="no-categories">
-    No categories found.
+  <div *ngIf="isLoading && categories.length === 0" class="loading-spinner">
+    ⏳ Cargando categorías...
   </div>
 
-  <div class="category-grid">
+  <div *ngIf="!isLoading && categories.length === 0" class="no-tasks">
+    <div class="no-tasks-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <p style="font-size: 18px; font-weight: 600; margin: 0 0 8px 0; color: var(--foreground);">No hay categorías</p>
+    <p style="font-size: 14px; margin: 0;">Crea tu primera categoría usando el botón "Nueva categoría"</p>
+  </div>
+
+  <div class="category-grid" *ngIf="!isLoading && categories.length > 0">
     <div class="category-card" *ngFor="let cat of categories" [style.border-left-color]="cat.color">
       <div class="category-header">
-        <h4><span [style.color]="cat.color">{{ cat.icon }}</span> {{ cat.name }}</h4>
+        <h4><span [style.color]="cat.color" style="font-size: 1.5rem; margin-right: 8px;">{{ cat.icon }}</span> {{
+          cat.name }}</h4>
         <span class="category-type">{{ cat.type }}</span>
       </div>
 
       <div class="category-details">
-        <p><strong>Limit:</strong> {{ cat.budgetLimit | currency }} / {{ cat.budgetPeriod }}</p>
+        <p><strong>Límite:</strong> {{ cat.budgetLimit | currency }} / {{ cat.budgetPeriod }}</p>
       </div>
 
       <div class="category-actions">
-        <button class="btn-edit" (click)="selectCategory(cat)">✏️ Edit</button>
-        <button class="btn-delete" (click)="deleteCategory(cat.id!)">🗑️ Delete</button>
+        <button class="btn-edit" (click)="selectCategory(cat)">✏️ Editar</button>
+        <button class="btn-delete" (click)="openDeleteDialog(cat)">🗑️ Eliminar</button>
       </div>
     </div>
   </div>
