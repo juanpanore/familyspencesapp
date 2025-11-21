@@ -1,0 +1,147 @@
+/* ====== MODO OSCURO GENERAL ====== */
+:host {
+  display: block;
+  background-color: #f5f7fa;
+  color: #e4e4e4;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+h2, h3 {
+  color: #1e1e1e;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #b3b1b1;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+/* ====== BARRA DE BÚSQUEDA ====== */
+.search-bar input {
+  width: 96%;
+  padding: 0.9rem;
+  font-size: 1rem;
+  color: #7c3aed;
+  background: #f5f7fa;
+  border: 1px solid #b3b1b1;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+
+input::placeholder{
+  color: #b3b1b1;
+}
+
+.search-bar input:focus {
+  border-color: #7c3aed;
+  background: #7c3aed15;
+}
+
+.search-bar input:focus::placeholder{
+  color: #7c3aed00;
+}
+
+/* ====== LISTA DE PRODUCTOS ====== */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.producto-item {
+  color: #f5f7fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #b3b1b1;
+  box-shadow: 0 0 10px 0 rgba(118, 75, 162, 0.493);
+  transition: transform 0.15s, background 0.2s;
+}
+
+.producto-item:hover strong{
+  color: #7c3aed;
+}
+
+.producto-item:hover {
+  background: #f5f7fa;
+  transform: translateY(-3px);
+  color: #7c3aed;
+}
+
+strong {
+  font-size: 1.1rem;
+  color: #f5f7fa;
+}
+
+/* ====== MENSAJE SIN RESULTADOS ====== */
+p {
+  margin-top: 1rem;
+  color: #aaa;
+}
+
+/* ====== FORMULARIO PARA AGREGAR PRODUCTO ====== */
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.add-form input {
+  padding: 0.9rem;
+  font-size: 1rem;
+  color: #7c3aed;
+  background: #f5f7fa;
+  border: 1px solid #b3b1b1;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+
+.add-form input:focus {
+  border-color: #7c3aed;
+  background: #7c3aed15;
+}
+
+.add-form input:focus::placeholder {
+  color: #7c3aed00;
+}
+
+/* ====== BOTÓN AGREGAR ====== */
+.add-form button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.add-form button:hover {
+  background: #7c3aeddc;
+}
+
+.add-form button:active {
+  transform: scale(0.97);
+}
+
+/* ====== HR ====== */
+hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 2rem 0;
+}

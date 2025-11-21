@@ -1,0 +1,67 @@
+<div class="home-layout">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="logo">FamilySpences</span>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <button class="dropbtn">Menú
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="dropdown-content">
+                    <a routerLink="/budget" class="dropdown-item">Presupuesto</a>
+                    <a routerLink="/tasks" class="dropdown-item">Tareas</a>
+                    <a routerLink="/products" class="dropdown-item">Productos</a>
+                    <a routerLink="/pet" class="dropdown-item">Mascotas</a>
+                    <a routerLink="/ranking" class="dropdown-item">Ranking</a>
+                    <a routerLink="/goals" class="dropdown-item">Metas</a>
+                    <a routerLink="/expense" class="dropdown-item">Gastos</a>
+                    <a routerLink="/vacation" class="dropdown-item">Vacaciones</a>
+                    <a routerLink="/notifications" class="dropdown-item">Notificaciones</a>
+                    <a routerLink="/family-members" class="dropdown-item">Agregar Familiar</a>
+                    <a routerLink="/income" class="dropdown-item">Ingresos</a>
+                </div>
+            </div>
+            <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Balance Section -->
+        <section class="balance-section">
+            <app-balance [familyId]="familyId"></app-balance>
+        </section>
+
+        <!-- Expenses Table -->
+        <section class="expenses-section">
+            <h2>Movimientos Recientes</h2>
+            <div class="table-responsive">
+                <table class="expenses-table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Valor</th>
+                            <th>Periodo</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let expense of expensesList">
+                            <td>{{ expense.title }}</td>
+                            <td>{{ expense.value | currency }}</td>
+                            <td>{{ expense.period }}</td>
+                            <td>{{ expense.responsible }}</td>
+                        </tr>
+                        <tr *ngIf="expensesList.length === 0">
+                            <td colspan="4" class="text-center empty-state">
+                                No se encontraron gastos recientes para esta familia.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

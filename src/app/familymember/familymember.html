@@ -1,0 +1,102 @@
+<div class="container">
+
+  <div *ngIf="!isAddingMember" class="list-view">
+
+    <h2>Miembros de la Familia</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Documento</th>
+          <th>Email</th>
+          <th>Parentesco</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let m of members">
+          <td>{{ m.firstName }} {{ m.lastName }}</td>
+          <td>{{ m.document }}</td>
+          <td>{{ m.email }}</td>
+          <td>{{ m.relationship?.type }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button (click)="startAddMember()">Agregar Miembro</button>
+  </div>
+
+  <div *ngIf="isAddingMember" class="form-view">
+
+    <h2>Agregar Miembro</h2>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <label>Nombre</label>
+      <input formControlName="firstName" type="text">
+      <small *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+        El nombre es obligatorio.
+      </small>
+
+      <label>Apellido</label>
+      <input formControlName="lastName" type="text">
+      <small *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+        El apellido es obligatorio.
+      </small>
+
+      <label>Fecha de nacimiento</label>
+      <input formControlName="birthDate" type="date">
+      <small *ngIf="form.get('birthDate')?.invalid && form.get('birthDate')?.touched">
+        La fecha es obligatoria.
+      </small>
+
+      <label>Tipo Documento</label>
+      <select formControlName="documentType">
+        <option value="">Seleccione</option>
+        <option *ngFor="let dt of documentTypes" [value]="dt.id">
+          {{ dt.type }}
+        </option>
+      </select>
+
+      <label>No Documento</label>
+      <input formControlName="document" type="text">
+      <small *ngIf="form.get('document')?.invalid && form.get('document')?.touched">
+        Min 6 dígitos.
+      </small>
+
+      <label>Email</label>
+      <input formControlName="email" type="email">
+      <small *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+        Email inválido.
+      </small>
+
+      <label>Parentesco</label>
+      <select formControlName="relationship">
+        <option value="">Seleccione</option>
+        <option *ngFor="let r of relationships" [value]="r.id">
+          {{ r.type }}
+        </option>
+      </select>
+
+      <label>Tarjeta Crédito</label>
+      <input formControlName="creditCard" type="text">
+
+      <label>Teléfono</label>
+      <input formControlName="phone" type="text">
+
+      <label>Dirección</label>
+      <input formControlName="address" type="text">
+
+      <label>Contraseña</label>
+      <input formControlName="password" type="password">
+
+      <div class="buttons">
+        <button type="submit" [disabled]="form.invalid">Guardar</button>
+        <button type="button" (click)="cancel()">Cancelar</button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

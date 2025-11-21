@@ -1,19 +1,18 @@
-/// <reference types="jasmine" />
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Ranking } from './ranking';
+import { FamilyMember } from './familymember';
 
-describe('Ranking', () => {
-  let component: Ranking;
-  let fixture: ComponentFixture<Ranking>;
+describe('Familymember', () => {
+  let component: FamilyMember;
+  let fixture: ComponentFixture<FamilyMember>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Ranking]
+      imports: [FamilyMember]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Ranking);
+    fixture = TestBed.createComponent(FamilyMember);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

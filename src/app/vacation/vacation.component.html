@@ -1,0 +1,123 @@
+<!-- src/app/vacation/vacation.component.html -->
+
+<div class="vacation-container">
+  <!-- Mensajes -->
+  <div *ngIf="successMessage" class="alert alert-success">✓ {{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">✗ {{ errorMessage }}</div>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🏖️ Mis Vacaciones</h1>
+    <button class="btn-primary" (click)="createNewVacation()" *ngIf="!showForm">
+      + Nueva Vacación
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <div *ngIf="showForm" class="form-card">
+    <div class="form-header">
+      <h2>{{ getFormTitle() }}</h2>
+      <button class="btn-close" (click)="cancelForm()">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label>Título <span class="required">*</span></label>
+      <input type="text" [(ngModel)]="formData.titulo" placeholder="Ej: Vacaciones en Cartagena">
+      <div *ngIf="submitted && (!formData.titulo || formData.titulo.length < 3)" class="error">
+        Mínimo 3 caracteres
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Lugar <span class="required">*</span></label>
+      <input type="text" [(ngModel)]="formData.lugar" placeholder="Ej: Cartagena de Indias">
+      <div *ngIf="submitted && (!formData.lugar || formData.lugar.length < 3)" class="error">
+        Mínimo 3 caracteres
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha Inicio <span class="required">*</span></label>
+        <input type="date" [(ngModel)]="formData.fechaInicio">
+        <div *ngIf="submitted && !formData.fechaInicio" class="error">Requerido</div>
+      </div>
+      <div class="form-group">
+        <label>Fecha Fin <span class="required">*</span></label>
+        <input type="date" [(ngModel)]="formData.fechaFin">
+        <div *ngIf="submitted && !formData.fechaFin" class="error">Requerido</div>
+      </div>
+    </div>
+
+    <div *ngIf="formData.fechaInicio && formData.fechaFin" class="duration-info">
+      🗓️ Duración: {{ getDuration(formData.fechaInicio, formData.fechaFin) }} días
+    </div>
+
+    <div class="form-group">
+      <label>Presupuesto (COP) <span class="required">*</span></label>
+      <input type="number" [(ngModel)]="formData.presupuesto" placeholder="0" min="0">
+      <div *ngIf="submitted && formData.presupuesto <= 0" class="error">Debe ser mayor a 0</div>
+    </div>
+
+    <div class="form-group">
+      <label>Descripción <span class="required">*</span></label>
+      <textarea [(ngModel)]="formData.descripcion" rows="5" placeholder="Describe tu plan..."></textarea>
+      <div class="char-count">{{ formData.descripcion?.length || 0 }} / 2000</div>
+      <div *ngIf="submitted && (!formData.descripcion || formData.descripcion.length < 10)" class="error">
+        Mínimo 10 caracteres
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-cancel" (click)="cancelForm()">Cancelar</button>
+      <button class="btn-save" (click)="saveVacation()" [disabled]="loading">
+        {{ loading ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading && !showForm" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
+
+  <!-- Lista de vacaciones -->
+  <div *ngIf="!loading && vacations.length > 0 && !showForm" class="vacation-grid">
+    <div *ngFor="let vacation of vacations" class="vacation-card">
+      <div class="card-header">
+        <h3>{{ vacation.titulo }}</h3>
+        <span class="badge">{{ getDuration(vacation.fechaInicio, vacation.fechaFin) }} días</span>
+      </div>
+
+      <div class="card-body">
+        <div class="info-row">
+          <span>📍</span>
+          <span>{{ vacation.lugar }}</span>
+        </div>
+        <div class="info-row">
+          <span>📅</span>
+          <span>{{ formatDate(vacation.fechaInicio) }} - {{ formatDate(vacation.fechaFin) }}</span>
+        </div>
+        <div class="info-row">
+          <span>💰</span>
+          <span class="budget">{{ formatBudget(vacation.presupuesto) }}</span>
+        </div>
+        <p class="description">{{ vacation.descripcion }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-edit" (click)="editVacation(vacation)">✏️ Editar</button>
+        <button class="btn-delete" (click)="deleteVacation(vacation.id!, vacation.titulo)">🗑️ Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!loading && vacations.length === 0 && !showForm" class="empty-state">
+    <div class="empty-icon">🏝️</div>
+    <h2>No hay vacaciones planeadas</h2>
+    <p>¡Comienza a planear tu próxima aventura!</p>
+    <button class="btn-primary" (click)="createNewVacation()">Crear mi primera vacación</button>
+  </div>
+</div>
