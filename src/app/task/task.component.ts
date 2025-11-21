@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TaskService } from '../services/task.service';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+import { Task, Expense, Vacation, CreateTaskDTO } from '../models/task.model';
 
 @Component({
   selector: 'app-task',
@@ -9,133 +12,133 @@ import { HttpClient } from '@angular/common/http';
 })
 export class TaskComponent implements OnInit {
 
-  familyId: string = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
-  idResponsible: string = 'f7c1acfa-62bb-4b7f-aaea-9cce2224c5f1'; 
+  familyId: string = '';
+  idResponsible: string = '';
+  isLoading: boolean = false;
 
-  tasks: any[] = [];
-  expenses: any[] = [];
-  vacations: any[] = [];
+  tasks: Task[] = [];
+  expenses: Expense[] = [];
+  vacations: Vacation[] = [];
 
-  showModal: boolean = false; 
+  showModal: boolean = false;
+  taskForm: FormGroup;
 
-  newTask: any = {
-    name: '',
-    description: '',
-    status: false,
-    creationDate: '',
-    idExpenseve: '',  // ✅ Nombre correcto del backend
-    idVacation: ''    // ✅ Cambiado de vacationId a idVacation
-  };
-
-  constructor(private taskService: TaskService, private http: HttpClient) {}
+  constructor(
+    private taskService: TaskService,
+    private http: HttpClient,
+    private authService: AuthService,
+    private fb: FormBuilder
+  ) {
+    this.taskForm = this.fb.group({
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      status: [false],
+      creationDate: [new Date().toISOString().split('T')[0], Validators.required],
+      idExpenseve: [''],
+      idVacation: ['']
+    });
+  }
 
   ngOnInit(): void {
+    this.familyId = this.authService.getFamilyId() || '';
+    this.idResponsible = this.authService.getUserId() || '';
+
+    if (!this.familyId || !this.idResponsible) {
+      console.error('❌ No se pudo obtener la información de autenticación (familyId o userId)');
+    }
+
     this.loadTasks();
     this.loadExpenses();
     this.loadVacations();
   }
 
   loadTasks(): void {
+    this.isLoading = true;
     this.taskService.getTasks(this.familyId).subscribe({
       next: (data) => {
         this.tasks = data;
-        console.log('✅ Tareas cargadas:', this.tasks);
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('❌ Error cargando tareas:', err);
+        this.isLoading = false;
       }
     });
   }
 
   loadExpenses(): void {
-    this.http.get<any[]>(`http://localhost:8080/api/v1/rest/expenses/by-family/${this.familyId}`)
+    this.http.get<Expense[]>(`http://localhost:8080/api/v1/rest/expenses/by-family/${this.familyId}`)
       .subscribe({
-        next: (data) => {
-          this.expenses = data;
-          console.log('✅ Expenses cargados:', this.expenses);
-        },
+        next: (data) => this.expenses = data,
         error: (err) => console.error('❌ Error cargando expenses:', err)
       });
   }
 
   loadVacations(): void {
-    this.http.get<any[]>(`http://localhost:8080/api/vacations`)
+    this.http.get<Vacation[]>(`http://localhost:8080/api/vacations`)
       .subscribe({
-        next: (data) => {
-          this.vacations = data;
-          console.log('✅ Vacations cargadas:', this.vacations);
-        },
+        next: (data) => this.vacations = data,
         error: (err) => console.error('❌ Error cargando vacations:', err)
       });
   }
 
   createTask(): void {
-    if (!this.newTask.name || !this.newTask.description || !this.newTask.idExpenseve) {
-      alert('Por favor completa los campos obligatorios.');
+    if (this.taskForm.invalid) {
+      this.taskForm.markAllAsTouched();
       return;
     }
 
-    let formattedDate = '';
-    try {
-      // Si el usuario seleccionó una fecha, usarla; si no, usar la fecha actual
-      formattedDate = this.newTask.creationDate || new Date().toISOString().split('T')[0];
-    } catch (e) {
-      console.error('❌ Error formateando fecha:', e);
-      alert('Error al procesar la fecha de creación.');
-      return;
-    }
+    const formValue = this.taskForm.value;
 
-    // ✅ Estructura correcta: el backend espera objetos con { id: "uuid" }
-    const taskData: any = {
-      name: this.newTask.name,
-      description: this.newTask.description,
-      status: this.newTask.status,
-      creationDate: formattedDate,
+    const taskData: CreateTaskDTO = {
+      name: formValue.name,
+      description: formValue.description,
+      status: formValue.status,
+      creationDate: formValue.creationDate,
       idResponsible: this.idResponsible,
-      idExpenseve: {
-        id: this.newTask.idExpenseve  // Backend hace: task.getIdExpenseve().getId()
-      }
+      idExpenseve: formValue.idExpenseve ? { id: formValue.idExpenseve } : null,
+      idVacations: formValue.idVacation ? { id: formValue.idVacation } : null
     };
-
-    // Solo agregar idVacations si tiene valor (como objeto)
-    if (this.newTask.idVacation) {
-      taskData.idVacations = {
-        id: this.newTask.idVacation  // Backend hace: task.getIdVacations().getId()
-      };
-    }
-
-    // familyId se pasa por query param, no en el body
 
     console.log('📤 Enviando taskData:', taskData);
 
+    this.isLoading = true;
     this.taskService.createTask(taskData, this.familyId).subscribe({
       next: (createdTask) => {
         console.log('✅ Tarea creada:', createdTask);
         this.tasks.push(createdTask);
-        this.closeModal(); 
-        this.loadTasks();
+        this.closeModal();
+        this.loadTasks(); // Reload to ensure consistency
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('❌ Error creando tarea:', err);
-        console.error('❌ Detalle del error:', err.error);
-        alert(`Error: ${err.error?.message || err.error?.error || 'No se pudo crear la tarea'}`);
+        alert(`Error: ${err.error?.message || 'No se pudo crear la tarea'}`);
+        this.isLoading = false;
       }
     });
   }
 
-  toggleStatus(task: any): void {
+  toggleStatus(task: Task): void {
+    if (!task.id) return;
     const updatedTask = { ...task, status: !task.status };
+
+    // Optimistic update
+    task.status = !task.status;
+
     this.taskService.updateTask(task.id, updatedTask, this.familyId).subscribe({
-      next: () => {
-        task.status = !task.status;
-        console.log('✅ Estado actualizado:', task);
-      },
-      error: (err) => console.error('❌ Error actualizando tarea:', err)
+      next: () => console.log('✅ Estado actualizado'),
+      error: (err) => {
+        console.error('❌ Error actualizando tarea:', err);
+        task.status = !task.status; // Revert on error
+      }
     });
   }
 
-  deleteTask(taskId: string): void {
+  deleteTask(taskId: string | undefined): void {
+    if (!taskId) return;
     if (!confirm('¿Seguro que deseas eliminar esta tarea?')) return;
+
     this.taskService.deleteTask(taskId, this.familyId).subscribe({
       next: () => {
         console.log('✅ Tarea eliminada:', taskId);
@@ -145,19 +148,24 @@ export class TaskComponent implements OnInit {
     });
   }
 
+  toggleStatusInForm(): void {
+    const currentStatus = this.taskForm.get('status')?.value;
+    this.taskForm.get('status')?.setValue(!currentStatus);
+  }
+
   openModal(): void {
     this.showModal = true;
   }
 
   closeModal(): void {
     this.showModal = false;
-    this.newTask = { 
-      name: '', 
-      description: '', 
-      status: false, 
-      creationDate: '', 
+    this.taskForm.reset({
+      name: '',
+      description: '',
+      status: false,
+      creationDate: new Date().toISOString().split('T')[0],
       idExpenseve: '',
       idVacation: ''
-    };
+    });
   }
 }

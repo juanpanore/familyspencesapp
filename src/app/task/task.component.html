@@ -1,69 +1,99 @@
 <div class="modal-overlay" *ngIf="showModal">
   <div class="modal-content">
-    <h3>Nueva Tarea</h3>
-
-    <form (ngSubmit)="createTask()" class="form">
-      <input [(ngModel)]="newTask.name" name="name" placeholder="Nombre de la tarea" required />
-
-      <textarea
-        [(ngModel)]="newTask.description"
-        name="description"
-        placeholder="Descripción"
-        rows="3"
-        required>
-      </textarea>
-
-      <label>💰 Gasto asociado:</label>
-      <select [(ngModel)]="newTask.idExpenseve" name="idExpenseve" required>
-        <option value="">-- Selecciona un gasto --</option>
-        <option *ngFor="let e of expenses" [value]="e.id">
-          {{ e.title }} | {{ e.description }} | {{ e.category }}
-        </option>
-      </select>
-
-      <label>🏖️ Vacaciones (opcional):</label>
-      <select [(ngModel)]="newTask.vacationId" name="vacationId">
-        <option value="">-- Sin vacaciones --</option>
-        <option *ngFor="let v of vacations" [value]="v.id">
-          {{ v.destination || v.name }}
-        </option>
-      </select>
-
-      <label>📅 Fecha de creación:</label>
-      <input
-        type="date"
-        [(ngModel)]="newTask.creationDate"
-        name="creationDate"
-        required />
-
-      <div class="checkbox-group">
-        <label class="checkbox-label">
-          <input
-            type="checkbox"
-            [(ngModel)]="newTask.status"
-            name="status" />
-          <span>✅ Marcar como completada</span>
-        </label>
+    <div class="card-header">
+      <h3 class="card-title">Crear Nueva Tarea</h3>
+      <p class="card-description">Complete el formulario para agregar una nueva tarea al sistema</p>
+    </div>
+    <form [formGroup]="taskForm" (ngSubmit)="createTask()" class="form-grid">
+      <div class="form-group">
+        <label>Nombre de la Tarea <span class="text-destructive">*</span></label>
+        <input formControlName="name" placeholder="Ej: Revisar presupuesto mensual" />
+        <div class="error-msg" *ngIf="taskForm.get('name')?.touched && taskForm.get('name')?.invalid">
+          El nombre es obligatorio
+        </div>
       </div>
-
+      <div class="form-group">
+        <label>Descripción <span class="text-destructive">*</span></label>
+        <textarea formControlName="description" placeholder="Proporcione detalles sobre la tarea..." rows="4">
+        </textarea>
+        <div class="error-msg" *ngIf="taskForm.get('description')?.touched && taskForm.get('description')?.invalid">
+          La descripción es obligatoria
+        </div>
+      </div>
+      <div class="grid-cols-2">
+        <div class="form-group">
+          <label>Gasto Asociado</label>
+          <select formControlName="idExpenseve">
+            <option value="">Seleccionar gasto</option>
+            <option *ngFor="let e of expenses" [value]="e.id">
+              {{ e.name }} | {{ e.amount }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Vacaciones</label>
+          <select formControlName="idVacation">
+            <option value="">Seleccionar vacaciones</option>
+            <option *ngFor="let v of vacations" [value]="v.id">
+              {{ v.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Fecha de Creación <span class="text-destructive">*</span></label>
+        <input type="date" formControlName="creationDate" />
+        <div class="error-msg" *ngIf="taskForm.get('creationDate')?.touched && taskForm.get('creationDate')?.invalid">
+          La fecha es obligatoria
+        </div>
+      </div>
+      <div class="toggle-container">
+        <div class="toggle-wrapper">
+          <div class="form-group">
+            <label style="font-size: 1rem; cursor: pointer;">Estado de la Tarea</label>
+            <p class="card-description" style="margin: 0;">
+              {{ taskForm.get('status')?.value ? "Marcada como completada" : "Pendiente de completar" }}
+            </p>
+          </div>
+          <button type="button" class="toggle-btn" [class.active]="taskForm.get('status')?.value"
+            (click)="taskForm.patchValue({status: !taskForm.get('status')?.value})">
+            <span class="toggle-thumb">
+              <svg *ngIf="taskForm.get('status')?.value" class="h-6 w-6"
+                style="width: 24px; height: 24px; color: var(--success);" fill="none" stroke="currentColor"
+                stroke-width="3" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg *ngIf="!taskForm.get('status')?.value" class="h-6 w-6"
+                style="width: 24px; height: 24px; color: var(--muted-foreground);" fill="none" stroke="currentColor"
+                stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
       <div class="modal-buttons">
-        <button type="submit">➕ Crear tarea</button>
-        <button type="button" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid || isLoading">
+          {{ isLoading ? 'Creando...' : 'Crear Tarea' }}
+        </button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="isLoading">
+          Cancelar
+        </button>
       </div>
     </form>
   </div>
 </div>
-
 <div class="tasks-container">
   <div class="header-row">
     <h2>📋 Mis Tareas</h2>
     <button class="btn-create-top" (click)="openModal()">➕ Nueva tarea</button>
   </div>
-
-  <div *ngIf="tasks.length === 0" class="no-tasks">
+  <div *ngIf="isLoading && tasks.length === 0" class="loading-spinner">
+    ⏳ Cargando tareas...
+  </div>
+  <div *ngIf="!isLoading && tasks.length === 0" class="no-tasks">
     No hay tareas creadas aún
   </div>
-
   <div class="task-card" *ngFor="let task of tasks">
     <div class="task-header">
       <h4>{{ task.name }}</h4>
@@ -71,13 +101,10 @@
         {{ task.status ? '✅ Completada' : '⏳ Pendiente' }}
       </span>
     </div>
-
     <p class="task-description">{{ task.description }}</p>
-
     <div class="task-meta">
       <span>📅 {{ task.creationDate }}</span>
     </div>
-
     <div class="task-actions">
       <button class="btn-toggle" (click)="toggleStatus(task)">
         {{ task.status ? 'Marcar pendiente' : 'Marcar completada' }}
