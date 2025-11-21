@@ -16,6 +16,8 @@ import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ExpenseComponent } from './component/expense/expense.component';
+import { CategoryComponent } from './categories/category.component';
+import { IncomeComponent } from './income/income.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { ExpenseComponent } from './component/expense/expense.component';
     GoalsComponent,
     RankingComponent,
     NotificationsComponent,
-    ExpenseComponent
+    ExpenseComponent,
+    CategoryComponent,
+    IncomeComponent
   ],
   imports: [
     BrowserModule,
