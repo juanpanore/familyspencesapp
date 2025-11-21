@@ -12,6 +12,7 @@ import { FamilymemberComponent } from './familymember/familymember';
 import { GoalsComponent } from './goals/goals.component';
 import { PetComponent } from './pet/pet.component';
 import { VacationComponent } from './vacation/vacation.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 const routes: Routes = [
   {
@@ -39,10 +40,10 @@ const routes: Routes = [
     path: 'products',
     component: ProductComponent
   },
-    {
-  path: 'family-members',
-  component: FamilymemberComponent
-},
+  {
+    path: 'family-members',
+    component: FamilymemberComponent
+  },
   {
     path: 'goals',
     component: GoalsComponent
@@ -62,6 +63,10 @@ const routes: Routes = [
   {
     path: 'vacation',
     component: VacationComponent
+  },
+  {
+    path: 'notifications',
+    component: NotificationsComponent
   },
   {
     path: '**',

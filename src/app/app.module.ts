@@ -34,20 +34,17 @@ import { PetComponent } from './pet/pet.component';
     NotificationsComponent,
     ExpenseComponent,
     VacationComponent,
-    PetComponent
+    PetComponent,
+    FamilymemberComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    CommonModule,  
+    CommonModule,
     RouterModule,
     HttpClientModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    CommonModule,
-    FormsModule,
-    RouterModule
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
