@@ -10,6 +10,7 @@ import { CategoryService } from './category.service';
 export class CategoryComponent implements OnInit {
     categories: Category[] = [];
     selectedCategory: Category = this.getEmptyCategory();
+    showModal = false;
     isEditing = false;
 
     // TODO: Replace with actual family ID from auth/context
@@ -34,11 +35,21 @@ export class CategoryComponent implements OnInit {
     selectCategory(category: Category): void {
         this.selectedCategory = { ...category };
         this.isEditing = true;
+        this.openModal();
+    }
+
+    openModal(): void {
+        this.showModal = true;
+    }
+
+    closeModal(): void {
+        this.showModal = false;
+        this.selectedCategory = this.getEmptyCategory();
+        this.isEditing = false;
     }
 
     cancelEdit(): void {
-        this.selectedCategory = this.getEmptyCategory();
-        this.isEditing = false;
+        this.closeModal();
     }
 
     saveCategory(): void {
@@ -47,7 +58,7 @@ export class CategoryComponent implements OnInit {
                 .subscribe({
                     next: () => {
                         this.loadCategories();
-                        this.cancelEdit();
+                        this.closeModal();
                     },
                     error: (err: any) => console.error('Error updating category', err)
                 });
@@ -56,7 +67,7 @@ export class CategoryComponent implements OnInit {
                 .subscribe({
                     next: () => {
                         this.loadCategories();
-                        this.cancelEdit();
+                        this.closeModal();
                     },
                     error: (err: any) => console.error('Error creating category', err)
                 });

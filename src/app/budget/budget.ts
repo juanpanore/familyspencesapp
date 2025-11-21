@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './budget.html',
-  styleUrl: './budget.css'
+  styleUrls: ['./budget.css']
 })
 export class Budget {
 

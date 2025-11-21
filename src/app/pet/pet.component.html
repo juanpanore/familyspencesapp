@@ -1,0 +1,83 @@
+<div class="container">
+
+  <h2 class="title">Gestión de Mascotas</h2>
+
+  <button class="btn-primary" (click)="toggleForm()">
+    {{ showForm ? 'Cerrar formulario' : 'Agregar Mascota' }}
+  </button>
+
+
+  <div *ngIf="showForm" class="form-card">
+    <h3 class="form-title">{{ isEditMode ? 'Editar Mascota' : 'Nueva Mascota' }}</h3>
+
+    <form (ngSubmit)="savePet()">
+      <div class="form-grid">
+        <div>
+          <label>Nombre</label>
+          <input [(ngModel)]="newPet.fullName" name="fullName" required />
+        </div>
+
+        <div>
+          <label>Tipo</label>
+          <input [(ngModel)]="newPet.petType" name="petType" required />
+        </div>
+
+        <div>
+          <label>Raza</label>
+          <input [(ngModel)]="newPet.breed" name="breed" required />
+        </div>
+
+        <div>
+          <label>Fecha Nacimiento</label>
+          <input type="date" [(ngModel)]="newPet.birthDate" name="birthDate" required />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-success">
+        {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+      </button>
+      
+      <button type="button" class="btn-secondary" *ngIf="isEditMode" (click)="toggleForm()">
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+  <table class="pet-table" *ngIf="pets.length > 0">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Raza</th>
+        <th>Nacimiento</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let pet of pets">
+        <td>{{ pet.fullName }}</td>
+        <td>{{ pet.petType }}</td>
+        <td>{{ pet.breed }}</td>
+        <td>{{ pet.birthDate }}</td>
+        <td>
+          <button class="btn-warning" (click)="editPet(pet)">Editar</button>
+          <button class="btn-danger" (click)="confirmDelete(pet)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="modal-backdrop" *ngIf="petToDelete">
+    <div class="modal">
+      <h3>¿Seguro que quieres eliminar esta mascota?</h3>
+      <p><strong>{{ petToDelete.fullName }}</strong></p>
+
+      <div class="modal-actions">
+        <button class="btn-danger" (click)="deletePetConfirmed()">Sí, eliminar</button>
+        <button class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+</div>

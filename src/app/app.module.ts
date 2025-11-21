@@ -16,6 +16,9 @@ import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ExpenseComponent } from './component/expense/expense.component';
+import { VacationComponent } from './vacation/vacation.component';
+
+import { PetComponent } from './pet/pet.component';
 import { CategoryComponent } from './categories/category.component';
 import { IncomeComponent } from './income/income.component';
 
@@ -31,12 +34,18 @@ import { IncomeComponent } from './income/income.component';
     RankingComponent,
     NotificationsComponent,
     ExpenseComponent,
+    VacationComponent,
+    PetComponent,
     CategoryComponent,
     IncomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
+    CommonModule,
+    RouterModule,
+    HttpClientModule,
     ReactiveFormsModule,
     HttpClientModule,
     CommonModule,

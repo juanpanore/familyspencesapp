@@ -17,7 +17,7 @@ export class ExpenseComponent implements OnInit {
     categoria: new FormControl('', [Validators.required]),
     responsable: new FormControl('', [Validators.required])
   });
-  
+
   categorias = ['ALIMENTACIÓN', 'TRANSPORTE', 'EDUCACIÓN', 'ENTRETENIMIENTO', 'SALUD', 'VIVIENDA', 'OTROS'];
   responsables = ['Juan', 'María', 'Pedro', 'Ana'];
   showForm = false;
@@ -49,7 +49,7 @@ export class ExpenseComponent implements OnInit {
       }
     );
   }
-  
+
 
   toggleForm(): void {
     this.showForm = !this.showForm;
@@ -58,12 +58,12 @@ export class ExpenseComponent implements OnInit {
   onSubmit() {
     if (this.expenseForm.valid) {
       const newExpense = {
-        title: this.expenseForm.value.titulo.trim(),
-        description: this.expenseForm.value.descripcion.trim(),
-        period: this.expenseForm.value.periodo,
-        value: parseFloat(this.expenseForm.value.valor), 
-        category: this.expenseForm.value.categoria.trim(),
-        responsible: this.expenseForm.value.responsable
+        title: this.expenseForm.value.titulo?.trim() ?? '',
+        description: this.expenseForm.value.descripcion?.trim() ?? '',
+        period: this.expenseForm.value.periodo ?? '',
+        value: parseFloat(this.expenseForm.value.valor ?? '0'),
+        category: this.expenseForm.value.categoria?.trim() ?? '',
+        responsible: this.expenseForm.value.responsable ?? ''
       };
       const familyId = 'b2efb720-8296-495e-a86e-b2d2955cfb1f';
       const mail = 'ana.gomez@email.com';
