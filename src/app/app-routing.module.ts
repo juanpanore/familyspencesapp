@@ -21,6 +21,10 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
+    path: 'register',  // ← NUEVA RUTA
+    component: LoginComponent  // ← Temporal, luego creas RegisterComponent
+  },
+  {
     path: 'home',
     component: HomeComponent
   },

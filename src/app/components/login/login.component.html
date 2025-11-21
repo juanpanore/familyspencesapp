@@ -57,4 +57,12 @@
       <span *ngIf="isLoading">Cargando...</span>
     </button>
   </form>
+
+  <!-- NUEVO: Botón de registro -->
+  <div class="register-section">
+    <p>¿No tienes cuenta?</p>
+    <button type="button" class="btn-register" (click)="goToRegister()">
+      Crear cuenta nueva
+    </button>
+  </div>
 </div>
