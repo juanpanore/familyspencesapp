@@ -2,9 +2,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import {map} from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 
-export interface RankingApiResponse {
+interface RankingApiResponse {
   ranking: Record<string, number>;
 }
 
@@ -43,9 +44,11 @@ export class RankingService {
    * Llama al GET /api/family/ranking/expenses/{familyId}/by-period/{period}
    */
   getRankingExpenses(familyId: string, period: string): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(
+    return this.http.get<RankingApiResponse>(
       `${this.apiUrl}/ranking/expenses/${familyId}/by-period/${period}`,
       { headers: this.getHeaders() }
+    ).pipe(
+      map(response => response.ranking || {}) 
     );
   }
 
@@ -53,9 +56,11 @@ export class RankingService {
    * Llama al GET /api/family/ranking/income/{familyId}/by-period/{period}
    */
   getRankingIncome(familyId: string, period: string): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(
+    return this.http.get<RankingApiResponse>(
       `${this.apiUrl}/ranking/income/${familyId}/by-period/${period}`,
       { headers: this.getHeaders() }
+    ).pipe(
+      map(response => response.ranking || {}) 
     );
   }
   
