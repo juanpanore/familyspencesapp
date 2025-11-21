@@ -13,6 +13,7 @@ import { GoalsComponent } from './goals/goals.component';
 import { PetComponent } from './pet/pet.component';
 import { VacationComponent } from './vacation/vacation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { IncomeComponent } from './income/income.component';
 
 const routes: Routes = [
   {
@@ -67,6 +68,10 @@ const routes: Routes = [
   {
     path: 'notifications',
     component: NotificationsComponent
+  },
+  {
+    path: 'income',
+    component: IncomeComponent
   },
   {
     path: '**',
