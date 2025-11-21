@@ -1,4 +1,3 @@
-<!-- Toast Notification -->
 <div class="toast-container" *ngIf="showToast">
   <div class="toast" [class.toast-success]="toastType === 'success'" [class.toast-error]="toastType === 'error'">
     <div class="toast-header">
@@ -17,7 +16,6 @@
   </div>
 </div>
 
-<!-- Delete Confirmation Dialog -->
 <div class="dialog-overlay" *ngIf="showDeleteDialog" (click)="closeDeleteDialog()">
   <div class="dialog-content" (click)="$event.stopPropagation()">
     <div class="dialog-header">
@@ -127,7 +125,7 @@
 
 <div class="tasks-container">
   <div class="header-row">
-    <h2>📋 Mis Tareas</h2>
+    <h2> Mis Tareas</h2>
     <div style="display: flex; align-items: center; gap: 12px;">
       <span class="task-count">{{ tasks.length }} {{ tasks.length === 1 ? 'tarea' : 'tareas' }}</span>
       <button class="btn-create-top" (click)="openModal()">➕ Nueva tarea</button>
@@ -152,7 +150,6 @@
   <div class="task-list" *ngIf="!isLoading && tasks.length > 0">
     <div *ngFor="let task of tasks" class="task-card" [class.completed]="task.status">
       <div class="task-content">
-        <!-- Status Circle Button -->
         <button class="status-btn" [class.completed]="task.status" (click)="toggleStatus(task)"
           [attr.aria-label]="task.status ? 'Marcar como pendiente' : 'Marcar como completada'">
           <svg *ngIf="task.status" class="status-icon" fill="none" stroke="currentColor" stroke-width="3"
@@ -165,12 +162,10 @@
           </svg>
         </button>
 
-        <!-- Task Info -->
         <div class="task-info">
           <h3 class="task-title">{{ task.name }}</h3>
           <p class="task-description">{{ task.description }}</p>
 
-          <!-- Task Meta -->
           <div class="task-meta">
             <div class="meta-item">
               <svg class="meta-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -200,7 +195,6 @@
           </div>
         </div>
 
-        <!-- Delete Button -->
         <button class="delete-btn" (click)="openDeleteDialog(task)" aria-label="Eliminar tarea">
           <svg class="delete-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <polyline points="3 6 5 6 21 6"></polyline>
