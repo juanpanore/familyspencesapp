@@ -22,6 +22,7 @@ import { VacationComponent } from './vacation/vacation.component';
 import { PetComponent } from './pet/pet.component';
 
 import { IncomeComponent } from './income/income.component';
+import { CategoryComponent } from './category/category.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 import { BudgetCreateComponent } from './components/budget/budget-create/budget-create.component';
 import { BudgetDetailsComponent } from './components/budget/budget-details/budget-details.component';
@@ -42,6 +43,7 @@ import { BudgetDetailsComponent } from './components/budget/budget-details/budge
     PetComponent,
     FamilymemberComponent,
     IncomeComponent,
+    CategoryComponent,
     BudgetListComponent,
     BudgetCreateComponent,
     BudgetDetailsComponent
