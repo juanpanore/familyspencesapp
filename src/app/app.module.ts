@@ -21,6 +21,8 @@ import { VacationComponent } from './vacation/vacation.component';
 
 import { PetComponent } from './pet/pet.component';
 
+import { IncomeComponent } from './income/income.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,7 +37,8 @@ import { PetComponent } from './pet/pet.component';
     ExpenseComponent,
     VacationComponent,
     PetComponent,
-    FamilymemberComponent
+    FamilymemberComponent,
+    IncomeComponent
   ],
   imports: [
     BrowserModule,
