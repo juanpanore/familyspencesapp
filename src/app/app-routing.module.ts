@@ -8,9 +8,12 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
+import { FamilymemberComponent } from './familymember/familymember';
 import { GoalsComponent } from './goals/goals.component';
 import { PetComponent } from './pet/pet.component';
 import { VacationComponent } from './vacation/vacation.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { IncomeComponent } from './income/income.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 
 const routes: Routes = [
@@ -40,6 +43,10 @@ const routes: Routes = [
     component: ProductComponent
   },
   {
+    path: 'family-members',
+    component: FamilymemberComponent
+  },
+  {
     path: 'goals',
     component: GoalsComponent
   },
@@ -58,6 +65,14 @@ const routes: Routes = [
   {
     path: 'vacation',
     component: VacationComponent
+  },
+  {
+    path: 'notifications',
+    component: NotificationsComponent
+  },
+  {
+    path: 'income',
+    component: IncomeComponent
   },
   {
     path: 'budget',

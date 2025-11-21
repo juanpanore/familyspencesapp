@@ -15,10 +15,13 @@ import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { FamilymemberComponent } from './familymember/familymember';
 import { ExpenseComponent } from './component/expense/expense.component';
 import { VacationComponent } from './vacation/vacation.component';
 
 import { PetComponent } from './pet/pet.component';
+
+import { IncomeComponent } from './income/income.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 import { BudgetCreateComponent } from './components/budget/budget-create/budget-create.component';
 import { BudgetDetailsComponent } from './components/budget/budget-details/budget-details.component';
@@ -37,6 +40,8 @@ import { BudgetDetailsComponent } from './components/budget/budget-details/budge
     ExpenseComponent,
     VacationComponent,
     PetComponent,
+    FamilymemberComponent,
+    IncomeComponent,
     BudgetListComponent,
     BudgetCreateComponent,
     BudgetDetailsComponent
@@ -48,11 +53,7 @@ import { BudgetDetailsComponent } from './components/budget/budget-details/budge
     CommonModule,
     RouterModule,
     HttpClientModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    CommonModule,
-    FormsModule,
-    RouterModule
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

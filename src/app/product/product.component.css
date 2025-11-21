@@ -23,6 +23,12 @@ h2, h3 {
   border-radius: 12px;
   border: 1px solid #b3b1b1;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  animation: fadeInBody 1s ease forwards;
+}
+
+@keyframes fadeInBody {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 /* ====== BARRA DE BÚSQUEDA ====== */
@@ -59,28 +65,52 @@ ul {
 }
 
 .producto-item {
-  color: rgba(0, 0, 0, 0.671);
-  background: #f5f7fa;
+  position: relative;
+  overflow: hidden;
+  color: #f5f7fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
   border: 1px solid #b3b1b1;
-  transition: transform 0.15s, background 0.2s;
+  box-shadow: 0 0 10px 0 rgba(118, 75, 162, 0.493);
+  transition: transform 0.15s ease, color 0.2s ease;
+}
+
+.producto-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 120%;
+  height: 100%;
+  background: #f5f7fa;
+  transition: left 0.45s ease;
+  z-index: -1;
+}
+
+.producto-item * {
+  position: relative;
+  z-index: 2;
+}
+
+
+.producto-item:hover::before {
+  left: 0;
 }
 
 .producto-item:hover strong{
-  color: #f5f7fa;
+  color: #7c3aed;
 }
 
 .producto-item:hover {
-  background: #7c3aed;
   transform: translateY(-3px);
-  color: #f5f7fa;
+  color: #7c3aed;
 }
 
 strong {
   font-size: 1.1rem;
-  color: #7c3aed;
+  color: #f5f7fa;
 }
 
 /* ====== MENSAJE SIN RESULTADOS ====== */
@@ -137,6 +167,7 @@ p {
 .add-form button:active {
   transform: scale(0.97);
 }
+
 
 /* ====== HR ====== */
 hr {

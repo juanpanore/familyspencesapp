@@ -1,0 +1,93 @@
+/* CONTENEDOR GENERAL */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* TITULOS */
+h2 {
+  margin-bottom: 1.2rem;
+  font-size: 1.6rem;
+  color: var(--foreground);
+}
+
+/* TABLA */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+thead {
+  background: var(--secondary);
+}
+
+th, td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+/* BOTÓN PRIMARIO */
+button {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: 0.2s ease-in-out;
+  margin-right: 0.5rem;
+}
+
+button:hover {
+  background: #6a2bd8;
+}
+
+/* FORMULARIO */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+label {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+input, select {
+  padding: 0.6rem;
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  outline: none;
+  font-size: 0.95rem;
+}
+
+input:focus, select:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+}
+
+/* BOTONES DEL FORMULARIO */
+.buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* VISTA FORMULARIO Y LISTA */
+.list-view, .form-view {
+  animation: fade 0.2s ease-in-out;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
