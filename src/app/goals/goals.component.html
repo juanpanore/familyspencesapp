@@ -1,2 +1,52 @@
-<p>goals works!</p>
+<div class="goals-container">
+  <h1>Metas de la Familia</h1>
 
+  <div *ngIf="goals.length > 0">
+    <ul>
+      <li *ngFor="let goal of goals">
+        <h3>{{ goal.name }}</h3>
+        <p>{{ goal.description }}</p>
+        <p>Meta diaria: {{ goal.dailyGoal }} | Tope: {{ goal.savingsCap }}</p>
+        <button (click)="showEditGoalForm(goal)">Editar</button>
+        <button (click)="deleteGoal(goal.id)">Eliminar</button>
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="goals.length === 0">
+    <p>No tienes metas aún.</p>
+  </div>
+
+  <button (click)="showCreateGoalForm()">Crear Meta</button>
+
+  <div *ngIf="selectedGoal || newGoal.name">
+    <h2>{{ selectedGoal ? 'Editar Meta' : 'Crear Meta' }}</h2>
+    <form (ngSubmit)="selectedGoal ? updateGoal() : createGoal()">
+      <div>
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" [(ngModel)]="selectedGoal?.name || newGoal.name" name="name" required>
+      </div>
+      <div>
+        <label for="description">Descripción:</label>
+        <textarea id="description" [(ngModel)]="selectedGoal?.description || newGoal.description" name="description" required></textarea>
+      </div>
+      <div>
+        <label for="category">Categoría:</label>
+        <input type="text" id="category" [(ngModel)]="selectedGoal?.categoryId || newGoal.categoryId" name="category" required>
+      </div>
+      <div>
+        <label for="savingsCap">Tope:</label>
+        <input type="number" id="savingsCap" [(ngModel)]="selectedGoal?.savingsCap || newGoal.savingsCap" name="savingsCap" required>
+      </div>
+      <div>
+        <label for="deadline">Fecha Límite:</label>
+        <input type="date" id="deadline" [(ngModel)]="selectedGoal?.deadline || newGoal.deadline" name="deadline" required>
+      </div>
+      <div>
+        <label for="dailyGoal">Meta Diaria:</label>
+        <input type="number" id="dailyGoal" [(ngModel)]="selectedGoal?.dailyGoal || newGoal.dailyGoal" name="dailyGoal" required>
+      </div>
+      <button type="submit">{{ selectedGoal ? 'Actualizar Meta' : 'Crear Meta' }}</button>
+    </form>
+  </div>
+</div>

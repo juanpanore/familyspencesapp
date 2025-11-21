@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -10,6 +11,11 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { Balance } from './balance/balance';
 import { TaskComponent } from './task/task.component';
+import { ProductComponent } from './product/product.component';
+import { GoalsComponent } from './goals/goals.component';
+import { RankingComponent } from './component/ranking/ranking.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { ExpenseComponent } from './component/expense/expense.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 @NgModule({
@@ -18,14 +24,20 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     LoginComponent,
     HomeComponent,
     Balance,
-    TaskComponent
+    TaskComponent,
+    ProductComponent,
+    GoalsComponent,
+    RankingComponent,
+    NotificationsComponent,
+    ExpenseComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    FormsModule,
     HttpClientModule,
+    CommonModule,
+    FormsModule,
     RouterModule
   ],
   providers: [
