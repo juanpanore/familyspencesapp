@@ -8,6 +8,7 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
+import { GoalsComponent } from './goals/goals.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,10 @@ const routes: Routes = [
   {
     path: 'products',
     component: ProductComponent
+  },
+  {
+    path: 'goals',
+    component: GoalsComponent
   },
   {
     path: 'expense',
