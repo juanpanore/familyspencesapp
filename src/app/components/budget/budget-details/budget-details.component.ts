@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BudgetService } from '../../../services/budget.service';
+import { BudgetService } from '../../../service/budget/budget.service';
 
 
 @Component({

@@ -3,7 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BudgetService } from '../../../services/budget.service';
+import { BudgetService } from '../../../service/budget/budget.service';
 
 @Component({
   selector: 'app-budget-create',

@@ -9,6 +9,7 @@ import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,10 @@ const routes: Routes = [
   {
     path: 'ranking',
     component: RankingComponent
+  },
+  {
+    path: 'budget',
+    component: BudgetListComponent
   },
   {
     path: '**',

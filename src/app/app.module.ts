@@ -16,6 +16,7 @@ import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ExpenseComponent } from './component/expense/expense.component';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { ExpenseComponent } from './component/expense/expense.component';
     GoalsComponent,
     RankingComponent,
     NotificationsComponent,
-    ExpenseComponent
+    ExpenseComponent,
+    BudgetListComponent
   ],
   imports: [
     BrowserModule,

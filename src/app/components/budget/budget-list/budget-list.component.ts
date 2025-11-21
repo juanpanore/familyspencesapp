@@ -2,7 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BudgetService } from '../../../services/budget.service';
+import { BudgetService } from 'src/app/service/budget/budget.service';
 
 @Component({
   selector: 'app-budget-list',
@@ -12,7 +12,8 @@ import { BudgetService } from '../../../services/budget.service';
 export class BudgetListComponent implements OnInit {
   loading = false;
   error: string | null = null;
-  familyId: string = '';
+  familyId: string = '123e4567-e89b-12d3-a456-426614174000';
+  datos: any;
 
   constructor(
     private budgetService: BudgetService,
@@ -20,14 +21,11 @@ export class BudgetListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Obtener familyId del usuario logueado
-    this.familyId = localStorage.getItem('familyId') || '';
+    this.budgetService.getAllBudgetsByFamily(this.familyId).subscribe(resp => {
+      this.datos = resp;
+    },
+      error => {console.error(error)});
 
-    if (this.familyId) {
-      this.loadBudgets();
-    } else {
-      this.error = 'No se encontró el ID de la familia. Por favor, inicie sesión nuevamente.';
-    }
   }
 
   loadBudgets(): void {
