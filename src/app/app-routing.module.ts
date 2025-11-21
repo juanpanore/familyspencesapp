@@ -45,13 +45,13 @@ const routes: Routes = [
     path: 'ranking',
     component: RankingComponent
   },
+   {
+    path: 'register',
+    component: RegisterUserComponent
+  },
   {
     path: '**',
     redirectTo: '/login'
-  },
-  {
-    path: 'register-user',
-    component: RegisterUserComponent
   }
 ];
 
