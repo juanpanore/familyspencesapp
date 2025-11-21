@@ -59,28 +59,29 @@ ul {
 }
 
 .producto-item {
-  color: rgba(0, 0, 0, 0.671);
-  background: #f5f7fa;
+  color: #f5f7fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
   border: 1px solid #b3b1b1;
+  box-shadow: 0 0 10px 0 rgba(118, 75, 162, 0.493);
   transition: transform 0.15s, background 0.2s;
 }
 
 .producto-item:hover strong{
-  color: #f5f7fa;
+  color: #7c3aed;
 }
 
 .producto-item:hover {
-  background: #7c3aed;
+  background: #f5f7fa;
   transform: translateY(-3px);
-  color: #f5f7fa;
+  color: #7c3aed;
 }
 
 strong {
   font-size: 1.1rem;
-  color: #7c3aed;
+  color: #f5f7fa;
 }
 
 /* ====== MENSAJE SIN RESULTADOS ====== */
