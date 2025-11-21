@@ -15,6 +15,7 @@ import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { FamilymemberComponent } from './familymember/familymember';
 import { ExpenseComponent } from './component/expense/expense.component';
 import { VacationComponent } from './vacation/vacation.component';
 
