@@ -1,4 +1,7 @@
 <div class="container">
+    <div *ngIf="showSuccessMessage && !isAddingMember" class="success-alert">
+    Nuevo miembro registrado exitosamente
+  </div>
 
   <div *ngIf="!isAddingMember" class="list-view">
 
@@ -33,66 +36,77 @@
 
     <form [formGroup]="form" (ngSubmit)="save()">
 
-      <label>Nombre</label>
-      <input formControlName="firstName" type="text">
-      <small *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
-        El nombre es obligatorio.
-      </small>
+<label>Nombre</label>
+<input formControlName="firstName" type="text">
+<small *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched" style="color: red;">El Nombre es obligatorio</small>
 
-      <label>Apellido</label>
-      <input formControlName="lastName" type="text">
-      <small *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
-        El apellido es obligatorio.
-      </small>
+<label>Apellido</label>
+<input formControlName="lastName" type="text">
+<small *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched" style="color: red;">El Apellido es obligatorio</small>
 
-      <label>Fecha de nacimiento</label>
-      <input formControlName="birthDate" type="date">
-      <small *ngIf="form.get('birthDate')?.invalid && form.get('birthDate')?.touched">
-        La fecha es obligatoria.
-      </small>
+<label>Fecha de nacimiento</label>
+<input formControlName="birthDate" type="date" [max]="maxDate">
+<small *ngIf="form.get('birthDate')?.invalid && form.get('birthDate')?.touched" style="color: red;">La fecha es obligatoria</small>
 
-      <label>Tipo Documento</label>
-      <select formControlName="documentType">
-        <option value="">Seleccione</option>
-        <option *ngFor="let dt of documentTypes" [value]="dt.id">
-          {{ dt.type }}
-        </option>
-      </select>
+<label>Tipo Documento</label>
+<select formControlName="documentType">
+  <option value="">Seleccione</option>
+  <option *ngFor="let dt of documentTypes" [ngValue]="dt.id">
+    {{ dt.type }}
+  </option>
+</select>
+<small *ngIf="form.get('documentType')?.invalid && form.get('documentType')?.touched" style="color: red;">Selecciona un Tipo de Documento</small>
 
-      <label>No Documento</label>
-      <input formControlName="document" type="text">
-      <small *ngIf="form.get('document')?.invalid && form.get('document')?.touched">
-        Min 6 dígitos.
-      </small>
+<label>No Documento</label>
+<input formControlName="document" type="text">
+<small *ngIf="form.get('document')?.invalid&& form.get('document')?.touched" style="color: red;">
+  Documento requerido (mínimo 6 dígitos).
+</small>
 
-      <label>Email</label>
-      <input formControlName="email" type="email">
-      <small *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-        Email inválido.
-      </small>
 
-      <label>Parentesco</label>
-      <select formControlName="relationship">
-        <option value="">Seleccione</option>
-        <option *ngFor="let r of relationships" [value]="r.id">
-          {{ r.type }}
-        </option>
-      </select>
+<label>Email</label>
+<input formControlName="email" type="email">
+<small *ngIf="form.get('email')?.invalid&& form.get('email')?.touched" style="color: red;">
+  Email inválido.
+</small>
 
-      <label>Tarjeta Crédito</label>
-      <input formControlName="creditCard" type="text">
+<label>Parentesco</label>
+<select formControlName="relationship">
+  <option value="">Seleccione</option>
+  <option *ngFor="let r of relationships" [ngValue]="r.id">
+    {{ r.type }}
+  </option>
+</select>
+<small *ngIf="form.get('relationship')?.invalid&& form.get('relationship')?.touched" style="color: red;">
+  Seleccione un parentesco.
+</small>
 
-      <label>Teléfono</label>
-      <input formControlName="phone" type="text">
+<label>Tarjeta Crédito</label>
+<input formControlName="creditCard" type="text">
+<small *ngIf="form.get('creditCard')?.invalid&& form.get('creditCard')?.touched" style="color: red;">
+  Tarjeta de crédito obligatoria.
+</small>
 
-      <label>Dirección</label>
-      <input formControlName="address" type="text">
+<label>Teléfono</label>
+<input formControlName="phone" type="text">
+<small *ngIf="form.get('phone')?.invalid&& form.get('phone')?.touched" style="color: red;">
+  Teléfono debe empezar con 3 y tener 10 dígitos.
+</small>
 
-      <label>Contraseña</label>
-      <input formControlName="password" type="password">
+<label>Dirección</label>
+<input formControlName="address" type="text">
+<small *ngIf="form.get('address')?.invalid&& form.get('address')?.touched" style="color: red;">
+  Dirección requerida (mínimo 5 caracteres).
+</small>
+
+<label>Contraseña</label>
+<input formControlName="password" type="password">
+<small *ngIf="form.get('password')?.invalid&& form.get('password')?.touched" style="color: red;">
+  La contraseña debe tener 8+ caracteres, mayúscula, minúscula, número y carácter especial.
+</small>
 
       <div class="buttons">
-        <button type="submit" [disabled]="form.invalid">Guardar</button>
+        <button type="submit">Guardar</button>
         <button type="button" (click)="cancel()">Cancelar</button>
       </div>
 
