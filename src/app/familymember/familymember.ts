@@ -41,6 +41,7 @@ export class FamilymemberComponent implements OnInit {
   relationships: Relationship[] = [];
   documentTypes: DocumentType[] = [];
   showSuccessMessage = false;
+  showErrorMessage = false; 
   maxDate: string='';
 
   isAddingMember = false;
@@ -67,7 +68,7 @@ export class FamilymemberComponent implements OnInit {
       document: ['', [Validators.required, Validators.minLength(6)]],
       email: ['', [Validators.required, Validators.email]],
       relationship: ['', Validators.required],
-      creditCard: ['', Validators.required],
+      creditCard: ['', Validators.required, Validators.pattern(/^d{9}$/),Validators.minLength(13),Validators.maxLength(19)],
       phone: ['', [Validators.required, Validators.pattern(/^3\d{9}$/)]],
       address: ['', [Validators.required, Validators.minLength(5)]],
       password: ['', [
@@ -107,42 +108,46 @@ export class FamilymemberComponent implements OnInit {
   }
 
 save(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
 
-    const familyId = this.authService.getFamilyId();
-    console.log(familyId);
-    if (!familyId) return;
+  const familyId = this.authService.getFamilyId();
+  console.log(familyId);
+  if (!familyId) return;
 
-    const payload: FamilyMember = {
-      ...this.form.value,
-      documentType: { id: this.form.value.documentType },
-      relationship: { id: this.form.value.relationship },
-      family: { id: familyId }
-    };
+  const payload: FamilyMember = {
+    ...this.form.value,
+    documentType: { id: this.form.value.documentType },
+    relationship: { id: this.form.value.relationship },
+    family: { id: familyId }
+  };
 
-    this.fmService.addFamilyMember(payload).subscribe({
-next: () => {
-  this.showSuccessMessage = true;
+  this.fmService.addFamilyMember(payload).subscribe({
+    next: () => {
+  this.showSuccessMessage = true; // ← TE FALTA ESTA LÍNEA
+  this.showErrorMessage = false;
   this.isAddingMember = false;
-  this.form.reset();
-  this.loadList();
-  
-  setTimeout(() => {
-    const alertElement = document.querySelector('.success-alert');
-    if (alertElement) {
-      alertElement.classList.add('hiding');
+      this.form.reset();
+      this.loadList();
+      
       setTimeout(() => {
         this.showSuccessMessage = false;
-      }, 500);
+    
+      }, 3000);
+    },
+    error: (err) => {
+      console.error('Error creando miembro', err);
+      this.showErrorMessage = true;
+      this.showSuccessMessage = false;
+      
+      setTimeout(() => {
+        this.showErrorMessage = false;
+      }, 5000);
     }
-  }, 3000);
-},
-      error: err => console.error('Error creando miembro', err)
-    });
-  }
+  });
+}
 
   private setMaxDate(): void {
     const today = new Date();

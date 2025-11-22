@@ -12,6 +12,16 @@
 .success-alert.hiding {
   opacity: 0;
 }
+
+.error-alert {
+  background-color: #dc3545;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
 /* CONTENEDOR GENERAL */
 .container {
   max-width: 900px;
