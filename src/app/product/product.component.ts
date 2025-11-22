@@ -46,16 +46,26 @@ export class ProductComponent implements OnInit {
   }
 
   agregarProducto(): void {
-    if (!this.newProduct.producto || !this.newProduct.negocio || !this.newProduct.precio) {
+    if (!this.newProduct.producto || !this.newProduct.negocio || this.newProduct.precio === null || this.newProduct.precio === undefined) {
       alert('Por favor completa todos los campos');
       return;
     }
 
+    if (isNaN(Number(this.newProduct.precio))) {
+      alert('El precio debe ser un número válido');
+      return;
+    }
+
+    if (Number(this.newProduct.precio) <= 0) {
+      alert('El precio debe ser mayor que 0');
+      return;
+    }
     this.productService.addProduct(this.newProduct).subscribe({
       next: () => {
         this.loadProductos();
         alert('Producto agregado correctamente');
-        this.newProduct = { producto: '', precio: 0, negocio: '' }; // limpiar formulario
+
+        this.newProduct = { producto: '', precio: 0, negocio: '' };
       },
       error: err => {
         console.error('Error al agregar producto', err);
@@ -63,4 +73,5 @@ export class ProductComponent implements OnInit {
       }
     });
   }
+
 }

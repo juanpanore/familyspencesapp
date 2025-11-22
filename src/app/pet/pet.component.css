@@ -1,4 +1,4 @@
-
+/* Contenedor principal */
 .container {
   max-width: 900px;
   margin: 40px auto;
@@ -6,13 +6,16 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* Títulos */
 .title {
   text-align: center;
   margin-bottom: 20px;
   font-size: 28px;
   font-weight: 600;
+  color: #5a5c69;
 }
 
+/* Botones */
 button {
   cursor: pointer;
   padding: 10px 18px;
@@ -73,6 +76,7 @@ button {
   background-color: #6c6f7a;
 }
 
+/* Tarjeta del formulario */
 .form-card {
   background: #ffffff;
   padding: 20px;
@@ -87,6 +91,7 @@ button {
   font-weight: 600;
 }
 
+/* Labels */
 label {
   font-weight: 500;
   color: #5a5c69;
@@ -94,6 +99,7 @@ label {
   display: block;
 }
 
+/* Inputs */
 input {
   width: 100%;
   max-width: 320px;
@@ -115,6 +121,7 @@ input:focus {
   box-shadow: 0 0 3px rgba(78, 115, 223, 0.5);
 }
 
+/* Grid del formulario */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -122,6 +129,7 @@ input:focus {
   margin-bottom: 20px;
 }
 
+/* Responsive: en pantallas pequeñas los inputs ocupan toda la anchura */
 @media (max-width: 600px) {
   .form-grid {
     grid-template-columns: 1fr;
@@ -132,6 +140,7 @@ input:focus {
   }
 }
 
+/* Tabla */
 .pet-table {
   width: 100%;
   border-collapse: collapse;
@@ -159,6 +168,7 @@ input:focus {
   background: #f8f9fc;
 }
 
+/* Espaciado entre botones de la tabla */
 .pet-table td button {
   margin-right: 8px;
 }
@@ -167,6 +177,55 @@ input:focus {
   margin-right: 0;
 }
 
+/* Estilos adicionales para botones en la tabla */
+.pet-table button {
+  transition: all 0.2s ease;
+  font-size: 14px;
+  padding: 8px 14px;
+}
+
+.pet-table button:active {
+  transform: scale(0.95);
+}
+
+/* Última fila sin borde inferior */
+.pet-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Estado cuando no hay mascotas */
+.no-pets {
+  text-align: center;
+  padding: 60px 20px;
+  color: #858796;
+}
+
+.no-pets-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.no-pets-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #5a5c69;
+}
+
+.no-pets-description {
+  font-size: 14px;
+  margin: 0;
+  color: #858796;
+}
+
+/* Modal */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -218,20 +277,87 @@ input:focus {
   }
 }
 
-.container h2 {
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast {
+  min-width: 320px;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid;
+}
+
+.toast-success {
+  border-left-color: #1cc88a;
+}
+
+.toast-error {
+  border-left-color: #e74a3b;
+}
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  color: #1cc88a;
+}
+
+.toast-error .toast-icon {
+  color: #e74a3b;
+}
+
+.toast-title {
+  font-size: 14px;
+  font-weight: 600;
   color: #5a5c69;
 }
 
-.pet-table tbody tr:last-child td {
-  border-bottom: none;
+.toast-message {
+  font-size: 13px;
+  color: #858796;
+  margin: 0;
+  line-height: 1.5;
 }
 
-.pet-table button {
-  transition: all 0.2s ease;
-  font-size: 14px;
-  padding: 8px 14px;
-}
+/* Responsive para toast */
+@media (max-width: 600px) {
+  .toast-container {
+    right: 10px;
+    left: 10px;
+  }
 
-.pet-table button:active {
-  transform: scale(0.95);
+  .toast {
+    min-width: auto;
+    width: 100%;
+  }
 }
