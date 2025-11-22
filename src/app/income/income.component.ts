@@ -1,10 +1,12 @@
-// src/app/income/income.component.ts
-
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 import { Income, Responsible } from './income.model';
 import { IncomeService } from '../service/income/income.service';
+import { FamilymemberService } from 'src/app/service/familymember/familymember';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-income',
@@ -15,21 +17,23 @@ export class IncomeComponent implements OnInit {
 
   @ViewChild('incomeForm') form!: NgForm;
 
-  // --- Datos de Componente ---
+ 
   incomes: Income[] = [];
   income: Income = this.createEmptyIncome();
   responsibles: Responsible[] = [];
-
-  // --- Estados de la Interfaz ---
   loading = false;
   isSaving = false;
   showEditModal = false;
-
-  // --- Datos de Sesión ---
+  currentUserId = '';
   currentUserName = '';
   familyName = '';
 
-  constructor(private incomeService: IncomeService) {}
+  constructor(
+    private incomeService: IncomeService,
+    private familymemberService: FamilymemberService,
+    private authService: AuthService,
+    private router: Router          
+  ) {}
 
   ngOnInit(): void {
     this.loadCurrentUser();
@@ -55,45 +59,81 @@ export class IncomeComponent implements OnInit {
     return `${year}-${month}`;
   }
 
-  // --- Lógica de Carga Asíncrona Controlada ---
+ 
 
   loadCurrentUser(): void {
-    const storedEmail = localStorage.getItem('currentUserEmail') || '';
-    const email = storedEmail || 'teito@gmail.com';
-
     this.loading = true;
-    console.log('1. Intentando cargar perfil para:', email);
 
-    this.incomeService.getProfile(email).subscribe({
-      next: user => {
-        this.currentUserName = user.fullName || `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
+    const token = this.authService.getToken();
+    if (!token) {
+      console.error('No se encontró token JWT. No se puede cargar información de usuario.');
+      this.loading = false;
+      return;
+    }
 
-        const familyId = user.familyId || user.family?.id || '';
-        this.familyName = user.family?.familyName || (familyId ? `Familia ${familyId.substring(0, 8)}...` : '');
-        console.log('2. Perfil cargado. Family ID:', familyId);
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
 
-        if (familyId) {
-          this.income.family = familyId;
-          this.loadFamilyMembers(familyId);
-        } else {
-          this.loading = false;
-          console.warn('Advertencia: Usuario sin Family ID asignado.');
+      this.currentUserId = payload.userId || payload.id || payload.sub || '';
+      this.currentUserName =
+        payload.fullName ||
+        `${payload.firstName ?? ''} ${payload.lastName ?? ''}`.trim();
+
+      const familyIdFromService = this.authService.getFamilyId();
+      const familyIdFromToken =
+        payload.familyId || (payload.family && payload.family.id) || '';
+
+      const familyId = familyIdFromService || familyIdFromToken;
+
+      if (familyId) {
+        
+        this.income.family = familyId;
+        this.familyName =
+          payload.familyName ||
+          (payload.family && payload.family.familyName) ||
+          '';
+        console.log('Family ID obtenido del token/servicio:', familyId);
+        this.loadFamilyMembers(familyId);
+      } else {
+        
+        console.warn('Usuario sin Family ID (no pertenece a una familia).');
+
+        this.familyName = '';
+
+        this.responsibles = [
+          {
+            id: this.currentUserId,
+            fullName: this.currentUserName || 'Usuario actual'
+          }
+        ];
+
+        if (!this.income.id) {
+          this.income.responsible.id = this.currentUserId;
         }
-      },
-      error: error => {
-        console.error('Error al cargar perfil de usuario', error);
+
+        this.income.family = '';
+        this.incomes = [];
         this.loading = false;
       }
-    });
+    } catch (e) {
+      console.error('Error al decodificar el token JWT', e);
+      this.loading = false;
+    }
   }
 
   loadFamilyMembers(familyId: string): void {
     console.log('3. Llamando a loadFamilyMembers para ID:', familyId);
 
-    this.incomeService.getResponsiblesByFamily(familyId).subscribe({
-      next: members => {
-        this.responsibles = members;
-        console.log('4. Responsables cargados. Cantidad:', members.length);
+    this.familymemberService.getFamilyMembers().subscribe({
+      next: (members: any[]) => {
+        this.responsibles = members.map((m: any) => ({
+          id: m.id,
+          fullName: m.fullName ?? `${m.firstName ?? ''} ${m.lastName ?? ''}`.trim()
+        }));
+
+        console.log('4. Responsables cargados. Cantidad:', this.responsibles.length);
 
         if (this.responsibles.length > 0) {
           if (!this.income.id && this.income.responsible.id === '') {
@@ -101,13 +141,15 @@ export class IncomeComponent implements OnInit {
             console.log('5. Responsable preseleccionado:', this.responsibles[0].fullName);
           }
         } else {
-          console.warn('Advertencia: La API devolvió una lista de responsables vacía (200 OK, pero []).');
+          console.warn(
+            'Advertencia: La API devolvió una lista de responsables vacía (200 OK, pero []).'
+          );
         }
 
         this.loadIncomes();
       },
-      error: error => {
-        console.error('ERROR CRÍTICO: Fallo en la llamada a getResponsiblesByFamily.', error);
+      error: (error: any) => {
+        console.error('ERROR CRÍTICO: Fallo en la llamada a getFamilyMembers.', error);
         this.loadIncomes();
       }
     });
@@ -132,8 +174,6 @@ export class IncomeComponent implements OnInit {
       }
     });
   }
-
-  // --- Lógica de CRUD ---
 
   saveIncome(): void {
     if (!this.income.id && this.form?.invalid) {
@@ -191,9 +231,7 @@ export class IncomeComponent implements OnInit {
       }
     });
   }
-
-  // --- Lógica de Formulario y Modal ---
-
+  
   resetForm(resetFamily: boolean = false): void {
     const currentFamily = this.income.family;
     this.income = this.createEmptyIncome();
@@ -230,8 +268,11 @@ export class IncomeComponent implements OnInit {
       this.form.resetForm(this.income);
     }
   }
+  goDashboard(): void {
+    this.router.navigate(['/dashboard']);   
+  }
 
-  // --- Getters y Funciones de Ayuda ---
+ 
 
   getResponsibleFullName(responsibleId: string): string {
     if (!responsibleId) {
@@ -248,7 +289,9 @@ export class IncomeComponent implements OnInit {
       return [];
     }
 
-    const sorted = [...this.incomes].sort((a, b) => (a.id && b.id) ? a.id.localeCompare(b.id) : 0);
+    const sorted = [...this.incomes].sort((a, b) =>
+      a.id && b.id ? a.id.localeCompare(b.id) : 0
+    );
     const last = sorted.slice(-5);
     return last.reverse();
   }

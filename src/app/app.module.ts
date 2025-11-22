@@ -59,6 +59,7 @@ import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]
