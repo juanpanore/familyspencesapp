@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { RegisterUserService, DocumentType, Relationship } from "../service/user/register-user.service";
@@ -19,6 +19,8 @@ export class RegisterUserComponent implements OnInit {
   showConfirmPassword = false;
   showSuccessModal = false;
   userName = "";
+
+  @ViewChild('birthDatePicker') birthDatePicker!: ElementRef<HTMLInputElement>;
 
   constructor(
     private fb: FormBuilder,
@@ -103,25 +105,47 @@ export class RegisterUserComponent implements OnInit {
     return "Muy fuerte";
   }
 
-  onDateInput(event: any) {
-    let value = event.target.value.replace(/\D/g, "");
+  onDateMask(event: any) {
+    let value: string = event.target.value.replace(/\D/g, "");
+    if (value.length > 8) value = value.slice(0, 8);
 
-    if (value.length > 8) value = value.substring(0, 8);
+    const parts: string[] = [];
+    if (value.length >= 2) {
+      parts.push(value.slice(0, 2));
+      if (value.length >= 4) {
+        parts.push(value.slice(2, 4));
+        if (value.length > 4) {
+          parts.push(value.slice(4));
+        }
+      } else {
+        parts.push(value.slice(2));
+      }
+    } else {
+      parts.push(value);
+    }
 
-    let formatted = "";
-    if (value.length >= 2) formatted = value.substring(0, 2);
-    if (value.length >= 4) formatted += "/" + value.substring(2, 4);
-    if (value.length === 8) formatted += "/" + value.substring(4, 8);
-
+    const formatted = parts.join("/");
     event.target.value = formatted;
 
-    if (value.length === 8) {
-      const day = value.substring(0, 2);
-      const month = value.substring(2, 4);
-      const year = value.substring(4, 8);
-
-      this.form.patchValue({ birthDate: `${year}-${month}-${day}` }, { emitEvent: false });
+    if (parts.length === 3 && parts[0].length === 2 && parts[1].length === 2 && parts[2].length === 4) {
+      const day = +parts[0];
+      const month = +parts[1] - 1;
+      const year = +parts[2];
+      const date = new Date(year, month, day);
+      if (!isNaN(date.getTime())) {
+        const iso = date.toISOString().substring(0, 10);
+        this.form.get("birthDate")?.setValue(iso);
+      } else {
+        this.form.get("birthDate")?.setValue("");
+      }
+    } else {
+      this.form.get("birthDate")?.setValue("");
     }
+  }
+
+  syncDateFromPicker(event: any) {
+    const value = event.target.value;
+    this.form.get('birthDate')?.setValue(value);
   }
 
   togglePasswordVisibility(field: string) {
@@ -129,6 +153,12 @@ export class RegisterUserComponent implements OnInit {
       this.showPassword = !this.showPassword;
     } else {
       this.showConfirmPassword = !this.showConfirmPassword;
+    }
+  }
+
+  openDatePicker() {
+    if (this.birthDatePicker && this.birthDatePicker.nativeElement) {
+      this.birthDatePicker.nativeElement.click();
     }
   }
 
@@ -164,7 +194,7 @@ export class RegisterUserComponent implements OnInit {
         this.userName = v.firstName;
         this.showSuccessModal = true;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.loading = false;
         this.errorMessage = err?.error?.error || "Error al registrar usuario.";
       },
@@ -174,7 +204,7 @@ export class RegisterUserComponent implements OnInit {
   closeModal() {
     this.showSuccessModal = false;
     this.form.reset();
-    this.router.navigate(["/login"]);
+    this.router.navigate(["/"]);
   }
 
   field(name: string) {
@@ -189,12 +219,4 @@ export class RegisterUserComponent implements OnInit {
   isFocused(fieldName: string): boolean {
     return document.activeElement === document.getElementById(fieldName);
   }
-
-  openDatePicker() {
-    const input: any = document.getElementById("birthDate");
-    if (input && input.showPicker) {
-      input.showPicker();
-    }
-  }
-
 }
