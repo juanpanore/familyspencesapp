@@ -12,7 +12,7 @@ export interface Expense {
 }
 export interface Vacation {
     id: string;
-    name: string;
+    titulo: string;
 }
 export interface Task {
     id?: string;
