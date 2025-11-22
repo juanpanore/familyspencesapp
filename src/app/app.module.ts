@@ -23,6 +23,10 @@ import { VacationComponent } from './vacation/vacation.component';
 import { PetComponent } from './pet/pet.component';
 
 import { IncomeComponent } from './income/income.component';
+import { CategoryComponent } from './category/category.component';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
+import { BudgetCreateComponent } from './components/budget/budget-create/budget-create.component';
+import { BudgetDetailsComponent } from './components/budget/budget-details/budget-details.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +44,11 @@ import { IncomeComponent } from './income/income.component';
     VacationComponent,
     PetComponent,
     FamilymemberComponent,
-    IncomeComponent
+    IncomeComponent,
+    CategoryComponent,
+    BudgetListComponent,
+    BudgetCreateComponent,
+    BudgetDetailsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { GoalService } from '../service/goal/goal.service';
 import { AuthService } from '../services/auth.service';
-import { CategoryService } from '../service/category/category.service';
+import { CategoryService } from '../category/category.service';
 import { Goal } from '../models/goal.model';
-import { Category } from '../models/category.model';
+import { Category } from '../category/category.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -111,7 +111,7 @@ export class GoalsComponent implements OnInit {
 
   loadCategories(familyId: string): void {
     console.log('📥 Cargando categorías para familia:', familyId);
-    this.categoryService.getCategoriesForFamily(familyId).subscribe(
+    this.categoryService.getAllCategories(familyId).subscribe(
       (categories) => {
         console.log('✅ Categorías cargadas:', categories);
         this.categories = categories;

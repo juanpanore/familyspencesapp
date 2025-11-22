@@ -1,0 +1,103 @@
+<div class="page">
+  <div class="page-header">
+    <div class="heading">
+      <p class="eyebrow">Finanzas | Familia</p>
+      <h1>Presupuestos</h1>
+      <p class="subtitle">Consulta, crea y revisa cada presupuesto sin salir de esta vista.</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="ghost" type="button" (click)="loadBudgets()">
+        <span class="icon">↻</span>
+        Actualizar
+      </button>
+      <button class="primary" type="button" (click)="openCreateModal()">
+        <span class="icon">＋</span>
+        Crear budget
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert error">
+    <span class="icon">⚠</span>
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando budgets de la familia…</p>
+  </div>
+
+  <div *ngIf="!loading && budgets.length" class="budget-grid">
+    <article
+        class="budget-card"
+      *ngFor="let budget of budgets"
+      (click)="openDetailModal(budget.budgetId)"
+    >
+      <div class="card-header">
+        <div>
+          <p class="label">Periodo</p>
+          <h3>{{ formatPeriod(budget.periodo || budget.period) }}</h3>
+        </div>
+        <div class="pill">{{ getResponsibleName(budget) }}</div>
+      </div>
+
+      <div class="amount-row">
+        <div>
+          <p class="label">Presupuesto</p>
+          <p class="amount">{{ getBudgetAmount(budget) | currency:'COP':'symbol-narrow':'1.0-0' }}</p>
+        </div>
+        <div class="balance" [class.positive]="getBalance(budget) >= 0" [class.negative]="getBalance(budget) < 0">
+          <p class="label">Balance</p>
+          <p class="amount">{{ getBalance(budget) | currency:'COP':'symbol-narrow':'1.0-0' }}</p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <p class="label">Ingresos</p>
+          <span>{{ getIncome(budget) | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+          <small [class.positive]="getIncomeDifference(budget) >= 0" [class.negative]="getIncomeDifference(budget) < 0">
+            {{ getIncomeDifference(budget) | currency:'COP':'symbol-narrow':'1.0-0' }} vs presupuesto
+          </small>
+        </div>
+        <div class="stat">
+          <p class="label">Gastos</p>
+          <span>{{ getExpenses(budget) | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+          <small [class.positive]="getExpensesDifference(budget) > 0" [class.negative]="getExpensesDifference(budget) < 0">
+            {{ getExpensesDifference(budget) | currency:'COP':'symbol-narrow':'1.0-0' }} restantes
+          </small>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div *ngIf="!loading && !budgets.length" class="empty">
+    <div class="empty-card">
+      <div class="icon-circle">📊</div>
+      <h3>Aún no hay budgets</h3>
+      <p>Empieza creando el primer presupuesto para tu familia.</p>
+      <button class="primary" type="button" (click)="openCreateModal()">Crear budget</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Budget -->
+<div class="modal-backdrop" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <app-budget-create
+      (budgetCreated)="handleBudgetCreated()"
+      (closed)="closeCreateModal()"
+    ></app-budget-create>
+  </div>
+</div>
+
+<!-- Modal Detalle Budget -->
+<div class="modal-backdrop" *ngIf="showDetailModal" (click)="closeDetailModal()">
+  <div class="modal wide" (click)="$event.stopPropagation()">
+    <app-budget-details
+      [budgetId]="selectedBudgetId"
+      (closed)="closeDetailModal()"
+    ></app-budget-details>
+  </div>
+</div>

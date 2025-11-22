@@ -1,0 +1,64 @@
+<div class="details-wrapper">
+  <div class="header">
+    <div>
+      <p class="eyebrow">Detalle de budget</p>
+      <h2>{{ formatPeriod(budget?.period) || 'Budget' }}</h2>
+      <p class="subtitle" *ngIf="budget">Responsable: {{ budget.responsible?.name }}</p>
+    </div>
+    <button class="icon-btn" type="button" (click)="close()">✕</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando detalle...</p>
+  </div>
+
+  <div *ngIf="error" class="alert">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && budget">
+    <div
+      class="balance-card"
+      [class.positive]="budget.summary?.balance >= 0"
+      [class.negative]="budget.summary?.balance < 0"
+    >
+      <div class="balance-top">
+        <span class="label">Balance familiar</span>
+        <span class="pill">Periodo {{ formatPeriod(budget.period) }}</span>
+      </div>
+      <div class="balance-value">{{ budget.summary?.balance | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
+      <p class="hint">
+        Ingresos: {{ budget.summary?.familyTotalIncome | currency:'COP':'symbol-narrow':'1.0-0' }} ·
+        Gastos: {{ budget.summary?.totalExpenses | currency:'COP':'symbol-narrow':'1.0-0' }}
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="info-card">
+        <p class="label">Presupuesto asignado</p>
+        <h3>{{ budget.budgetAmount | currency:'COP':'symbol-narrow':'1.0-0' }}</h3>
+        <div class="meta">
+          <span>Responsable</span>
+          <strong>{{ budget.responsible?.name || 'N/A' }}</strong>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <p class="label">Movimiento del periodo</p>
+        <div class="row">
+          <span>Ingresos familiares</span>
+          <strong>{{ budget.summary?.familyTotalIncome | currency:'COP':'symbol-narrow':'1.0-0' }}</strong>
+        </div>
+        <div class="row">
+          <span>Total gastos</span>
+          <strong>{{ budget.summary?.totalExpenses | currency:'COP':'symbol-narrow':'1.0-0' }}</strong>
+        </div>
+        <div class="row highlight">
+          <span>Balance</span>
+          <strong [class.positive]="budget.summary?.balance >= 0" [class.negative]="budget.summary?.balance < 0">
+            {{ budget.summary?.balance | currency:'COP':'symbol-narrow':'1.0-0' }}
+          </strong>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
