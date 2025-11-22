@@ -6,7 +6,7 @@
     </button>
     
     <div class="header-title">
-      {{ showPodium ? 'Resultados' : 'Ranking Familiar' }}
+      {{ showPodium ? 'Resultados' : 'Ranking' }}
     </div>
 
     <button class="nav-btn link-style" *ngIf="showPodium" (click)="exportExcel()">
@@ -15,31 +15,35 @@
     <div class="nav-placeholder" *ngIf="!showPodium"></div>
   </div>
 
-  <div class="ios-content" [@fadeInUp]>
+  <div class="ios-content">
 
-    <div class="card-settings" *ngIf="!showPodium">
+    <div class="card-settings" *ngIf="!showPodium" [@fadeInUp]>
       <div class="card-icon">📊</div>
       <h2>Gestión Mensual</h2>
-      <p class="desc">Selecciona el período a consultar.</p>
+      <p class="desc">Selecciona un período para analizar.</p>
 
       <form [formGroup]="rankingForm" class="ios-list">
         
         <div class="list-item">
           <label>Mes</label>
-          <select formControlName="month">
-            <option *ngFor="let m of months" [value]="m.val">{{ m.name }}</option>
-          </select>
-          <span class="chevron">›</span>
+          <div class="select-wrapper">
+            <select formControlName="month">
+              <option *ngFor="let m of months" [value]="m.val">{{ m.name }}</option>
+            </select>
+            <span class="chevron">›</span>
+          </div>
         </div>
         
         <div class="separator"></div>
         
         <div class="list-item">
           <label>Año</label>
-          <select formControlName="year">
-            <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-          </select>
-          <span class="chevron">›</span>
+          <div class="select-wrapper">
+            <select formControlName="year">
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+            <span class="chevron">›</span>
+          </div>
         </div>
 
       </form>
@@ -51,19 +55,19 @@
         </button>
         
         <button class="btn-apple secondary" (click)="onConsult()" [disabled]="isLoading">
-          Ver Resultados
+          Consultar Ranking
         </button>
       </div>
 
-      <div class="alert success" *ngIf="successMessage">
-         Ranking calculado correctamente
+      <div class="alert success" *ngIf="successMessage" [@fadeInUp]>
+        Ranking calculado correctamente
       </div>
-      <div class="alert error" *ngIf="noDataMessage">
+      <div class="alert error" *ngIf="noDataMessage" [@fadeInUp]>
          No hay datos para este período
       </div>
     </div>
 
-    <div class="podium-view" *ngIf="showPodium">
+    <div class="podium-view" *ngIf="showPodium" [@fadeInUp]>
       
       <div class="podium-stage">
         <div class="column rank-2" *ngIf="topSpenders[1]">
