@@ -1,18 +1,32 @@
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  rel="stylesheet"
+/>
 
 <div class="income-wrapper" *ngIf="!loading">
 
   <section class="card">
-    <div class="page-header">
-      <h1>{{ income.id ? 'Editar ingreso' : 'Nuevo ingreso' }}</h1>
-      <p *ngIf="currentUserName || familyName">
-        <ng-container *ngIf="currentUserName">
-          Usuario: {{ currentUserName }}
-        </ng-container>
-        <ng-container *ngIf="familyName">
-          — Familia: {{ familyName }}
-        </ng-container>
-      </p>
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div>
+        <h1>{{ income.id ? 'Editar ingreso' : 'Nuevo ingreso' }}</h1>
+
+        <p *ngIf="currentUserName">
+          Usuario: {{ currentUserName }} — Familia:
+          <ng-container *ngIf="familyName; else noFamilyLabel">
+            {{ familyName }}
+          </ng-container>
+          <ng-template #noFamilyLabel>Sin familia</ng-template>
+        </p>
+      </div>
+
+     
+      <button
+        type="button"
+        class="secondary"
+        (click)="goDashboard()"
+      >
+        ← Volver al inicio
+      </button>
     </div>
 
     <form class="form" (ngSubmit)="saveIncome()" #incomeForm="ngForm">
@@ -87,13 +101,12 @@
           <input
             id="family"
             type="text"
-            [value]="familyName || 'Sin familia asignada'"
+            [value]="familyName || 'Sin familia'"
             readonly
           />
         </div>
 
         <div class="form-group"></div>
-
 
         <div class="buttons form-group--full">
           <button type="submit" [disabled]="incomeForm.invalid || isSaving">
@@ -125,51 +138,51 @@
         *ngIf="latestFamilyIncomes.length > 0; else emptyState"
       >
         <thead>
-        <tr>
-          <th>Título</th>
-          <th>Descripción</th>
-          <th>Período</th>
-          <th>Total</th>
-          <th>Responsable</th>
-          <th>Acciones</th>
-        </tr>
+          <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Período</th>
+            <th>Total</th>
+            <th>Responsable</th>
+            <th>Acciones</th>
+          </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let inc of latestFamilyIncomes">
-          <td>
-            <div class="cell-main">
-              <span class="cell-title">{{ inc.title }}</span>
-            </div>
-          </td>
-          <td>{{ inc.description }}</td>
-          <td>{{ inc.period }}</td>
-          <td>{{ inc.total | number:'1.2-2' }}</td>
+          <tr *ngFor="let inc of latestFamilyIncomes">
+            <td>
+              <div class="cell-main">
+                <span class="cell-title">{{ inc.title }}</span>
+              </div>
+            </td>
+            <td>{{ inc.description }}</td>
+            <td>{{ inc.period }}</td>
+            <td>{{ inc.total | number: '1.2-2' }}</td>
 
-          <td>
-            {{ getResponsibleFullName(inc.responsible.id) }}
-          </td>
+            <td>
+              {{ getResponsibleFullName(inc.responsible.id) }}
+            </td>
 
-          <td>
-            <div class="cell-actions">
-              <button
-                type="button"
-                class="primary action-btn"
-                (click)="editIncome(inc)"
-                [disabled]="isSaving || loading"
-              >
-                <i class="fas fa-edit"></i>
-              </button>
-              <button
-                type="button"
-                class="danger action-btn"
-                (click)="deleteIncome(inc.id)"
-                [disabled]="isSaving || loading"
-              >
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
+            <td>
+              <div class="cell-actions">
+                <button
+                  type="button"
+                  class="primary action-btn"
+                  (click)="editIncome(inc)"
+                  [disabled]="isSaving || loading"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button
+                  type="button"
+                  class="danger action-btn"
+                  (click)="deleteIncome(inc.id)"
+                  [disabled]="isSaving || loading"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -183,11 +196,16 @@
 
 </div>
 
-<div *ngIf="loading" class="income-wrapper" style="text-align: center; margin-top: 50px;">
+<div
+  *ngIf="loading"
+  class="income-wrapper"
+  style="text-align: center; margin-top: 50px;"
+>
   <span class="badge badge--loading">Cargando datos de la familia...</span>
-  <p style="color: #6b7280; margin-top: 15px;">Esperando la respuesta del servidor para cargar los responsables.</p>
+  <p style="color: #6b7280; margin-top: 15px;">
+    Esperando la respuesta del servidor para cargar los responsables.
+  </p>
 </div>
-
 
 <div class="modal" *ngIf="showEditModal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
@@ -230,7 +248,6 @@
             placeholder="YYYY-MM o mes"
           />
         </div>
-
 
         <div class="form-group form-group--full">
           <label for="editResponsible">Responsable</label>
