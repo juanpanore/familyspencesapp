@@ -14,6 +14,7 @@ import { ProductComponent } from './product/product.component';
 import { GoalsComponent } from './goals/goals.component';
 import { RankingComponent } from './component/ranking/ranking.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { RegisterUserComponent } from './register-user/register-user.component';
 import { FamilymemberComponent } from './familymember/familymember';
 import { ExpenseComponent } from './component/expense/expense.component';
 import { VacationComponent } from './vacation/vacation.component';
@@ -21,6 +22,9 @@ import { PetComponent } from './pet/pet.component';
 import { IncomeComponent } from './income/income.component';
 import { CategoryComponent } from './category/category.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
+import { BudgetCreateComponent } from './components/budget/budget-create/budget-create.component';
+import { BudgetDetailsComponent } from './components/budget/budget-details/budget-details.component';
 
 @NgModule({
   declarations: [
@@ -33,12 +37,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     GoalsComponent,
     RankingComponent,
     NotificationsComponent,
+    RegisterUserComponent,
     ExpenseComponent,
     VacationComponent,
     PetComponent,
     FamilymemberComponent,
     IncomeComponent,
-    CategoryComponent
+    CategoryComponent,
+    BudgetListComponent,
+    BudgetCreateComponent,
+    BudgetDetailsComponent
   ],
   imports: [
     BrowserModule,

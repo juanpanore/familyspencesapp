@@ -41,7 +41,7 @@ export class FamilymemberService {
   addFamilyMember(member: FamilyMember): Observable<FamilyMember> {
     const familyId = this.authService.getFamilyId();
     if (!familyId) {
-      throw new Error('FamilyId no disponible en AuthService');
+      throw new Error('FamilyId no disponible');
     }
     const url = `${this.membersUrl}?familyId=${familyId}`;
     return this.http.post<FamilyMember>(url, member, { headers: this.getHeaders() });

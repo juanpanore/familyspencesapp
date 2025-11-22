@@ -10,11 +10,13 @@ import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { FamilymemberComponent } from './familymember/familymember';
 import { GoalsComponent } from './goals/goals.component';
+import { RegisterUserComponent } from './register-user/register-user.component';
 import { PetComponent } from './pet/pet.component';
 import { VacationComponent } from './vacation/vacation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { IncomeComponent } from './income/income.component';
 import { CategoryComponent } from './category/category.component';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 
 const routes: Routes = [
   {
@@ -24,10 +26,6 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'register',
     component: LoginComponent
   },
   {
@@ -58,6 +56,10 @@ const routes: Routes = [
     path: 'ranking',
     component: RankingComponent
   },
+   {
+    path: 'register',
+    component: RegisterUserComponent
+  },
   {
     path: 'pet',
     component: PetComponent
@@ -77,6 +79,10 @@ const routes: Routes = [
   {
     path: 'categories',
     component: CategoryComponent
+  },
+  {
+    path: 'budget',
+    component: BudgetListComponent
   },
   {
     path: '**',

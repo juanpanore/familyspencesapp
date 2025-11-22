@@ -28,9 +28,9 @@ export interface Category {
     id?: string;
     familyId?: string;
     name: string;
-    type: CategoryType;
-    budgetLimit?: number;
-    budgetPeriod?: BudgetPeriod;
-    icon?: string;
-    color?: string;
+
+    categoryType: CategoryType;
+    description?: string;
+    allocatedBudget: number;
+    budgetPeriod: BudgetPeriod;
 }
