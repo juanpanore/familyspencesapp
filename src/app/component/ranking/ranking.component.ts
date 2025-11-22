@@ -14,8 +14,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
   animations: [
     trigger('fadeInUp', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+        style({ opacity: 0, transform: 'translateY(30px)' }),
+        animate('0.6s cubic-bezier(0.2, 0.8, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ])
   ]
@@ -27,6 +27,15 @@ export class RankingComponent implements OnInit {
   showPodium: boolean = false;
   successMessage: boolean = false;
   noDataMessage: boolean = false;
+
+  months = [
+    { val: 1, name: 'Enero' }, { val: 2, name: 'Febrero' }, { val: 3, name: 'Marzo' },
+    { val: 4, name: 'Abril' }, { val: 5, name: 'Mayo' }, { val: 6, name: 'Junio' },
+    { val: 7, name: 'Julio' }, { val: 8, name: 'Agosto' }, { val: 9, name: 'Septiembre' },
+    { val: 10, name: 'Octubre' }, { val: 11, name: 'Noviembre' }, { val: 12, name: 'Diciembre' }
+  ];
+
+  years: number[] = [];
 
   rankingForm = new FormGroup({
     month: new FormControl(new Date().getMonth() + 1, [Validators.required]),
@@ -40,7 +49,14 @@ export class RankingComponent implements OnInit {
     private rankingService: RankingService,
     private authService: AuthService,
     private router: Router
-  ) { }
+  ) { 
+    const currentYear = new Date().getFullYear();
+    for (let i = 2023; i <= currentYear + 1; i++) {
+      this.years.push(i);
+    }
+    this.years.sort((a, b) => b - a);
+
+  }
 
   ngOnInit(): void {
     this.familyId = this.authService.getFamilyId();
@@ -51,9 +67,12 @@ export class RankingComponent implements OnInit {
   }
 
   getPeriod(): string {
-    const month = this.rankingForm.value.month!.toString().padStart(2, '0');
-    const year = this.rankingForm.value.year;
-    return `${year}-${month}`;
+    const monthVal = this.rankingForm.value.month;
+    const yearVal = this.rankingForm.value.year;
+    
+    // Asegura que el mes tenga 2 dígitos (ej: 1 -> "01")
+    const monthStr = monthVal!.toString().padStart(2, '0');
+    return `${yearVal}-${monthStr}`;
   }
 
   onCalculate(): void {

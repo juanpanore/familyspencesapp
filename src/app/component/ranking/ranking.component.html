@@ -6,7 +6,7 @@
     </button>
     
     <div class="header-title">
-      {{ showPodium ? 'Resultados' : 'Ranking' }}
+      {{ showPodium ? 'Resultados' : 'Ranking Familiar' }}
     </div>
 
     <button class="nav-btn link-style" *ngIf="showPodium" (click)="exportExcel()">
@@ -15,23 +15,33 @@
     <div class="nav-placeholder" *ngIf="!showPodium"></div>
   </div>
 
-  <div class="ios-content">
+  <div class="ios-content" [@fadeInUp]>
 
-    <div class="card-settings" *ngIf="!showPodium" [@fadeInUp]>
+    <div class="card-settings" *ngIf="!showPodium">
       <div class="card-icon">📊</div>
       <h2>Gestión Mensual</h2>
-      <p class="desc">Selecciona un período para analizar.</p>
+      <p class="desc">Selecciona el período a consultar.</p>
 
       <form [formGroup]="rankingForm" class="ios-list">
+        
         <div class="list-item">
           <label>Mes</label>
-          <input type="number" formControlName="month" placeholder="1" min="1" max="12">
+          <select formControlName="month">
+            <option *ngFor="let m of months" [value]="m.val">{{ m.name }}</option>
+          </select>
+          <span class="chevron">›</span>
         </div>
+        
         <div class="separator"></div>
+        
         <div class="list-item">
           <label>Año</label>
-          <input type="number" formControlName="year" placeholder="2025">
+          <select formControlName="year">
+            <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+          </select>
+          <span class="chevron">›</span>
         </div>
+
       </form>
 
       <div class="actions-group">
@@ -45,15 +55,15 @@
         </button>
       </div>
 
-      <div class="alert success" *ngIf="successMessage" [@fadeInUp]>
-        ✅ Ranking calculado correctamente
+      <div class="alert success" *ngIf="successMessage">
+         Ranking calculado correctamente
       </div>
-      <div class="alert error" *ngIf="noDataMessage" [@fadeInUp]>
-        ⚠️ No hay datos para este período
+      <div class="alert error" *ngIf="noDataMessage">
+         No hay datos para este período
       </div>
     </div>
 
-    <div class="podium-view" *ngIf="showPodium" [@fadeInUp]>
+    <div class="podium-view" *ngIf="showPodium">
       
       <div class="podium-stage">
         <div class="column rank-2" *ngIf="topSpenders[1]">
