@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TaskService } from '../services/task.service';
-import { HttpClient } from '@angular/common/http';
+import { VacationService, Vacation } from '../service/vacation/vacation.service';
 import { AuthService } from '../services/auth.service';
 import { ExpenseService } from '../service/expense/expense.service';
-import { Task, Expense, Vacation, CreateTaskDTO } from '../models/task.model';
+import { Task, Expense, CreateTaskDTO } from '../models/task.model';
 
 @Component({
   selector: 'app-task',
@@ -34,10 +34,10 @@ export class TaskComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private http: HttpClient,
     private authService: AuthService,
     private fb: FormBuilder,
-    private expenseService: ExpenseService
+    private expenseService: ExpenseService,
+    private vacationService: VacationService
   ) {
     this.taskForm = this.fb.group({
       name: ['', Validators.required],
@@ -111,7 +111,7 @@ export class TaskComponent implements OnInit {
   }
 
   loadVacations(): void {
-    this.http.get<Vacation[]>(`http://localhost:8080/api/vacations`)
+    this.vacationService.getVacationsByUser(this.idResponsible)
       .subscribe({
         next: (data) => this.vacations = data,
         error: (err) => {
