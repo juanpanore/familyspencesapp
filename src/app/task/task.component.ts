@@ -1,10 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TaskService } from '../services/task.service';
-import { VacationService, Vacation } from '../service/vacation/vacation.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { ExpenseService } from '../service/expense/expense.service';
 import { Task, Expense, CreateTaskDTO } from '../models/task.model';
+
+// Interfaz local para Vacations que coincide con la respuesta del backend
+interface Vacation {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  fechaInicio: string;
+  fechaFin: string;
+  lugar: string;
+  presupuesto: number;
+}
 
 @Component({
   selector: 'app-task',
@@ -34,10 +45,10 @@ export class TaskComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
+    private http: HttpClient,
     private authService: AuthService,
     private fb: FormBuilder,
-    private expenseService: ExpenseService,
-    private vacationService: VacationService
+    private expenseService: ExpenseService
   ) {
     this.taskForm = this.fb.group({
       name: ['', Validators.required],
@@ -111,7 +122,13 @@ export class TaskComponent implements OnInit {
   }
 
   loadVacations(): void {
-    this.vacationService.getVacationsByUser(this.idResponsible)
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    // Usamos el endpoint correcto que devuelve todas las vacaciones
+    this.http.get<Vacation[]>('http://localhost:8080/api/vacations', { headers })
       .subscribe({
         next: (data) => this.vacations = data,
         error: (err) => {
