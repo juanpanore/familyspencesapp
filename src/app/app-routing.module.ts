@@ -10,6 +10,7 @@ import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
 import { FamilymemberComponent } from './familymember/familymember';
 import { GoalsComponent } from './goals/goals.component';
+import { RegisterUserComponent } from './register-user/register-user.component';
 import { PetComponent } from './pet/pet.component';
 import { VacationComponent } from './vacation/vacation.component';
 import { NotificationsComponent } from './notifications/notifications.component';
@@ -25,10 +26,6 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'register',
     component: LoginComponent
   },
   {
@@ -58,6 +55,10 @@ const routes: Routes = [
   {
     path: 'ranking',
     component: RankingComponent
+  },
+   {
+    path: 'register',
+    component: RegisterUserComponent
   },
   {
     path: 'pet',
