@@ -31,7 +31,6 @@ export class GoalsComponent implements OnInit {
 
   categories: Category[] = [];
   selectedCategoryFilter: string = '';
-  uuidSearch: string = '';
 
   originalGoal: Goal | null = null;
 
@@ -140,20 +139,9 @@ export class GoalsComponent implements OnInit {
     });
   }
 
-  searchByUuid(): void {
-    if (this.uuidSearch && this.familyId) {
-      console.log('🔍 Buscando meta por UUID:', this.uuidSearch);
-      this.goalService.getGoal(this.familyId, this.uuidSearch).subscribe(
-        (goal) => {
-          console.log('✅ Meta encontrada:', goal);
-          this.showEditGoalForm(goal);
-        },
-        (error) => {
-          console.error('❌ Error al buscar la meta por UUID:', error);
-          this.showNotificationModal('Error', 'No se encontró ninguna meta con ese UUID', 'error');
-        }
-      );
-    }
+  getCategoryName(categoryId: string): string {
+    const category = this.categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Sin categoría';
   }
 
   showCreateGoalForm(): void {
