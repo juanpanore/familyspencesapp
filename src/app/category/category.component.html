@@ -21,8 +21,7 @@
     <div class="dialog-content" (click)="$event.stopPropagation()">
         <div class="dialog-header">
             <h3 class="dialog-title">¿Eliminar categoría?</h3>
-            <p class="dialog-description">
-                Esta acción no se puede deshacer. La categoría será eliminada permanentemente.
+            <p class="dialog-description">Esta acción no se puede deshacer. La categoría será eliminada permanentemente.
             </p>
         </div>
         <div class="dialog-footer">
@@ -37,8 +36,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ isEditing ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
             <p class="card-description">Complete el formulario para {{ isEditing ? 'actualizar la' : 'crear una nueva'
-                }}
-                categoría</p>
+                }} categoría</p>
         </div>
         <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="form-grid">
             <div class="form-group">
@@ -69,29 +67,18 @@
                 <input type="number" formControlName="budgetLimit" placeholder="0.00" />
             </div>
 
-            <div class="grid-cols-2">
-                <div class="form-group">
-                    <label>Icono (Emoji)</label>
-                    <input formControlName="icon" placeholder="🍔" />
-                </div>
-                <div class="form-group">
-                    <label>Color</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="color" formControlName="color" style="width: 50px; padding: 2px; height: 40px;" />
-                        <span style="font-size: 0.875rem; color: var(--muted-foreground);">{{
-                            categoryForm.get('color')?.value
-                            }}</span>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea formControlName="description" placeholder="Detalles de la categoría..." rows="3"
+                    style="width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;"></textarea>
             </div>
 
             <div class="modal-buttons">
                 <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid || isLoading">
                     {{ isLoading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
                 </button>
-                <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="isLoading">
-                    Cancelar
-                </button>
+                <button type="button" class="btn btn-outline" (click)="closeModal()"
+                    [disabled]="isLoading">Cancelar</button>
             </div>
         </form>
     </div>
@@ -99,7 +86,15 @@
 
 <div class="tasks-container">
     <div class="header-row">
-        <h2>📂 Categorías</h2>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <button class="btn-back" (click)="goHome()" title="Volver al inicio">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </button>
+            <h2>📂 Categorías</h2>
+        </div>
+
         <div style="display: flex; align-items: center; gap: 12px;">
             <span class="task-count">{{ categories.length }} {{ categories.length === 1 ? 'categoría' : 'categorías'
                 }}</span>
@@ -107,9 +102,7 @@
         </div>
     </div>
 
-    <div *ngIf="isLoading && categories.length === 0" class="loading-spinner">
-        ⏳ Cargando categorías...
-    </div>
+    <div *ngIf="isLoading && categories.length === 0" class="loading-spinner">⏳ Cargando categorías...</div>
 
     <div *ngIf="!isLoading && categories.length === 0" class="no-tasks">
         <div class="no-tasks-icon">
@@ -123,18 +116,16 @@
     </div>
 
     <div class="category-grid" *ngIf="!isLoading && categories.length > 0">
-        <div class="category-card" *ngFor="let cat of categories" [style.border-left-color]="cat.color">
+        <div class="category-card" *ngFor="let cat of categories">
             <div class="category-header">
-                <h4><span [style.color]="cat.color" style="font-size: 1.5rem; margin-right: 8px;">{{ cat.icon }}</span>
-                    {{
-                    cat.name }}</h4>
-                <span class="category-type">{{ cat.type }}</span>
+                <h4><span style="margin-right: 8px;">📁</span> {{ cat.name }}</h4>
+                <span class="category-type">{{ cat.categoryType }}</span>
             </div>
-
             <div class="category-details">
-                <p><strong>Límite:</strong> {{ cat.budgetLimit | currency }} / {{ cat.budgetPeriod }}</p>
+                <p><strong>Límite:</strong> {{ cat.allocatedBudget | currency }} / {{ cat.budgetPeriod }}</p>
+                <p *ngIf="cat.description" style="font-size: 0.85rem; color: #666; margin-top: 4px;">{{ cat.description
+                    }}</p>
             </div>
-
             <div class="category-actions">
                 <button class="btn-edit" (click)="selectCategory(cat)">✏ Editar</button>
                 <button class="btn-delete" (click)="openDeleteDialog(cat)">🗑 Eliminar</button>

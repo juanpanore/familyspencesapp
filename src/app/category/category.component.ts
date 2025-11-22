@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Category, CategoryType, BudgetPeriod } from './category.model';
 import { CategoryService } from './category.service';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router'; // <--- 1. IMPORTAR ROUTER
 
 @Component({
     selector: 'app-category',
@@ -34,16 +35,16 @@ export class CategoryComponent implements OnInit {
     constructor(
         private categoryService: CategoryService,
         private authService: AuthService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private router: Router // <--- 2. INYECTAR ROUTER AQUÍ
     ) {
         this.categoryForm = this.fb.group({
-            id: [''],
+            id: [null],
             name: ['', Validators.required],
             type: [CategoryType.OTROS, Validators.required],
             budgetLimit: [0, [Validators.required, Validators.min(0)]],
             budgetPeriod: [BudgetPeriod.MENSUAL, Validators.required],
-            icon: [''],
-            color: ['#000000']
+            description: ['', Validators.maxLength(255)]
         });
     }
 
@@ -51,11 +52,15 @@ export class CategoryComponent implements OnInit {
         this.familyId = this.authService.getFamilyId() || '';
         this.userId = this.authService.getUserId() || '';
 
-        if (!this.familyId || !this.userId) {
-            console.error('No se pudo obtener la información de autenticación (familyId o userId)');
+        if (!this.familyId) {
+            console.error('No se pudo obtener el familyId');
         }
 
         this.loadCategories();
+    }
+
+    goHome(): void {
+        this.router.navigate(['/home']);
     }
 
     loadCategories(): void {
@@ -81,25 +86,24 @@ export class CategoryComponent implements OnInit {
         this.showModal = false;
         this.isEditing = false;
         this.categoryForm.reset({
+            id: null,
             name: '',
             type: CategoryType.OTROS,
             budgetLimit: 0,
             budgetPeriod: BudgetPeriod.MENSUAL,
-            icon: '',
-            color: '#000000'
+            description: ''
         });
     }
 
-    selectCategory(category: Category): void {
+    selectCategory(category: any): void {
         this.isEditing = true;
         this.categoryForm.patchValue({
             id: category.id,
             name: category.name,
-            type: category.type,
-            budgetLimit: category.budgetLimit,
+            type: category.categoryType,
+            budgetLimit: category.allocatedBudget,
             budgetPeriod: category.budgetPeriod,
-            icon: category.icon,
-            color: category.color
+            description: category.description
         });
         this.openModal();
     }
@@ -111,40 +115,50 @@ export class CategoryComponent implements OnInit {
         }
 
         const formValue = this.categoryForm.value;
-        const categoryData: Category = {
-            ...formValue,
+
+        const payload: any = {
+            familyId: this.familyId,
+            name: formValue.name,
+            categoryType: formValue.type,
+            allocatedBudget: parseFloat(formValue.budgetLimit),
+            budgetPeriod: formValue.budgetPeriod,
+            description: formValue.description || ''
         };
+
+        if (this.isEditing && formValue.id) {
+            payload.id = formValue.id;
+        }
+
+        console.log('Enviando payload correcto:', payload);
 
         this.isLoading = true;
 
-        if (this.isEditing && categoryData.id) {
-            this.categoryService.updateCategory(categoryData.id, categoryData, this.familyId)
+        if (this.isEditing && payload.id) {
+            this.categoryService.updateCategory(payload.id, payload, this.familyId)
                 .subscribe({
                     next: () => {
                         this.loadCategories();
                         this.closeModal();
-                        this.showToastNotification('Categoría actualizada', `${categoryData.name} ha sido actualizada`, 'success');
+                        this.showToastNotification('Éxito', 'Categoría actualizada', 'success');
                     },
                     error: (err: any) => {
-                        console.error('Error updating category', err);
+                        console.error(err);
                         this.isLoading = false;
-                        this.showToastNotification('Error', 'No se pudo actualizar la categoría', 'error');
+                        this.showToastNotification('Error', 'No se pudo actualizar', 'error');
                     }
                 });
         } else {
-            delete categoryData.id;
-
-            this.categoryService.createCategory(categoryData, this.familyId)
+            this.categoryService.createCategory(payload, this.familyId)
                 .subscribe({
                     next: () => {
                         this.loadCategories();
                         this.closeModal();
-                        this.showToastNotification('Categoría creada', `${categoryData.name} ha sido creada`, 'success');
+                        this.showToastNotification('Éxito', 'Categoría creada', 'success');
                     },
                     error: (err: any) => {
-                        console.error('Error creating category', err);
+                        console.error(err);
                         this.isLoading = false;
-                        this.showToastNotification('Error', 'No se pudo crear la categoría', 'error');
+                        this.showToastNotification('Error', 'No se pudo crear', 'error');
                     }
                 });
         }
@@ -170,12 +184,12 @@ export class CategoryComponent implements OnInit {
             next: () => {
                 this.loadCategories();
                 this.closeDeleteDialog();
-                this.showToastNotification('Categoría eliminada', `${categoryName} ha sido eliminada`, 'success');
+                this.showToastNotification('Eliminado', `${categoryName} eliminado`, 'success');
             },
             error: (err: any) => {
-                console.error('Error deleting category', err);
+                console.error(err);
                 this.closeDeleteDialog();
-                this.showToastNotification('Error', 'No se pudo eliminar la categoría', 'error');
+                this.showToastNotification('Error', 'No se pudo eliminar', 'error');
             }
         });
     }
@@ -185,9 +199,6 @@ export class CategoryComponent implements OnInit {
         this.toastMessage = message;
         this.toastType = type;
         this.showToast = true;
-
-        setTimeout(() => {
-            this.showToast = false;
-        }, 3000);
+        setTimeout(() => this.showToast = false, 3000);
     }
 }
