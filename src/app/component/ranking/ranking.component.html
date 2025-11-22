@@ -1,106 +1,103 @@
-<div class="ios-page" [@fadeInUp]>
+<div class="ios-container">
   
-  <header class="ios-header">
+  <div class="ios-header glass-effect">
     <button class="nav-btn" (click)="showPodium ? backToSettings() : goHome()">
-      <span class="icon">‹</span> {{ showPodium ? 'Atrás' : 'Home' }}
+      <span class="back-arrow">‹</span> {{ showPodium ? 'Atrás' : 'Inicio' }}
     </button>
-
-    <div class="logo-center">
-      <img src="assets/logo.png" alt="FamilySpences" class="logo-img" onerror="this.style.display='none'">
-      <span class="page-title">{{ showPodium ? 'Resultados' : 'Ranking' }}</span>
+    
+    <div class="header-title">
+      {{ showPodium ? 'Resultados' : 'Ranking' }}
     </div>
 
-    <button class="nav-btn" (click)="exportExcel()">
-      <span class="icon-export">Share</span>
+    <button class="nav-btn link-style" *ngIf="showPodium" (click)="exportExcel()">
+      Exportar
     </button>
-  </header>
+    <div class="nav-placeholder" *ngIf="!showPodium"></div>
+  </div>
 
-  <main class="content">
+  <div class="ios-content">
 
-    <div class="card-panel" *ngIf="!showPodium">
-      <h1>Gestión Mensual</h1>
-      <p class="subtitle">Calcula el rendimiento financiero de tu familia.</p>
+    <div class="card-settings" *ngIf="!showPodium" [@fadeInUp]>
+      <div class="card-icon">📊</div>
+      <h2>Gestión Mensual</h2>
+      <p class="desc">Selecciona un período para analizar.</p>
 
-      <form [formGroup]="rankingForm" class="ios-form">
-        <div class="row">
+      <form [formGroup]="rankingForm" class="ios-list">
+        <div class="list-item">
           <label>Mes</label>
-          <input type="number" formControlName="month" placeholder="1">
+          <input type="number" formControlName="month" placeholder="1" min="1" max="12">
         </div>
-        <div class="divider"></div>
-        <div class="row">
+        <div class="separator"></div>
+        <div class="list-item">
           <label>Año</label>
           <input type="number" formControlName="year" placeholder="2025">
         </div>
       </form>
 
-      <div class="btn-container">
-        <button class="btn-primary" (click)="onCalculate()" [disabled]="isLoading">
+      <div class="actions-group">
+        <button class="btn-apple primary" (click)="onCalculate()" [disabled]="isLoading">
           <span *ngIf="!isLoading">Calcular Ranking</span>
-          <div *ngIf="isLoading" class="spinner"></div>
+          <div *ngIf="isLoading" class="loader"></div>
         </button>
         
-        <button class="btn-secondary" (click)="onConsult()">
+        <button class="btn-apple secondary" (click)="onConsult()" [disabled]="isLoading">
           Ver Resultados
         </button>
       </div>
 
-      <div class="status-msg success" *ngIf="successMessage" [@fadeInUp]>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        <span>Cálculo completado</span>
+      <div class="alert success" *ngIf="successMessage" [@fadeInUp]>
+        ✅ Ranking calculado correctamente
       </div>
-
-      <div class="status-msg error" *ngIf="noDataMessage" [@fadeInUp]>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-        <span>No existe ranking para este período</span>
+      <div class="alert error" *ngIf="noDataMessage" [@fadeInUp]>
+        ⚠️ No hay datos para este período
       </div>
-
     </div>
 
-    <div class="podium-panel" *ngIf="showPodium">
+    <div class="podium-view" *ngIf="showPodium" [@fadeInUp]>
       
       <div class="podium-stage">
         <div class="column rank-2" *ngIf="topSpenders[1]">
-          <div class="avatar">{{ topSpenders[1].user.charAt(0) }}</div>
+          <div class="bubble">{{ topSpenders[1].user.charAt(0) | uppercase }}</div>
           <div class="bar">
-            <span class="score">${{ topSpenders[1].totalExpenses | number }}</span>
-            <span class="position">2</span>
+            <span class="value">${{ topSpenders[1].totalExpenses | number:'1.0-0' }}</span>
+            <span class="pos">2</span>
           </div>
-          <span class="username">{{ topSpenders[1].user }}</span>
+          <span class="u-name">{{ topSpenders[1].user }}</span>
         </div>
 
         <div class="column rank-1" *ngIf="topSpenders[0]">
-          <span class="crown">👑</span>
-          <div class="avatar winner">{{ topSpenders[0].user.charAt(0) }}</div>
+          <div class="crown">👑</div>
+          <div class="bubble winner">{{ topSpenders[0].user.charAt(0) | uppercase }}</div>
           <div class="bar">
-            <span class="score">${{ topSpenders[0].totalExpenses | number }}</span>
-            <span class="position">1</span>
+            <span class="value">${{ topSpenders[0].totalExpenses | number:'1.0-0' }}</span>
+            <span class="pos">1</span>
           </div>
-          <span class="username">{{ topSpenders[0].user }}</span>
+          <span class="u-name">{{ topSpenders[0].user }}</span>
         </div>
 
         <div class="column rank-3" *ngIf="topSpenders[2]">
-          <div class="avatar">{{ topSpenders[2].user.charAt(0) }}</div>
+          <div class="bubble">{{ topSpenders[2].user.charAt(0) | uppercase }}</div>
           <div class="bar">
-            <span class="score">${{ topSpenders[2].totalExpenses | number }}</span>
-            <span class="position">3</span>
+            <span class="value">${{ topSpenders[2].totalExpenses | number:'1.0-0' }}</span>
+            <span class="pos">3</span>
           </div>
-          <span class="username">{{ topSpenders[2].user }}</span>
+          <span class="u-name">{{ topSpenders[2].user }}</span>
         </div>
       </div>
 
-      <div class="full-list">
-        <h3>Detalle Completo</h3>
-        <div class="list-row" *ngFor="let item of rankingData; let i = index">
-          <span class="row-rank">#{{ i + 1 }}</span>
-          <div class="row-info">
-            <span class="row-name">{{ item.user }}</span>
-            <span class="row-ingreso">Ingresos: ${{ item.totalIncome | number }}</span>
+      <div class="detail-list ios-list">
+        <div class="list-header">Detalle Completo</div>
+        <div class="list-item detail-row" *ngFor="let row of rankingData; let i = index">
+          <span class="idx">#{{ i + 1 }}</span>
+          <div class="info">
+            <span class="main-text">{{ row.user }}</span>
+            <span class="sub-text">Ingresos: ${{ row.totalIncome | number }}</span>
           </div>
-          <span class="row-gasto">-${{ item.totalExpenses | number }}</span>
+          <span class="money">-${{ row.totalExpenses | number }}</span>
         </div>
       </div>
 
     </div>
 
-  </main>
+  </div>
 </div>

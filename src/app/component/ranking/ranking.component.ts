@@ -11,12 +11,11 @@ import { trigger, transition, style, animate } from '@angular/animations';
   selector: 'app-ranking',
   templateUrl: './ranking.component.html',
   styleUrls: ['./ranking.component.css'],
-  // Animación de entrada suave (Slide Up)
   animations: [
     trigger('fadeInUp', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('0.6s cubic-bezier(0.2, 0.8, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ])
   ]
@@ -25,7 +24,7 @@ export class RankingComponent implements OnInit {
 
   familyId: string | null = null;
   isLoading: boolean = false;
-  showPodium: boolean = false; 
+  showPodium: boolean = false;
   successMessage: boolean = false;
   noDataMessage: boolean = false;
 
@@ -35,7 +34,7 @@ export class RankingComponent implements OnInit {
   });
 
   rankingData: RankingRow[] = [];
-  topSpenders: RankingRow[] = []; // Los 3 que más gastaron
+  topSpenders: RankingRow[] = [];
 
   constructor(
     private rankingService: RankingService,
@@ -57,63 +56,62 @@ export class RankingComponent implements OnInit {
     return `${year}-${month}`;
   }
 
-  // 1. CALCULAR
   onCalculate(): void {
     if (!this.familyId) return;
     
     this.isLoading = true;
     this.successMessage = false;
+    this.noDataMessage = false;
     const period = this.getPeriod();
 
     this.rankingService.calculateRanking(this.familyId, period).subscribe({
       next: () => {
-        // Delay artificial pequeño para ver la animación de carga
         setTimeout(() => {
           this.isLoading = false;
           this.successMessage = true;
           setTimeout(() => this.successMessage = false, 3000);
-        }, 1500);
+        }, 1000);
       },
       error: () => {
         this.isLoading = false;
-        alert('Error al iniciar el cálculo.');
+        alert('Error de conexión.');
       }
     });
   }
 
-  // 2. CONSULTAR (Muestra el Podio)
   onConsult(): void {
     if (!this.familyId) return;
 
     this.isLoading = true;
+    this.noDataMessage = false;
+    this.successMessage = false; // Limpiamos mensajes previos
+    
     const period = this.getPeriod();
-    this.noDataMessage = false; // Reiniciamos alertas
-    this.successMessage = false;
 
     forkJoin({
       expenses: this.rankingService.getRankingExpenses(this.familyId, period),
       income: this.rankingService.getRankingIncome(this.familyId, period)
     }).subscribe({
       next: ({ expenses, income }) => {
-        this.rankingData = this.mergeRankingData(expenses, income); // Nota: Si usaste el fix del servicio, aquí llega limpio
+        this.rankingData = this.mergeRankingData(expenses, income);
         
-        // Tomamos los top 3 para el podio
-        this.topSpenders = this.rankingData.slice(0, 3);
-        this.isLoading = false;
-        this.showPodium = true; // ¡Cambio de pantalla!
-
+        // --- CORRECCIÓN: Validar ANTES de cambiar la vista ---
         if (this.rankingData.length === 0) {
           this.isLoading = false;
-          this.noDataMessage = true; 
-          
-          
+          this.noDataMessage = true; // Mostramos error
           setTimeout(() => this.noDataMessage = false, 3000);
-          return; 
+          return; // ¡IMPORTANTE! Detenemos aquí. No cambiamos a Podio.
         }
+
+        // Si llegamos aquí, es que SI hay datos
+        this.topSpenders = this.rankingData.slice(0, 3);
+        this.isLoading = false;
+        this.showPodium = true; 
       },
       error: () => {
         this.isLoading = false;
-        alert('No se encontraron datos.');
+        this.noDataMessage = true;
+        setTimeout(() => this.noDataMessage = false, 3000);
       }
     });
   }
@@ -130,10 +128,10 @@ export class RankingComponent implements OnInit {
 
   backToSettings(): void {
     this.showPodium = false;
+    this.rankingData = [];
   }
 
   private mergeRankingData(exp: any, inc: any): RankingRow[] {
-    // Aseguramos compatibilidad si el servicio devuelve {ranking: ...} o directo
     const expenses = exp.ranking ? exp.ranking : exp;
     const income = inc.ranking ? inc.ranking : inc;
 
@@ -148,7 +146,6 @@ export class RankingComponent implements OnInit {
       });
     });
 
-    // Ordenar mayor gasto a menor
     return merged.sort((a, b) => b.totalExpenses - a.totalExpenses);
   }
 }
