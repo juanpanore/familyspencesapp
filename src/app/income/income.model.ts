@@ -1,3 +1,4 @@
+
 // src/app/income/income.model.ts
 
 // 1. MODELO PARA INGRESOS

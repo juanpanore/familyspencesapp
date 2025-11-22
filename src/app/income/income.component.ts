@@ -4,7 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Income, Responsible } from './income.model';
-import { IncomeService } from './income.service';
+import { IncomeService } from '../service/income/income.service';
 
 @Component({
   selector: 'app-income',
