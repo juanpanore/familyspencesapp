@@ -166,7 +166,15 @@
 
 /* Password field */
 .password-field { position: relative; }
-.password-field input { padding-right: 3rem; }
+.password-field input { 
+  padding-right: 3rem;
+}
+
+/* Ocultar crédito enmascarado */
+.password-field input[type="password"] {
+  -webkit-text-security: disc;
+}
+
 .toggle-password {
   position: absolute;
   right: 1rem;
@@ -198,48 +206,33 @@
 .strength-bar { height: 100%; transition: all 0.3s ease; border-radius: var(--radius) var(--radius) 0 0; }
 .strength-text { font-size: 0.75rem; margin-top: 0.5rem; margin-left: 0.25rem; font-weight: 500; display: block; }
 
-/* Date field */
+/* Date field styles */
 .date-field {
   position: relative;
 }
 
-.date-field input {
-  padding-right: 3rem;
-}
-
-.date-text-input {
+.date-input-wrapper {
   position: relative;
-  z-index: 2;
+  display: flex;
+  align-items: center;
 }
 
-.date-picker-input {
-  position: absolute;
-  top: 0;
-  left: 0;
+.date-native-input {
   width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 1;
+  padding: 1rem;
+  border: 2px solid var(--input);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  color: var(--foreground);
+  background: var(--background);
+  transition: all 0.3s ease;
+  outline: none;
   cursor: pointer;
-  pointer-events: none;
 }
 
-.calendar-icon {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.25rem;
-  cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
-  z-index: 3;
-  opacity: 0.6;
-  pointer-events: auto;
-}
-
-.calendar-icon:hover {
-  transform: translateY(-50%) scale(1.2);
-  opacity: 1;
+.date-native-input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
 }
 
 /* Submit button */

@@ -1,6 +1,10 @@
 <div class="container">
-    <div *ngIf="showSuccessMessage && !isAddingMember" class="success-alert">
-    Nuevo miembro registrado exitosamente
+  <div *ngIf="showSuccessMessage && !isAddingMember" class="success-alert">
+     Nuevo miembro registrado exitosamente
+  </div>
+
+  <div *ngIf="showErrorMessage && isAddingMember" class="error-alert">
+    Ocurrio un error registrando el miembro. Por favor, intente nuevamente.
   </div>
 
   <div *ngIf="!isAddingMember" class="list-view">
@@ -82,13 +86,13 @@
 </small>
 
 <label>Tarjeta Crédito</label>
-<input formControlName="creditCard" type="text">
+<input formControlName="creditCard" type="number">
 <small *ngIf="form.get('creditCard')?.invalid&& form.get('creditCard')?.touched" style="color: red;">
   Tarjeta de crédito obligatoria.
 </small>
 
 <label>Teléfono</label>
-<input formControlName="phone" type="text">
+<input formControlName="phone" type="number">
 <small *ngIf="form.get('phone')?.invalid&& form.get('phone')?.touched" style="color: red;">
   Teléfono debe empezar con 3 y tener 10 dígitos.
 </small>

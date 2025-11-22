@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { RegisterUserService, DocumentType, Relationship } from "../service/user/register-user.service";
@@ -9,6 +9,7 @@ import { RegisterUserService, DocumentType, Relationship } from "../service/user
   styleUrls: ["./register-user.component.css"],
 })
 export class RegisterUserComponent implements OnInit {
+
   form!: FormGroup;
   documentTypes: DocumentType[] = [];
   relationships: Relationship[] = [];
@@ -17,10 +18,11 @@ export class RegisterUserComponent implements OnInit {
   errorMessage = "";
   showPassword = false;
   showConfirmPassword = false;
+  showCreditCard = false;
+  displayCreditCard = "";
   showSuccessModal = false;
   userName = "";
-
-  @ViewChild('birthDatePicker') birthDatePicker!: ElementRef<HTMLInputElement>;
+  maxDate: string = "";
 
   constructor(
     private fb: FormBuilder,
@@ -29,6 +31,7 @@ export class RegisterUserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.maxDate = new Date().toISOString().split('T')[0];
     this.buildForm();
     this.loadSelects();
   }
@@ -36,15 +39,15 @@ export class RegisterUserComponent implements OnInit {
   buildForm() {
     this.form = this.fb.group(
       {
-        firstName: ["", [Validators.required, Validators.maxLength(50)]],
-        lastName: ["", [Validators.required, Validators.maxLength(50)]],
+        firstName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this)]],
+        lastName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this)]],
         birthDate: ["", Validators.required],
         documentTypeId: ["", Validators.required],
-        document: ["", [Validators.required, Validators.maxLength(30)]],
+        document: ["", [Validators.required, this.onlyNumbersValidator.bind(this)]],
         email: ["", [Validators.required, Validators.email]],
         relationshipId: ["", Validators.required],
-        creditCard: ["", [Validators.required, Validators.minLength(12), Validators.maxLength(19)]],
-        phone: ["", [Validators.required, Validators.minLength(7)]],
+        creditCard: ["", [Validators.required, Validators.minLength(13), Validators.maxLength(19), this.onlyCreditCardNumbers.bind(this)]],
+        phone: ["", [Validators.required, this.onlyPhoneNumbersValidator.bind(this)]],
         address: ["", [Validators.required, Validators.maxLength(200)]],
         password: ["", [Validators.required, Validators.minLength(6)]],
         confirmPassword: ["", Validators.required],
@@ -63,6 +66,64 @@ export class RegisterUserComponent implements OnInit {
       next: (r) => (this.relationships = r),
       error: () => {}
     });
+  }
+
+  /** Validador personalizado: solo permite letras y espacios */
+  onlyLettersValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+    const isValid = /^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]*$/.test(control.value);
+    return isValid ? null : { invalidName: true };
+  }
+
+  /** Validador personalizado: solo permite números entre 6 y 15 dígitos */
+  onlyNumbersValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+    const isValid = /^[0-9]*$/.test(control.value) && control.value.length >= 6 && control.value.length <= 15;
+    if (!isValid) {
+      if (!/^[0-9]*$/.test(control.value)) {
+        return { invalidDocument: true };
+      }
+      if (control.value.length < 6 || control.value.length > 15) {
+        return { invalidLength: true };
+      }
+    }
+    return null;
+  }
+
+  /** Validador personalizado: solo permite números entre 7 y 10 dígitos para teléfono */
+  onlyPhoneNumbersValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+    const isValid = /^[0-9]*$/.test(control.value) && control.value.length >= 7 && control.value.length <= 10;
+    if (!isValid) {
+      if (!/^[0-9]*$/.test(control.value)) {
+        return { invalidPhoneFormat: true };
+      }
+      if (control.value.length < 7 || control.value.length > 10) {
+        return { invalidPhoneLength: true };
+      }
+    }
+    return null;
+  }
+
+  /** Validador personalizado: solo números para tarjeta de crédito (13-19 dígitos) */
+  onlyCreditCardNumbers(control: any) {
+    if (!control.value) {
+      return null;
+    }
+    const cleanValue = String(control.value).replace(/\D/g, '');
+    if (!/^[0-9]*$/.test(cleanValue)) {
+      return { invalidCreditCard: true };
+    }
+    if (cleanValue.length < 13 || cleanValue.length > 19) {
+      return { invalidCreditCardLength: true };
+    }
+    return null;
   }
 
   passwordsMatch(group: FormGroup) {
@@ -105,47 +166,24 @@ export class RegisterUserComponent implements OnInit {
     return "Muy fuerte";
   }
 
-  onDateMask(event: any) {
-    let value: string = event.target.value.replace(/\D/g, "");
-    if (value.length > 8) value = value.slice(0, 8);
-
-    const parts: string[] = [];
-    if (value.length >= 2) {
-      parts.push(value.slice(0, 2));
-      if (value.length >= 4) {
-        parts.push(value.slice(2, 4));
-        if (value.length > 4) {
-          parts.push(value.slice(4));
-        }
-      } else {
-        parts.push(value.slice(2));
-      }
-    } else {
-      parts.push(value);
-    }
-
-    const formatted = parts.join("/");
-    event.target.value = formatted;
-
-    if (parts.length === 3 && parts[0].length === 2 && parts[1].length === 2 && parts[2].length === 4) {
-      const day = +parts[0];
-      const month = +parts[1] - 1;
-      const year = +parts[2];
-      const date = new Date(year, month, day);
-      if (!isNaN(date.getTime())) {
-        const iso = date.toISOString().substring(0, 10);
-        this.form.get("birthDate")?.setValue(iso);
-      } else {
-        this.form.get("birthDate")?.setValue("");
-      }
-    } else {
-      this.form.get("birthDate")?.setValue("");
-    }
+  /** Filtrar solo números en tarjeta de crédito (máx 19 dígitos) */
+  formatCreditCard(event: any) {
+    let value = event.target.value.replace(/\D/g, '').slice(0, 19);
+    this.form.get('creditCard')?.setValue(value, { emitEvent: false });
   }
 
-  syncDateFromPicker(event: any) {
-    const value = event.target.value;
-    this.form.get('birthDate')?.setValue(value);
+  /** Sanear entrada: permitir solo letras (incluye tildes y espacios) */
+  formatOnlyLetters(event: any, fieldName: string) {
+    const value = event.target.value || '';
+    const clean = String(value).replace(/[^a-zA-ZÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+    this.form.get(fieldName)?.setValue(clean, { emitEvent: false });
+  }
+
+  /** Sanear entrada: permitir solo dígitos, opcionalmente limitar longitud */
+  formatOnlyDigits(event: any, fieldName: string, maxLen: number = 19) {
+    const value = event.target.value || '';
+    const clean = String(value).replace(/\D/g, '').slice(0, maxLen);
+    this.form.get(fieldName)?.setValue(clean, { emitEvent: false });
   }
 
   togglePasswordVisibility(field: string) {
@@ -153,12 +191,6 @@ export class RegisterUserComponent implements OnInit {
       this.showPassword = !this.showPassword;
     } else {
       this.showConfirmPassword = !this.showConfirmPassword;
-    }
-  }
-
-  openDatePicker() {
-    if (this.birthDatePicker && this.birthDatePicker.nativeElement) {
-      this.birthDatePicker.nativeElement.click();
     }
   }
 
