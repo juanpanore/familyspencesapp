@@ -18,7 +18,7 @@ export class NotificationsComponent implements OnInit {
   unreadCount = 0;
   loading = false;
 
-  // Usaremos las dos para que funcione
+  // para mostrar mensajes de error
   errorMessage: string | null = null;
   error: string | null = null;
 
@@ -35,49 +35,39 @@ export class NotificationsComponent implements OnInit {
     this.initUserIdFromToken();
   }
 
-  // ================== USER ID DESDE TOKEN ==================
-
-  private initUserIdFromToken(): void {
-    const token = this.authService.getToken();
-
-    if (!token) {
-      this.setError('No se encontró token. Por favor inicia sesión de nuevo.');
-      return;
-    }
-
-    try {
-      const payloadBase64 = token
-        .split('.')[1]
-        .replace(/-/g, '+')
-        .replace(/_/g, '/');
-      const payloadJson = atob(payloadBase64);
-      const payload = JSON.parse(payloadJson);
-
-      this.userId = payload.userId || payload.sub;
-
-      if (!this.userId) {
-        this.setError('No se pudo obtener el userId desde el token.');
-        return;
-      }
-
-      this.loadNotifications();
-      this.loadUnreadCount();
-    } catch (e) {
-      console.error(e);
-      this.setError('Error al leer la información del usuario.');
-    }
-  }
-
-  // ================== MANEJO DE ERROR (para error y errorMessage) ==================
+  // ================== MANEJO DE ERROR ==================
 
   private setError(message: string | null): void {
     this.errorMessage = message;
     this.error = message;
   }
 
+  // ================== USER ID DESDE AUTH SERVICE ==================
+
+  private initUserIdFromToken(): void {
+    // 1. Verificamos si hay token válido
+    if (!this.authService.isAuthenticated()) {
+      this.setError('Debes iniciar sesión para ver tus notificaciones.');
+      return;
+    }
+
+    // 2. Pedimos el userId al AuthService (él decodifica el token)
+    const uid = this.authService.getUserId();
+
+    if (!uid) {
+      this.setError('No se pudo obtener el userId desde el token.');
+      return;
+    }
+
+    this.userId = uid;
+
+    // 3. Cargamos datos
+    this.loadNotifications();
+    this.loadUnreadCount();
+  }
+
   // ================== CARGA DE DATOS ==================
 
-  // Método público que el HTML puede llamar (equivalente a reload)
   loadNotifications(): void {
     if (!this.userId) return;
 
@@ -112,7 +102,6 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  // si quieres seguir usando reload() en otros sitios
   reload(): void {
     this.loadNotifications();
   }
@@ -197,7 +186,6 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  // 👇 Este método es el que tu HTML llama como deleteAllRead()
   deleteAllRead(): void {
     this.deleteReadNotifications();
   }
