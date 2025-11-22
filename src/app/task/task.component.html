@@ -71,7 +71,7 @@
           <select formControlName="idVacation">
             <option value="">Seleccionar vacaciones</option>
             <option *ngFor="let v of vacations" [value]="v.id">
-              {{ v.name }}
+              {{ v.titulo }}
             </option>
           </select>
           <p class="card-description" style="margin: 4px 0 0 0; font-size: 0.75rem;" *ngIf="isExpenseSelected">
@@ -190,7 +190,7 @@
                 <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                 <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
               </svg>
-              <span>{{ task.idVacations.name }}</span>
+              <span>{{ task.idVacations.titulo }}</span>
             </div>
           </div>
         </div>
