@@ -17,6 +17,7 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { IncomeComponent } from './income/income.component';
 import { CategoryComponent } from './category/category.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
+import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
 
 const routes: Routes = [
   {
@@ -56,7 +57,7 @@ const routes: Routes = [
     path: 'ranking',
     component: RankingComponent
   },
-   {
+  {
     path: 'register',
     component: RegisterUserComponent
   },
@@ -83,6 +84,10 @@ const routes: Routes = [
   {
     path: 'budget',
     component: BudgetListComponent
+  },
+  {
+    path: 'monthly-closings',
+    component: MonthlyClosingComponent
   },
   {
     path: '**',

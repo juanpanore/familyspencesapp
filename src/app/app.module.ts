@@ -27,6 +27,7 @@ import { CategoryComponent } from './category/category.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 import { BudgetCreateComponent } from './components/budget/budget-create/budget-create.component';
 import { BudgetDetailsComponent } from './components/budget/budget-details/budget-details.component';
+import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { BudgetDetailsComponent } from './components/budget/budget-details/budge
     CategoryComponent,
     BudgetListComponent,
     BudgetCreateComponent,
-    BudgetDetailsComponent
+    BudgetDetailsComponent,
+    MonthlyClosingComponent
   ],
   imports: [
     BrowserModule,
