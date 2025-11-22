@@ -46,6 +46,17 @@ export class GoalsComponent implements OnInit {
     dailyGoal: 0
   };
 
+  formGoal: Goal = {
+    id: '',
+    familyId: '',
+    name: '',
+    description: '',
+    categoryId: '',
+    savingsCap: 0,
+    deadline: '',
+    dailyGoal: 0
+  };
+
   constructor(
     private goalService: GoalService,
     private authService: AuthService,
@@ -159,10 +170,12 @@ export class GoalsComponent implements OnInit {
       deadline: '',
       dailyGoal: 0
     };
+    this.formGoal = { ...this.newGoal };
   }
 
   createGoal(): void {
-    if (this.newGoal.name && this.newGoal.description) {
+    if (this.formGoal.name && this.formGoal.description) {
+      this.newGoal = { ...this.formGoal, familyId: this.familyId! };
       console.log('➕ Creando nueva meta:', this.newGoal);
       this.goalService.createGoal(this.familyId!, this.newGoal.categoryId, this.newGoal).subscribe(
         (goal) => {
@@ -182,23 +195,29 @@ export class GoalsComponent implements OnInit {
 
   showEditGoalForm(goal: Goal): void {
     console.log('✏️ Abriendo formulario para editar meta:', goal);
-    this.selectedGoal = { ...goal };
-    this.originalGoal = { ...goal };
+    this.selectedGoal = JSON.parse(JSON.stringify(goal));
+    this.originalGoal = JSON.parse(JSON.stringify(goal));
+    this.formGoal = JSON.parse(JSON.stringify(goal));
     this.showFormModal = true;
   }
 
   updateGoal(): void {
-    if (this.selectedGoal) {
-      if (this.originalGoal && this.hasNoChanges(this.selectedGoal, this.originalGoal)) {
+    if (this.selectedGoal && this.originalGoal) {
+      this.selectedGoal = { ...this.formGoal, id: this.selectedGoal.id, familyId: this.familyId! };
+
+      if (this.hasNoChanges(this.selectedGoal, this.originalGoal)) {
         this.showNotificationModal('Información', 'No se ha realizado ningún cambio en la meta', 'warning');
         return;
       }
 
       console.log('✏️ Actualizando meta:', this.selectedGoal);
+      console.log('🔍 CategoryId ORIGINAL (para buscar):', this.originalGoal.categoryId);
+      console.log('🆕 CategoryId NUEVO (para actualizar):', this.selectedGoal.categoryId);
+
       this.goalService.updateGoal(
         this.familyId!,
         this.selectedGoal.id,
-        this.selectedGoal.categoryId,
+        this.originalGoal.categoryId,
         this.selectedGoal
       ).subscribe(
         (goal) => {
