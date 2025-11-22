@@ -1,149 +1,154 @@
-
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RankingService } from '../../service/ranking/ranking.service';
 import { AuthService } from '../../services/auth.service';
 import { RankingRow } from '../../model/ranking-row.model';
+import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-ranking',
   templateUrl: './ranking.component.html',
-  styleUrls: []
+  styleUrls: ['./ranking.component.css'],
+  // Animación de entrada suave (Slide Up)
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('0.6s cubic-bezier(0.2, 0.8, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class RankingComponent implements OnInit {
 
   familyId: string | null = null;
-  userId: string | null = null;
+  isLoading: boolean = false;
+  showPodium: boolean = false; 
+  successMessage: boolean = false;
+  noDataMessage: boolean = false;
 
   rankingForm = new FormGroup({
-    month: new FormControl(new Date().getMonth() + 1, [Validators.required, Validators.min(1), Validators.max(12)]),
-    year: new FormControl(new Date().getFullYear(), [Validators.required, Validators.min(2020)])
+    month: new FormControl(new Date().getMonth() + 1, [Validators.required]),
+    year: new FormControl(new Date().getFullYear(), [Validators.required])
   });
 
   rankingData: RankingRow[] = [];
-  calculationMessage: string | null = null;
-  consultMessage: string | null = null;
+  topSpenders: RankingRow[] = []; // Los 3 que más gastaron
 
   constructor(
     private rankingService: RankingService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.familyId = this.authService.getFamilyId();
-    this.userId = this.authService.getUserId();
-
-    if (!this.familyId) {
-      this.consultMessage = "Error: No se pudo identificar su familia. Por favor inicie sesión nuevamente.";
-
-    } else {
-      console.log('Ranking inicializado para familia:', this.familyId);
-    }
   }
 
+  goHome(): void {
+    this.router.navigate(['/home']);
+  }
 
-  private getPeriod(): string {
+  getPeriod(): string {
     const month = this.rankingForm.value.month!.toString().padStart(2, '0');
     const year = this.rankingForm.value.year;
     return `${year}-${month}`;
   }
 
+  // 1. CALCULAR
   onCalculate(): void {
-    if (this.rankingForm.invalid) {
-      this.calculationMessage = "Por favor, ingrese un mes y año válidos.";
-      return;
-    }
-    if (!this.familyId) {
-      this.calculationMessage = "Error: No se pudo identificar su familia. Por favor inicie sesión nuevamente.";
-      return;
-    }
+    if (!this.familyId) return;
+    
+    this.isLoading = true;
+    this.successMessage = false;
     const period = this.getPeriod();
-    this.calculationMessage = "Iniciando cálculo...";
-    this.consultMessage = null;
-    this.rankingData = [];
-
 
     this.rankingService.calculateRanking(this.familyId, period).subscribe({
-      next: (response: any) => {
-        console.log('Calculation triggered:', response);
-        this.calculationMessage = response.message || "Cálculo iniciado. Consulta los resultados en unos momentos.";
+      next: () => {
+        // Delay artificial pequeño para ver la animación de carga
+        setTimeout(() => {
+          this.isLoading = false;
+          this.successMessage = true;
+          setTimeout(() => this.successMessage = false, 3000);
+        }, 1500);
       },
-      error: (err: any) => {
-        console.error('Error calculating ranking:', err);
-        this.calculationMessage = `Error: ${err.error?.message || 'No se pudo iniciar el cálculo.'}`;
+      error: () => {
+        this.isLoading = false;
+        alert('Error al iniciar el cálculo.');
       }
     });
   }
 
+  // 2. CONSULTAR (Muestra el Podio)
   onConsult(): void {
-    if (this.rankingForm.invalid) {
-      this.consultMessage = "Por favor, ingrese un mes y año válidos.";
-      return;
-    }
-    if (!this.familyId) {
-      this.consultMessage = "Error: Sesión no válida.";
-      return;
-    }
+    if (!this.familyId) return;
 
+    this.isLoading = true;
     const period = this.getPeriod();
-    this.consultMessage = "Consultando datos...";
-    this.calculationMessage = null;
-    this.rankingData = [];
+    this.noDataMessage = false; // Reiniciamos alertas
+    this.successMessage = false;
 
     forkJoin({
       expenses: this.rankingService.getRankingExpenses(this.familyId, period),
       income: this.rankingService.getRankingIncome(this.familyId, period)
     }).subscribe({
       next: ({ expenses, income }) => {
-        this.rankingData = this.mergeRankingData(expenses, income);
-        this.consultMessage = this.rankingData.length > 0 ? "Datos cargados." : "No se encontraron datos para este período.";
+        this.rankingData = this.mergeRankingData(expenses, income); // Nota: Si usaste el fix del servicio, aquí llega limpio
+        
+        // Tomamos los top 3 para el podio
+        this.topSpenders = this.rankingData.slice(0, 3);
+        this.isLoading = false;
+        this.showPodium = true; // ¡Cambio de pantalla!
+
+        if (this.rankingData.length === 0) {
+          this.isLoading = false;
+          this.noDataMessage = true; 
+          
+          
+          setTimeout(() => this.noDataMessage = false, 3000);
+          return; 
+        }
       },
-      error: (err: any) => {
-        console.error('Error consulting ranking:', err);
-        this.consultMessage = "Error al consultar los datos.";
-      }
-    });
-  }
-  downloadReport(): void {
-    if (this.rankingForm.invalid || !this.familyId) {
-      alert("Por favor verifique el período y su sesión.");
-      return;
-    }
-    
-    const period = this.getPeriod();
-    this.rankingService.downloadRankingExcel(this.familyId, period).subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = `Ranking_Familia_${period}.xlsx`;
-        anchor.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error('Error descargando Excel:', err);
-        alert("Error al descargar el reporte. Verifique si existen datos calculados.");
+      error: () => {
+        this.isLoading = false;
+        alert('No se encontraron datos.');
       }
     });
   }
 
-  private mergeRankingData(
-    expenses: Record<string, number>,
-    income: Record<string, number>
-  ): RankingRow[] {
+  exportExcel(): void {
+    this.rankingService.downloadRankingExcel(this.familyId!, this.getPeriod()).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Ranking_${this.getPeriod()}.xlsx`;
+      a.click();
+    });
+  }
 
-    const allUsers = new Set([...Object.keys(expenses), ...Object.keys(income)]);
-    const mergedData: RankingRow[] = [];
+  backToSettings(): void {
+    this.showPodium = false;
+  }
 
-    allUsers.forEach(user => {
-      mergedData.push({
-        user: user,
-        totalExpenses: expenses[user] || 0,
-        totalIncome: income[user] || 0
+  private mergeRankingData(exp: any, inc: any): RankingRow[] {
+    // Aseguramos compatibilidad si el servicio devuelve {ranking: ...} o directo
+    const expenses = exp.ranking ? exp.ranking : exp;
+    const income = inc.ranking ? inc.ranking : inc;
+
+    const users = new Set([...Object.keys(expenses || {}), ...Object.keys(income || {})]);
+    const merged: RankingRow[] = [];
+
+    users.forEach(u => {
+      merged.push({ 
+        user: u, 
+        totalExpenses: expenses[u] || 0, 
+        totalIncome: income[u] || 0 
       });
     });
 
-    return mergedData.sort((a, b) => b.totalExpenses - a.totalExpenses);
+    // Ordenar mayor gasto a menor
+    return merged.sort((a, b) => b.totalExpenses - a.totalExpenses);
   }
 }

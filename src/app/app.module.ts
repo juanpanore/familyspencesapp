@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
@@ -18,11 +17,10 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { FamilymemberComponent } from './familymember/familymember';
 import { ExpenseComponent } from './component/expense/expense.component';
 import { VacationComponent } from './vacation/vacation.component';
-
 import { PetComponent } from './pet/pet.component';
-
 import { IncomeComponent } from './income/income.component';
 import { CategoryComponent } from './category/category.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [

@@ -1,41 +1,106 @@
-<div class="container" style="padding: 20px;"> <h2>Ranking Familiar</h2>
+<div class="ios-page" [@fadeInUp]>
   
-  <form [formGroup]="rankingForm" class="form-container" style="display: flex; gap: 15px; margin-bottom: 20px;">
-    <div class="form-field">
-      <label for="month" style="margin-right: 5px;">Mes:</label>
-      <input id="month" type="number" formControlName="month" min="1" max="12" placeholder="MM">
+  <header class="ios-header">
+    <button class="nav-btn" (click)="showPodium ? backToSettings() : goHome()">
+      <span class="icon">‹</span> {{ showPodium ? 'Atrás' : 'Home' }}
+    </button>
+
+    <div class="logo-center">
+      <img src="assets/logo.png" alt="FamilySpences" class="logo-img" onerror="this.style.display='none'">
+      <span class="page-title">{{ showPodium ? 'Resultados' : 'Ranking' }}</span>
     </div>
-    <div class="form-field">
-      <label for="year" style="margin-right: 5px;">Año:</label>
-      <input id="year" type="number" formControlName="year" min="2020" placeholder="YYYY">
+
+    <button class="nav-btn" (click)="exportExcel()">
+      <span class="icon-export">Share</span>
+    </button>
+  </header>
+
+  <main class="content">
+
+    <div class="card-panel" *ngIf="!showPodium">
+      <h1>Gestión Mensual</h1>
+      <p class="subtitle">Calcula el rendimiento financiero de tu familia.</p>
+
+      <form [formGroup]="rankingForm" class="ios-form">
+        <div class="row">
+          <label>Mes</label>
+          <input type="number" formControlName="month" placeholder="1">
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+          <label>Año</label>
+          <input type="number" formControlName="year" placeholder="2025">
+        </div>
+      </form>
+
+      <div class="btn-container">
+        <button class="btn-primary" (click)="onCalculate()" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Calcular Ranking</span>
+          <div *ngIf="isLoading" class="spinner"></div>
+        </button>
+        
+        <button class="btn-secondary" (click)="onConsult()">
+          Ver Resultados
+        </button>
+      </div>
+
+      <div class="status-msg success" *ngIf="successMessage" [@fadeInUp]>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span>Cálculo completado</span>
+      </div>
+
+      <div class="status-msg error" *ngIf="noDataMessage" [@fadeInUp]>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span>No existe ranking para este período</span>
+      </div>
+
     </div>
-  </form>
 
-  <div class="button-group" style="margin-bottom: 20px;">
-    <button (click)="onCalculate()" [disabled]="rankingForm.invalid" class="btn btn-primary" style="margin-right: 10px;">Calcular Ranking</button>
-    <button (click)="onConsult()" [disabled]="rankingForm.invalid" class="btn btn-secondary">Consultar Ranking</button>
-  </div>
+    <div class="podium-panel" *ngIf="showPodium">
+      
+      <div class="podium-stage">
+        <div class="column rank-2" *ngIf="topSpenders[1]">
+          <div class="avatar">{{ topSpenders[1].user.charAt(0) }}</div>
+          <div class="bar">
+            <span class="score">${{ topSpenders[1].totalExpenses | number }}</span>
+            <span class="position">2</span>
+          </div>
+          <span class="username">{{ topSpenders[1].user }}</span>
+        </div>
 
-  <div *ngIf="calculationMessage" class="feedback-message info" style="margin-bottom: 15px; color: blue;">{{ calculationMessage }}</div>
-  <div *ngIf="consultMessage" class="feedback-message info" style="margin-bottom: 15px; color: green;">{{ consultMessage }}</div>
+        <div class="column rank-1" *ngIf="topSpenders[0]">
+          <span class="crown">👑</span>
+          <div class="avatar winner">{{ topSpenders[0].user.charAt(0) }}</div>
+          <div class="bar">
+            <span class="score">${{ topSpenders[0].totalExpenses | number }}</span>
+            <span class="position">1</span>
+          </div>
+          <span class="username">{{ topSpenders[0].user }}</span>
+        </div>
 
-  <div *ngIf="rankingData.length > 0" class="table-container">
-    <h3>Resultados para {{ rankingForm.value.year }}-{{ rankingForm.value.month | number:'2.0' }}</h3>
-    <table style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr style="background-color: #f4f4f4;">
-          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Usuario</th>
-          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Total Gastos</th>
-          <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Total Ingresos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of rankingData">
-          <td style="padding: 8px; border: 1px solid #ddd;">{{ item.user }}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">{{ item.totalExpenses | currency:'COP':'$' }}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">{{ item.totalIncome | currency:'COP':'$' }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <div class="column rank-3" *ngIf="topSpenders[2]">
+          <div class="avatar">{{ topSpenders[2].user.charAt(0) }}</div>
+          <div class="bar">
+            <span class="score">${{ topSpenders[2].totalExpenses | number }}</span>
+            <span class="position">3</span>
+          </div>
+          <span class="username">{{ topSpenders[2].user }}</span>
+        </div>
+      </div>
+
+      <div class="full-list">
+        <h3>Detalle Completo</h3>
+        <div class="list-row" *ngFor="let item of rankingData; let i = index">
+          <span class="row-rank">#{{ i + 1 }}</span>
+          <div class="row-info">
+            <span class="row-name">{{ item.user }}</span>
+            <span class="row-ingreso">Ingresos: ${{ item.totalIncome | number }}</span>
+          </div>
+          <span class="row-gasto">-${{ item.totalExpenses | number }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
 </div>

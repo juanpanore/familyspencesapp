@@ -1,0 +1,174 @@
+/* LAYOUT */
+.ios-page {
+  min-height: 100vh;
+  padding-top: 70px;
+  display: flex;
+  justify-content: center;
+}
+
+/* HEADER */
+.ios-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px); /* Efecto Vidrio */
+  border-bottom: 1px solid #E5E5E5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 999;
+}
+
+.nav-btn {
+  background: none; border: none;
+  color: var(--apple-blue);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.logo-center {
+  display: flex; flex-direction: column; align-items: center;
+}
+.logo-img { height: 20px; }
+.page-title { font-weight: 600; font-size: 16px; }
+
+/* TARJETA CENTRAL */
+.content { width: 100%; max-width: 480px; padding: 20px; }
+
+.card-panel h1 { text-align: center; font-size: 28px; margin-bottom: 5px; }
+.subtitle { text-align: center; color: var(--apple-gray); margin-bottom: 30px; }
+
+/* FORMULARIO IOS */
+.ios-form {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--apple-shadow);
+  margin-bottom: 30px;
+}
+
+.row {
+  display: flex; justify-content: space-between; padding: 16px;
+}
+.row input {
+  text-align: right; border: none; outline: none;
+  font-size: 16px; color: var(--apple-blue);
+}
+.divider { height: 1px; background: #E5E5E5; margin-left: 16px; }
+
+/* BOTONES */
+.btn-container { display: flex; flex-direction: column; gap: 12px; }
+
+.btn-primary {
+  width: 100%; padding: 16px;
+  background: var(--apple-blue); color: white;
+  border: none; border-radius: 12px;
+  font-size: 17px; font-weight: 600;
+  cursor: pointer; display: flex; justify-content: center;
+}
+
+.btn-secondary {
+  width: 100%; padding: 16px;
+  background: rgba(0,113,227,0.1); color: var(--apple-blue);
+  border: none; border-radius: 12px;
+  font-size: 17px; font-weight: 600;
+  cursor: pointer;
+}
+
+/* SPINNER */
+.spinner {
+  width: 20px; height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.success-msg {
+  margin-top: 20px; text-align: center; color: #34C759; font-weight: 500;
+}
+
+/* --- PODIO --- */
+.podium-stage {
+  display: flex; justify-content: center; align-items: flex-end;
+  height: 280px; margin-bottom: 40px;
+}
+
+.column {
+  display: flex; flex-direction: column; align-items: center;
+  margin: 0 10px; width: 80px;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  padding-bottom: 10px; color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  animation: grow 0.8s ease-out;
+}
+
+.rank-1 .bar { height: 160px; background: linear-gradient(to bottom, #FFD700, #FDB931); order: 2; }
+.rank-2 .bar { height: 120px; background: linear-gradient(to bottom, #C0C0C0, #E0E0E0); order: 1; }
+.rank-3 .bar { height: 90px;  background: linear-gradient(to bottom, #CD7F32, #A0522D); order: 3; }
+
+.avatar {
+  width: 40px; height: 40px;
+  background: #eee; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; margin-bottom: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.username { margin-top: 8px; font-size: 14px; font-weight: 600; }
+.crown { font-size: 24px; margin-bottom: -10px; z-index: 2; }
+
+/* LISTA */
+.full-list {
+  background: white; border-radius: 12px;
+  padding: 0 20px; box-shadow: var(--apple-shadow);
+}
+.list-row {
+  display: flex; align-items: center;
+  padding: 15px 0; border-bottom: 1px solid #eee;
+}
+.row-rank { font-weight: bold; color: var(--apple-gray); width: 30px; }
+.row-info { flex: 1; display: flex; flex-direction: column; }
+.row-name { font-weight: 600; }
+.row-ingreso { font-size: 12px; color: var(--apple-gray); }
+.row-gasto { font-weight: 600; color: var(--apple-text); }
+/* MENSAJES DE ESTADO ANIMADOS */
+.status-msg {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 12px;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Estilo Éxito (Verde Apple) */
+.status-msg.success {
+  background-color: rgba(52, 199, 89, 0.1);
+  color: #34C759;
+}
+
+/* Estilo Error/Info (Rojo/Naranja Apple) */
+.status-msg.error {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #FF3B30; /* Rojo sistema iOS */
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes grow { from { height: 0; opacity: 0; } to { opacity: 1; } }
