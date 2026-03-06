@@ -75,25 +75,33 @@ export class FamilymemberComponent implements OnInit {
     this.loadList();
   }
 
-  buildForm(): void {
-    this.form = this.fb.group({
-      firstName:       ['', Validators.required],
-      lastName:        ['', Validators.required],
-      birthDate:       ['', Validators.required],
-      documentType:    ['', Validators.required],
-      document:        ['', [Validators.required, Validators.minLength(6)]],
-      email:           ['', [Validators.required, Validators.email]],
-      relationship:    ['', Validators.required],
-      creditCard:      ['', [Validators.required, Validators.pattern(/^\d{13,19}$/)]],
-      phone:           ['', [Validators.required, Validators.pattern(/^3\d{9}$/)]],
-      address:         ['', [Validators.required, Validators.minLength(5)]],
-      password:        ['', [
-        Validators.required,
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&._-]).{8,}$/)
-      ]],
-      confirmPassword: ['', Validators.required]
-    }, { validators: passwordMatchValidator() });
-  }
+buildForm(): void {
+this.form = this.fb.group({
+  firstName:       ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+)*$/)]],
+  lastName:        ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+)*$/)]],
+  birthDate:       ['', Validators.required],
+  documentType:    ['', Validators.required],
+  document:        ['', [Validators.required, Validators.pattern(/\S/)]],
+  email:           ['', [Validators.required, Validators.email]],
+  relationship:    ['', Validators.required],
+  creditCard:      ['', [Validators.required, Validators.pattern(/^\d{13,19}$/)]],
+  phone:           ['', [Validators.required, Validators.pattern(/^3\d{9}$/)]],
+  address:         ['', [Validators.required, Validators.minLength(5), Validators.pattern(/\S/)]],
+  password:        ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*¿?&._-]).{8,}$/)]],
+  confirmPassword: ['', Validators.required]
+}, { validators: passwordMatchValidator() });
+
+  this.form.get('documentType')?.valueChanges.subscribe(selectedId => {
+    const selected = this.documentTypes.find(dt => dt.id === selectedId);
+    const rule     = selected ? this.documentRules[selected.type!] : null;
+    const control  = this.form.get('document');
+    control?.setValidators(rule
+      ? [Validators.required, Validators.pattern(rule.pattern)]
+      : [Validators.required]
+    );
+    control?.updateValueAndValidity();
+  });
+}
 
   loadCatalogs(): void {
     this.fmService.getDocumentTypesForFamilyMember().subscribe({
@@ -126,7 +134,7 @@ export class FamilymemberComponent implements OnInit {
     const hasUpper   = /[A-Z]/.test(value);
     const hasLower   = /[a-z]/.test(value);
     const hasNumber  = /\d/.test(value);
-    const hasSpecial = /[@$!%#*?&._-]/.test(value);
+    const hasSpecial = /[@$!%#*¿?&._-]/.test(value);
     const score = [value.length >= 8, hasUpper, hasLower, hasNumber, hasSpecial]
       .filter(Boolean).length;
     this.passwordStrength = score <= 2 ? 'weak' : score <= 4 ? 'medium' : 'strong';
@@ -143,6 +151,53 @@ loadList(): void {
   });
 }
 
+readonly documentRules: Record<string, { pattern: RegExp, message: string }> = {
+  'Cédula de ciudadanía':               { pattern: /^\d{6,10}$/,        message: 'Debe tener entre 6 y 10 dígitos numéricos' },
+  'Cédula de extranjería':              { pattern: /^\d{6,10}$/,        message: 'Debe tener entre 6 y 10 dígitos numéricos' },
+  'Tarjeta de identidad':               { pattern: /^\d{10,11}$/,       message: 'Debe tener entre 10 y 11 dígitos numéricos' },
+  'Registro civil':                     { pattern: /^\d{10,11}$/,       message: 'Debe tener entre 10 y 11 dígitos numéricos' },
+  'Pasaporte':                          { pattern: /^[a-zA-Z0-9]{5,9}$/, message: 'Debe tener entre 5 y 9 caracteres alfanuméricos' },
+  'Número de Identificación Tributaria':{ pattern: /^\d{9,10}$/,        message: 'El NIT debe tener entre 9 y 10 dígitos numéricos' },
+  'Permiso especial de permanencia':    { pattern: /^[a-zA-Z0-9]{4,16}$/, message: 'Debe tener entre 4 y 16 caracteres alfanuméricos' },
+};
+
+get documentErrorMessage(): string {
+  const selectedId = this.form.get('documentType')?.value;
+  const selected   = this.documentTypes.find(dt => dt.id === selectedId);
+  return selected ? (this.documentRules[selected.type!]?.message ?? 'Documento inválido') : 'Documento inválido';
+}
+
+readonly documentMaxLength: Record<string, number> = {
+  'Cédula de ciudadanía':                10,
+  'Cédula de extranjería':               10,
+  'Tarjeta de identidad':                11,
+  'Registro civil':                      11,
+  'Pasaporte':                            9,
+  'Número de Identificación Tributaria': 10,
+  'Permiso especial de permanencia':     16,
+};
+
+get currentDocumentMaxLength(): number {
+  const selectedId = this.form.get('documentType')?.value;
+  const selected   = this.documentTypes.find(dt => dt.id === selectedId);
+  return selected ? (this.documentMaxLength[selected.type!] ?? 20) : 20;
+}
+
+onDocumentKeypress(event: KeyboardEvent): boolean {
+  const selectedId = this.form.get('documentType')?.value;
+  const selected   = this.documentTypes.find(dt => dt.id === selectedId);
+  if (!selected) return true;
+
+  const alphanumericTypes = ['Pasaporte', 'Permiso especial de permanencia'];
+  const isAlphanumeric    = alphanumericTypes.includes(selected.type!);
+
+  if (isAlphanumeric) {
+    return /^[a-zA-Z0-9]$/.test(event.key); 
+  } else {
+    return /^\d$/.test(event.key); 
+  }
+}
+
 save(): void {
   if (this.form.invalid) {
     this.form.markAllAsTouched();
@@ -152,12 +207,22 @@ save(): void {
   const familyId = this.authService.getFamilyId();
   if (!familyId) return;
 
-  const payload: FamilyMember = {
-    ...this.form.value,
-    documentType: { id: this.form.value.documentType },
-    relationship: { id: this.form.value.relationship },
-    family:       { id: familyId }
-  };
+const v = this.form.value;
+
+const payload: FamilyMember = {
+  firstName:    v.firstName.trim(),
+  lastName:     v.lastName.trim(),
+  birthDate:    v.birthDate,
+  document:     v.document.trim(),
+  email:        v.email.trim(),
+  creditCard:   v.creditCard,
+  phone:        v.phone,
+  address:      v.address.trim(),
+  password:     v.password,
+  documentType: { id: v.documentType },
+  relationship: { id: v.relationship },
+  family:       { id: familyId }
+};
 
   this.isSubmitting = true;
   this.showAlert('processing', 'Registrando miembro...');
