@@ -40,16 +40,16 @@ export class RegisterUserComponent implements OnInit {
     this.form = this.fb.group(
       {
         firstName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this)]],
-        lastName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this)]],
-        birthDate: ["", Validators.required],
+        lastName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this), this.prohibitedNameValidator.bind(this)]],
+        birthDate: ["", [Validators.required, this.validBirthDateValidator.bind(this)]],
         documentTypeId: ["", Validators.required],
-        document: ["", [Validators.required, this.onlyNumbersValidator.bind(this)]],
+        document: ["", [Validators.required, this.documentFormatValidator.bind(this)]],
         email: ["", [Validators.required, Validators.email]],
         relationshipId: ["", Validators.required],
         creditCard: ["", [Validators.required, Validators.minLength(13), Validators.maxLength(19), this.onlyCreditCardNumbers.bind(this)]],
         phone: ["", [Validators.required, this.onlyPhoneNumbersValidator.bind(this)]],
         address: ["", [Validators.required, Validators.maxLength(200)]],
-        password: ["", [Validators.required, Validators.minLength(6)]],
+        password: ["", [Validators.required, Validators.minLength(8), this.strongPasswordValidator.bind(this)]],
         confirmPassword: ["", Validators.required],
       },
       { validators: this.passwordsMatch },
@@ -66,6 +66,12 @@ export class RegisterUserComponent implements OnInit {
       next: (r) => (this.relationships = r),
       error: () => {}
     });
+
+    // Re-validar documento y fecha cuando el tipo de documento cambia
+    this.form.get('documentTypeId')?.valueChanges.subscribe(() => {
+      this.form.get('document')?.updateValueAndValidity();
+      this.form.get('birthDate')?.updateValueAndValidity();
+    });
   }
 
   /** Validador personalizado: solo permite letras y espacios */
@@ -77,24 +83,141 @@ export class RegisterUserComponent implements OnInit {
     return isValid ? null : { invalidName: true };
   }
 
-  /** Validador personalizado: solo permite números entre 6 y 15 dígitos */
-  onlyNumbersValidator(control: any) {
+  /** Validador: Prohibir nombre "Cuenta Eliminada" */
+  prohibitedNameValidator(control: any) {
     if (!control.value) {
       return null;
     }
-    const isValid = /^[0-9]*$/.test(control.value) && control.value.length >= 6 && control.value.length <= 15;
-    if (!isValid) {
-      if (!/^[0-9]*$/.test(control.value)) {
-        return { invalidDocument: true };
-      }
-      if (control.value.length < 6 || control.value.length > 15) {
-        return { invalidLength: true };
+    const isProhibited = control.value.trim().toLowerCase() === "cuenta eliminada";
+    return isProhibited ? { prohibitedName: true } : null;
+  }
+
+  /** Validador de formato de documento según tipo */
+  documentFormatValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+
+    const docType = this.form?.get('documentTypeId')?.value;
+    if (!docType) {
+      // Si no hay tipo de documento seleccionado, validar que sea numérico
+      return /^[0-9]*$/.test(control.value) ? null : { invalidDocument: true };
+    }
+
+    const value = String(control.value);
+    let isValid = false;
+    let errorKey = 'invalidDocumentFormat';
+
+    // Mapeo de tipos de documento y sus validaciones
+    // 1: Cédula de ciudadanía (6-10 dígitos)
+    // 2: Cédula de extranjería (6-10 dígitos)
+    // 3: Tarjeta de identidad (10-11 dígitos)
+    // 4: Registro civil (10-11 dígitos)
+    // 5: Pasaporte (5-9 caracteres alfanuméricos)
+    // 6: NIT (9-10 dígitos)
+    // 7: Permiso especial de permanencia (4-16 caracteres alfanuméricos)
+
+    switch (docType) {
+      case 1: // Cédula de ciudadanía (6-10 dígitos)
+      case 2: // Cédula de extranjería (6-10 dígitos)
+        isValid = /^[0-9]{6,10}$/.test(value);
+        if (!isValid && !/^[0-9]*$/.test(value)) errorKey = 'invalidDocument';
+        if (!isValid && /^[0-9]*$/.test(value)) errorKey = 'invalidDocumentLength';
+        return isValid ? null : { [errorKey]: true };
+
+      case 3: // Tarjeta de identidad (10-11 dígitos)
+      case 4: // Registro civil (10-11 dígitos)
+        isValid = /^[0-9]{10,11}$/.test(value);
+        if (!isValid && !/^[0-9]*$/.test(value)) errorKey = 'invalidDocument';
+        if (!isValid && /^[0-9]*$/.test(value)) errorKey = 'invalidDocumentLength';
+        return isValid ? null : { [errorKey]: true };
+
+      case 5: // Pasaporte (5-9 caracteres alfanuméricos)
+        isValid = /^[a-zA-Z0-9]{5,9}$/.test(value);
+        return isValid ? null : { invalidDocumentFormat: true };
+
+      case 6: // NIT (9-10 dígitos)
+        isValid = /^[0-9]{9,10}$/.test(value);
+        if (!isValid && !/^[0-9]*$/.test(value)) errorKey = 'invalidDocument';
+        if (!isValid && /^[0-9]*$/.test(value)) errorKey = 'invalidDocumentLength';
+        return isValid ? null : { [errorKey]: true };
+
+      case 7: // Permiso especial de permanencia (4-16 caracteres alfanuméricos)
+        isValid = /^[a-zA-Z0-9]{4,16}$/.test(value);
+        return isValid ? null : { invalidDocumentFormat: true };
+
+      default:
+        return /^[0-9]*$/.test(value) ? null : { invalidDocument: true };
+    }
+  }
+
+  /** Validador de edad según el tipo de documento */
+  validBirthDateValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+
+    const birthDate = new Date(control.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    // Validar que no sea menor de edad (menor a 18 años)
+    if (age < 0) {
+      return { invalidBirthDate: true };
+    }
+
+    if (isNaN(birthDate.getTime())) {
+      return { invalidBirthDate: true };
+    }
+
+    const docTypeId = this.form?.get('documentTypeId')?.value;
+
+    // Tarjeta de identidad (doc type 3): disponible solo para menores de edad
+    if (docTypeId === 3 || docTypeId === '3') {
+      if (age >= 18) {
+        return { adultCannotUseIDCard: true };
       }
     }
+
+    // Cédula de ciudadanía (doc type 1): disponible solo para mayores de edad
+    if (docTypeId === 1 || docTypeId === '1') {
+      if (age < 18) {
+        return { minorCannotUseCitizenshipCard: true };
+      }
+    }
+
     return null;
   }
 
-  /** Validador personalizado: solo permite números entre 7 y 10 dígitos para teléfono */
+  /** Validador: Contraseña fuerte (mínimo 8 caracteres, mayúscula, número, carácter especial) */
+  strongPasswordValidator(control: any) {
+    if (!control.value) {
+      return null;
+    }
+
+    const password = control.value;
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    if (!hasMinLength) {
+      return { weakPassword: true };
+    }
+
+    if (!hasUpperCase || !hasNumber || !hasSpecialChar) {
+      return { insufficientPasswordStrength: true };
+    }
+
+    return null;
+  }
+
+  /** Validador personalizado: solo permite números para teléfono (7-10 dígitos) */
   onlyPhoneNumbersValidator(control: any) {
     if (!control.value) {
       return null;
@@ -135,11 +258,11 @@ export class RegisterUserComponent implements OnInit {
   strengthScore(): number {
     const pw = this.form.get("password")?.value || "";
     let score = 0;
-    if (pw.length >= 6) score++;
-    if (pw.length >= 10) score++;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
     if (/[A-Z]/.test(pw)) score++;
     if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) score++;
     return score;
   }
 
@@ -164,6 +287,23 @@ export class RegisterUserComponent implements OnInit {
     if (score === 3) return "Aceptable";
     if (score === 4) return "Fuerte";
     return "Muy fuerte";
+  }
+
+  /** Sanear entrada de documento según el tipo */
+  sanitizeDocumentInput(event: any) {
+    const value = event.target.value || '';
+    const docTypeId = this.form?.get('documentTypeId')?.value;
+
+    let clean = value;
+    // Pasaporte y Permiso especial: alfanuméricos
+    if (docTypeId === 5 || docTypeId === 7 || docTypeId === '5' || docTypeId === '7') {
+      clean = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    } else {
+      // Todo lo demás: solo números
+      clean = value.replace(/\D/g, '');
+    }
+
+    this.form.get('document')?.setValue(clean, { emitEvent: false });
   }
 
   /** Filtrar solo números en tarjeta de crédito (máx 19 dígitos) */
@@ -236,7 +376,7 @@ export class RegisterUserComponent implements OnInit {
   closeModal() {
     this.showSuccessModal = false;
     this.form.reset();
-    this.router.navigate(["/"]);
+    this.router.navigate(["/login"]);
   }
 
   field(name: string) {

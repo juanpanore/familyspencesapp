@@ -30,6 +30,7 @@
           <span class="error-message" *ngIf="field('lastName')?.touched && field('lastName')?.invalid">
             <span *ngIf="field('lastName')?.errors?.['required']">Campo requerido</span>
             <span *ngIf="field('lastName')?.errors?.['invalidName']">Apellido inválido (solo letras)</span>
+            <span *ngIf="field('lastName')?.errors?.['prohibitedName']">Este nombre es reservado y no puede ser utilizado</span>
           </span>
         </div>
       </div>
@@ -54,12 +55,13 @@
              [class.has-value]="hasValue('document')"
              [class.has-error]="field('document')?.touched && field('document')?.invalid"
              [class.valid]="field('document')?.valid && field('document')?.touched">
-          <input id="document" type="text" formControlName="document" required (input)="formatOnlyDigits($event, 'document', 15)" />
+          <input id="document" type="text" formControlName="document" required (input)="sanitizeDocumentInput($event)" />
           <label for="document">Documento</label>
           <span class="error-message" *ngIf="field('document')?.touched && field('document')?.invalid">
             <span *ngIf="field('document')?.errors?.['required']">Campo requerido</span>
-            <span *ngIf="field('document')?.errors?.['invalidDocument']">Documento inválido (solo números)</span>
-            <span *ngIf="field('document')?.errors?.['invalidLength']">Documento debe tener entre 6 y 15 dígitos</span>
+            <span *ngIf="field('document')?.errors?.['invalidDocument']">Documento inválido (caracteres no permitidos)</span>
+            <span *ngIf="field('document')?.errors?.['invalidDocumentLength']">Longitud incorrecta para este tipo de documento</span>
+            <span *ngIf="field('document')?.errors?.['invalidDocumentFormat']">Formato inválido para este tipo de documento</span>
           </span>
         </div>
       </div>
@@ -125,7 +127,10 @@
           </div>
           
           <span class="error-message" *ngIf="field('birthDate')?.touched && field('birthDate')?.invalid">
-            Fecha requerida
+            <span *ngIf="field('birthDate')?.errors?.['required']">Fecha de nacimiento requerida</span>
+            <span *ngIf="field('birthDate')?.errors?.['invalidBirthDate']">Fecha de nacimiento inválida</span>
+            <span *ngIf="field('birthDate')?.errors?.['adultCannotUseIDCard']">Adultos no pueden registrarse con Tarjeta de Identidad</span>
+            <span *ngIf="field('birthDate')?.errors?.['minorCannotUseCitizenshipCard']">Menores de edad no pueden registrarse con Cédula de Ciudadanía</span>
           </span>
         </div>
 
@@ -141,8 +146,7 @@
           <label for="creditCard">Tarjeta de Crédito</label>
           
           <button type="button" class="toggle-password" (click)="showCreditCard = !showCreditCard" tabindex="-1">
-            <span *ngIf="!showCreditCard">👁️‍🗨️</span>
-            <span *ngIf="showCreditCard">👁️</span>
+            👁️
           </button>
           
           <span class="error-message" *ngIf="field('creditCard')?.touched && field('creditCard')?.invalid">
@@ -175,8 +179,7 @@
           <label for="password">Contraseña</label>
 
           <button type="button" class="toggle-password" (click)="togglePasswordVisibility('password')" tabindex="-1">
-            <span *ngIf="!showPassword">👁️‍🗨️</span>
-            <span *ngIf="showPassword">👁️</span>
+            👁️
           </button>
 
           <div class="strength-bar-container" *ngIf="hasValue('password')">
@@ -188,7 +191,10 @@
           <span class="strength-text" *ngIf="hasValue('password')">{{ getStrengthText() }}</span>
 
           <span class="error-message" *ngIf="field('password')?.touched && field('password')?.invalid">
-            Mínimo 6 caracteres
+            <span *ngIf="field('password')?.errors?.['required']">Campo requerido</span>
+            <span *ngIf="field('password')?.errors?.['minlength']">Mínimo 8 caracteres</span>
+            <span *ngIf="field('password')?.errors?.['weakPassword']">Mínimo 8 caracteres requerido</span>
+            <span *ngIf="field('password')?.errors?.['insufficientPasswordStrength']">Debe incluir mayúscula, número y carácter especial</span>
           </span>
         </div>
 
@@ -201,8 +207,7 @@
           <label for="confirmPassword">Repetir Contraseña</label>
 
           <button type="button" class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')" tabindex="-1">
-            <span *ngIf="!showConfirmPassword">👁️‍🗨️</span>
-            <span *ngIf="showConfirmPassword">👁️</span>
+            👁️
           </button>
 
           <span class="error-message" *ngIf="form.hasError('passwordsMismatch') && field('confirmPassword')?.touched">
