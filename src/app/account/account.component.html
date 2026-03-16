@@ -1,0 +1,115 @@
+<div class="account-layout">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="logo">FamilySpences</span>
+    </div>
+    <div class="navbar-right">
+      <button (click)="goHome()" class="btn-back">← Inicio</button>
+      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-wrapper">
+    <div class="spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <!-- Error crítico -->
+  <div *ngIf="!loading && error" class="error-banner">
+    {{ error }}
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!loading && !error && profile" class="account-container">
+
+    <!-- Cabecera del perfil -->
+    <div class="profile-header">
+      <div class="avatar">
+        {{ profile.firstName.charAt(0).toUpperCase() }}{{ profile.lastName.charAt(0).toUpperCase() }}
+      </div>
+      <div class="profile-header-info">
+        <h1 class="profile-name">{{ profile.firstName }} {{ profile.lastName }}</h1>
+        <p class="profile-meta">
+          <span class="badge-relationship" *ngIf="profile.relationship">
+            {{ profile.relationship.type }}
+          </span>
+          <span class="profile-family" *ngIf="profile.family">
+            Familia {{ profile.family.familyName }}
+          </span>
+        </p>
+        <p class="profile-email">{{ profile.email }}</p>
+      </div>
+    </div>
+
+    <!-- Sección: Editar información -->
+    <div class="card">
+      <h2 class="card-title">Información Personal</h2>
+
+      <div *ngIf="profileSuccess" class="alert alert-success">{{ profileSuccess }}</div>
+      <div *ngIf="profileError"   class="alert alert-error">{{ profileError }}</div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" formControlName="firstName" placeholder="Tu nombre"
+              [class.invalid]="f['firstName'].invalid && f['firstName'].touched" />
+            <span class="field-error" *ngIf="f['firstName'].invalid && f['firstName'].touched">
+              Solo letras, mínimo 3 caracteres.
+            </span>
+          </div>
+          <div class="form-group">
+            <label>Apellido</label>
+            <input type="text" formControlName="lastName" placeholder="Tu apellido"
+              [class.invalid]="f['lastName'].invalid && f['lastName'].touched" />
+            <span class="field-error" *ngIf="f['lastName'].invalid && f['lastName'].touched">
+              Solo letras, mínimo 3 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" formControlName="phone" placeholder="3XXXXXXXXX"
+              [class.invalid]="f['phone'].invalid && f['phone'].touched" />
+            <span class="field-error" *ngIf="f['phone'].invalid && f['phone'].touched">
+              Número colombiano: 3 seguido de 9 dígitos.
+            </span>
+          </div>
+          <div class="form-group">
+            <label>Dirección</label>
+            <input type="text" formControlName="address" placeholder="Tu dirección"
+              [class.invalid]="f['address'].invalid && f['address'].touched" />
+            <span class="field-error" *ngIf="f['address'].invalid && f['address'].touched">
+              Mínimo 5 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <!-- Campos de solo lectura -->
+        <div class="form-row readonly-row">
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="text" [value]="profile.email" disabled />
+          </div>
+          <div class="form-group" *ngIf="profile.relationship">
+            <label>Parentesco</label>
+            <input type="text" [value]="profile.relationship.type" disabled />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary"
+            [disabled]="profileForm.invalid || savingProfile">
+            {{ savingProfile ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

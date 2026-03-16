@@ -59,7 +59,9 @@ export class RegisterUserComponent implements OnInit {
   loadSelects() {
     this.srv.getDocumentTypes().subscribe({
       next: (d) => (this.documentTypes = d),
-      error: () => {}
+      error: () => {
+        this.errorMessage = 'No se pudo conectar con el servidor. Verifica que el backend esté activo.';
+      }
     });
 
     this.srv.getRelationships().subscribe({
