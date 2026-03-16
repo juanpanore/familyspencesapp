@@ -1,0 +1,347 @@
+:root {
+  /* Colores Base */
+  --background: #ffffff;           
+  --foreground: #020817;          
+
+  /* Tarjetas */
+  --card: #ffffff;                 
+  --card-foreground: #020817;      
+
+  /* Color Primario (Violeta) */
+  --primary: #7c3aed;              
+  --primary-foreground: #f8fafc;   
+
+  /* Color Secundario (Gris claro) */
+  --secondary: #f1f5f9;            
+  --secondary-foreground: #0f172a; 
+
+  /* Muted (Apagado) */
+  --muted: #f1f5f9;                
+  --muted-foreground: #64748b;     
+
+  /* Destructivo (Rojo) */
+  --destructive: #ef4444;          
+  --destructive-foreground: #f8fafc; 
+
+  /* Success (Verde) */
+  --success: #22c55e;              
+  --success-foreground: #ffffff;   
+
+  /* Bordes e Inputs */
+  --border: #e2e8f0;               
+  --input: #e2e8f0;                
+  --ring: #7c3aed;                 
+
+  /* Border Radius */
+  --radius: 0.625rem;              
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 900px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--card-foreground);
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+/* Form Layout */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Floating Label Input */
+.form-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 1rem 1rem 0.5rem 1rem;
+  border: 2px solid var(--input);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  color: var(--foreground);
+  background: var(--background);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.form-field label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  background: var(--background);
+  padding: 0 0.25rem;
+}
+
+/* Floating label when focused or has value */
+.form-field input:focus + label,
+.form-field select:focus + label,
+.form-field.has-value label {
+  top: 0;
+  font-size: 0.75rem;
+  color: var(--primary);
+  transform: translateY(0);
+}
+
+/* Focus effect with glow */
+.form-field input:focus,
+.form-field select:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+/* Error state */
+.form-field.has-error input,
+.form-field.has-error select {
+  border-color: var(--destructive);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+  background-color: #fef2f2;
+}
+
+.form-field.valid input,
+.form-field.valid select {
+  border-color: var(--success);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+  background-color: #f0fdf4;
+}
+
+.error-message {
+  font-size: 0.75rem;
+  color: var(--destructive);
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+  display: block;
+}
+
+/* Password field */
+.password-field { position: relative; }
+.password-field input { 
+  padding-right: 3rem;
+}
+
+/* Ocultar crédito enmascarado */
+.password-field input[type="password"] {
+  -webkit-text-security: disc;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  opacity: 1;
+  transition: opacity 0.2s;
+  z-index: 3;
+  pointer-events: auto;
+}
+.toggle-password:hover { opacity: 0.7; }
+
+/* Strength bar */
+.strength-bar-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--secondary);
+  border-radius: var(--radius) var(--radius) 0 0;
+  overflow: hidden;
+}
+.strength-bar { height: 100%; transition: all 0.3s ease; border-radius: var(--radius) var(--radius) 0 0; }
+.strength-text { font-size: 0.75rem; margin-top: 0.5rem; margin-left: 0.25rem; font-weight: 500; display: block; }
+
+/* Date field styles */
+.date-field {
+  position: relative;
+}
+
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.date-native-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--input);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  color: var(--foreground);
+  background: var(--background);
+  transition: all 0.3s ease;
+  outline: none;
+  cursor: pointer;
+}
+
+.date-native-input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+/* Submit button */
+.form-actions { margin-top: 2rem; }
+.submit-button {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+}
+.submit-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Modal de éxito */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideInModal 0.4s ease-out;
+}
+
+@keyframes slideInModal {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--success);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin: 0 auto 1.5rem;
+  font-weight: 300;
+}
+
+.modal-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--card-foreground);
+  margin: 0 0 0.75rem 0;
+}
+
+.modal-content p {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  margin: 0 0 1.5rem 0;
+}
+
+.modal-button {
+  padding: 0.75rem 2rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.modal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .register-card { padding: 2rem 1.5rem; }
+  .form-row { grid-template-columns: 1fr; gap: 1rem; }
+  .header h1 { font-size: 1.5rem; }
+  .modal-content { padding: 2rem 1.5rem; }
+  .modal-icon { width: 60px; height: 60px; font-size: 2rem; }
+}

@@ -1,0 +1,55 @@
+<div class="notifications-container">
+  <div class="notifications-header">
+    <h2>Notificaciones</h2>
+    <span class="unread-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+  </div>
+
+  <div class="notifications-actions">
+    <button (click)="markAllAsRead()" [disabled]="unreadCount === 0">
+      Marcar todas como leídas
+    </button>
+    <button (click)="deleteAllRead()">
+      Eliminar leídas
+    </button>
+    <button (click)="loadNotifications()">
+      Actualizar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Cargando notificaciones...
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div class="notifications-list" *ngIf="!loading">
+    <div
+      *ngFor="let n of notifications"
+      class="notification-item"
+      [class.notification-unread]="!n.read"
+      (click)="markAsRead(n)"
+    >
+      <div class="notification-header">
+        <div class="notification-meta">
+          <span class="type-label">{{ n.type }}</span>
+          <span class="priority-badge">{{ n.priority }}</span>
+        </div>
+        <button class="delete-btn" (click)="deleteNotification(n); $event.stopPropagation()">
+          ✕
+        </button>
+      </div>
+      <div class="notification-message">
+        {{ n.message }}
+      </div>
+      <div class="notification-footer" *ngIf="n.readAt">
+        <small>Leída: {{ n.readAt | date:'short' }}</small>
+      </div>
+    </div>
+
+    <div *ngIf="notifications.length === 0" class="no-notifications">
+      No hay notificaciones
+    </div>
+  </div>
+</div>

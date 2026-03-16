@@ -1,0 +1,223 @@
+/* ====== MODO OSCURO GENERAL ====== */
+:host {
+  display: block;
+  background-color: #f5f7fa;
+  color: #e4e4e4;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+h2, h3 {
+  color: #1e1e1e;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.top-bar {
+  width: 100%;
+  background: linear-gradient(135deg, #6d28d9 0%, #a78bfa 100%);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  animation: slideDown 0.6s ease forwards;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.top-btn {
+  background-color: #7c3aed;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.top-btn:hover {
+  background-color: #7c3aed50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #b3b1b1;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  animation: fadeInBody 1s ease forwards;
+}
+
+@keyframes fadeInBody {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ====== BARRA DE BÚSQUEDA ====== */
+.search-bar input {
+  width: 96%;
+  padding: 0.9rem;
+  font-size: 1rem;
+  color: #7c3aed;
+  background: #f5f7fa;
+  border: 1px solid #b3b1b1;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+
+input::placeholder{
+  color: #b3b1b1;
+}
+
+.search-bar input:focus {
+  border-color: #7c3aed;
+  background: #7c3aed15;
+}
+
+.search-bar input:focus::placeholder{
+  color: #7c3aed00;
+}
+
+/* ====== LISTA DE PRODUCTOS ====== */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.producto-item {
+  position: relative;
+  overflow: hidden;
+  color: #f5f7fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #b3b1b1;
+  box-shadow: 0 0 10px 0 rgba(118, 75, 162, 0.493);
+  transition: transform 0.15s ease, color 0.2s ease;
+}
+
+.producto-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 120%;
+  height: 100%;
+  background: #f5f7fa;
+  transition: left 0.45s ease;
+  z-index: -1;
+}
+
+.producto-item * {
+  position: relative;
+  z-index: 2;
+}
+
+
+.producto-item:hover::before {
+  left: 0;
+}
+
+.producto-item:hover strong{
+  color: #7c3aed;
+}
+
+.producto-item:hover {
+  transform: translateY(-3px);
+  color: #7c3aed;
+}
+
+strong {
+  font-size: 1.1rem;
+  color: #f5f7fa;
+}
+
+/* ====== MENSAJE SIN RESULTADOS ====== */
+p {
+  margin-top: 1rem;
+  color: #aaa;
+}
+
+/* ====== FORMULARIO PARA AGREGAR PRODUCTO ====== */
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.add-form input {
+  padding: 0.9rem;
+  font-size: 1rem;
+  color: #7c3aed;
+  background: #f5f7fa;
+  border: 1px solid #b3b1b1;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+
+.add-form input:focus {
+  border-color: #7c3aed;
+  background: #7c3aed15;
+}
+
+.add-form input:focus::placeholder {
+  color: #7c3aed00;
+}
+
+/* ====== BOTÓN AGREGAR ====== */
+.add-form button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.add-form button:hover {
+  background: #7c3aeddc;
+}
+
+.add-form button:active {
+  transform: scale(0.97);
+}
+
+
+/* ====== HR ====== */
+hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 2rem 0;
+}

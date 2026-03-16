@@ -1,0 +1,117 @@
+<div class="ios-container">
+  
+  <div class="ios-header glass-effect">
+    <button class="nav-btn" (click)="showPodium ? backToSettings() : goHome()">
+      <span class="back-arrow">‹</span> {{ showPodium ? 'Atrás' : 'Inicio' }}
+    </button>
+    
+    <div class="header-title">
+      {{ showPodium ? 'Resultados' : 'Ranking' }}
+    </div>
+
+    <button class="nav-btn link-style" *ngIf="showPodium" (click)="exportExcel()">
+      Exportar
+    </button>
+    <div class="nav-placeholder" *ngIf="!showPodium"></div>
+  </div>
+
+  <div class="ios-content">
+
+    <div class="card-settings" *ngIf="!showPodium" [@fadeInUp]>
+      <div class="card-icon">📊</div>
+      <h2>Gestión Mensual</h2>
+      <p class="desc">Selecciona un período para analizar.</p>
+
+      <form [formGroup]="rankingForm" class="ios-list">
+        
+        <div class="list-item">
+          <label>Mes</label>
+          <div class="select-wrapper">
+            <select formControlName="month">
+              <option *ngFor="let m of months" [value]="m.val">{{ m.name }}</option>
+            </select>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <div class="list-item">
+          <label>Año</label>
+          <div class="select-wrapper">
+            <select formControlName="year">
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+            <span class="chevron">›</span>
+          </div>
+        </div>
+
+      </form>
+
+      <div class="actions-group">
+        <button class="btn-apple primary" (click)="onCalculate()" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Calcular Ranking</span>
+          <div *ngIf="isLoading" class="loader"></div>
+        </button>
+        
+        <button class="btn-apple secondary" (click)="onConsult()" [disabled]="isLoading">
+          Consultar Ranking
+        </button>
+      </div>
+
+      <div class="alert success" *ngIf="successMessage" [@fadeInUp]>
+        Ranking calculado correctamente
+      </div>
+      <div class="alert error" *ngIf="noDataMessage" [@fadeInUp]>
+         No hay datos para este período
+      </div>
+    </div>
+
+    <div class="podium-view" *ngIf="showPodium" [@fadeInUp]>
+      
+      <div class="podium-stage">
+        <div class="column rank-2" *ngIf="topSpenders[1]">
+          <div class="bubble">{{ topSpenders[1].user.charAt(0) | uppercase }}</div>
+          <div class="bar">
+            <span class="value">${{ topSpenders[1].totalExpenses | number:'1.0-0' }}</span>
+            <span class="pos">2</span>
+          </div>
+          <span class="u-name">{{ topSpenders[1].user }}</span>
+        </div>
+
+        <div class="column rank-1" *ngIf="topSpenders[0]">
+          <div class="crown">👑</div>
+          <div class="bubble winner">{{ topSpenders[0].user.charAt(0) | uppercase }}</div>
+          <div class="bar">
+            <span class="value">${{ topSpenders[0].totalExpenses | number:'1.0-0' }}</span>
+            <span class="pos">1</span>
+          </div>
+          <span class="u-name">{{ topSpenders[0].user }}</span>
+        </div>
+
+        <div class="column rank-3" *ngIf="topSpenders[2]">
+          <div class="bubble">{{ topSpenders[2].user.charAt(0) | uppercase }}</div>
+          <div class="bar">
+            <span class="value">${{ topSpenders[2].totalExpenses | number:'1.0-0' }}</span>
+            <span class="pos">3</span>
+          </div>
+          <span class="u-name">{{ topSpenders[2].user }}</span>
+        </div>
+      </div>
+
+      <div class="detail-list ios-list">
+        <div class="list-header">Detalle Completo</div>
+        <div class="list-item detail-row" *ngFor="let row of rankingData; let i = index">
+          <span class="idx">#{{ i + 1 }}</span>
+          <div class="info">
+            <span class="main-text">{{ row.user }}</span>
+            <span class="sub-text">Ingresos: ${{ row.totalIncome | number }}</span>
+          </div>
+          <span class="money">-${{ row.totalExpenses | number }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

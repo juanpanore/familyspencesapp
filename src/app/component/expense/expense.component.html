@@ -1,0 +1,109 @@
+<header class="top-bar">
+<button class="top-btn" routerLink="/home">Inicio</button>
+</header>
+<div class="content-wrapper">
+  <div *ngIf="!showForm" style="text-align: center;">
+    <h2>Lista de Gastos</h2>
+    <table border="1" style="margin: 0 auto; width: 80%; border-collapse: collapse; text-align: center;">
+      <thead>
+        <tr>
+          <th style="background-color: #6d28d9; padding: 10px;">Título</th>
+          <th style="background-color: #6d28d9; padding: 10px;">Descripción</th>
+          <th style="background-color: #6d28d9; padding: 10px;">Periodo</th>
+          <th style="background-color: #6d28d9; padding: 10px;">Valor</th>
+          <th style="background-color: #6d28d9; padding: 10px;">Categoría</th>
+          <th style="background-color: #6d28d9; padding: 10px;">Responsable</th>
+          <th style="background-color: #6d28d9; padding: 10px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="expenses.length === 0">
+          <td colspan="7" style="padding: 10px;">No hay gastos registrados.</td>
+        </tr>
+        <tr *ngFor="let expense of expenses; let i = index">
+          <td style="padding: 10px;">{{ expense.titulo }}</td>
+          <td style="padding: 10px;">{{ expense.descripcion }}</td>
+          <td style="padding: 10px;">{{ expense.periodo }}</td>
+          <td style="padding: 10px;">{{ expense.valor }}</td>
+          <td style="padding: 10px;">{{ expense.categoria }}</td>
+          <td style="padding: 10px;">{{ expense.responsable }}</td>
+          <td style="padding: 10px;">
+            <button (click)="onEditExpense(i)" style="background: none; border: none; cursor: pointer;">
+              <img src="assets/icons/edit-icon.png" alt="Editar" style="width: 20px; height: 20px;">
+            </button>
+            <button (click)="onDeleteExpense(i)" style="background: none; border: none; cursor: pointer;">
+              <img src="assets/icons/delete-icon.png" alt="Eliminar" style="width: 20px; height: 20px;">
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button (click)="toggleForm()" style="margin-top: 20px;">Añadir un nuevo gasto</button>
+  </div>
+
+  <div *ngIf="showForm">
+    <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+      <div>
+        <label for="titulo">Título:</label>
+        <input id="titulo" formControlName="titulo">
+        <div *ngIf="expenseForm.get('titulo')?.invalid && expenseForm.get('titulo')?.touched">
+          <small *ngIf="expenseForm.get('titulo')?.errors?.['required']">El título es obligatorio.</small>
+          <small *ngIf="expenseForm.get('titulo')?.errors?.['minlength']">El título debe tener al menos 3 caracteres.</small>
+        </div>
+      </div>
+
+      <div>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" formControlName="descripcion"></textarea>
+        <div *ngIf="expenseForm.get('descripcion')?.invalid && expenseForm.get('descripcion')?.touched">
+          <small *ngIf="expenseForm.get('descripcion')?.errors?.['required']">La descripción es obligatoria.</small>
+          <small *ngIf="expenseForm.get('descripcion')?.errors?.['minlength']">La descripción debe tener al menos 5 caracteres.</small>
+        </div>
+      </div>
+
+      <div>
+        <label for="periodo">Periodo:</label>
+        <input id="periodo" type="month" formControlName="periodo">
+        <div *ngIf="expenseForm.get('periodo')?.invalid && expenseForm.get('periodo')?.touched">
+          <small>El periodo es obligatorio.</small>
+        </div>
+      </div>
+
+      <div>
+        <label for="valor">Valor:</label>
+        <input id="valor" formControlName="valor" type="text" inputmode="numeric" (input)="onValorInput($event)">
+        <div *ngIf="expenseForm.get('valor')?.invalid && expenseForm.get('valor')?.touched">
+          <small *ngIf="expenseForm.get('valor')?.errors?.['required']">El valor es obligatorio.</small>
+          <small *ngIf="expenseForm.get('valor')?.errors?.['min']">El valor debe ser mayor o igual a 0.</small>
+        </div>
+      </div>
+
+      <div>
+        <label for="categoria">Categoría:</label>
+        <select id="categoria" formControlName="categoria">
+          <option value="" disabled>Seleccione una categoría</option>
+          <option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</option>
+        </select>
+        <div *ngIf="expenseForm.get('categoria')?.invalid && expenseForm.get('categoria')?.touched">
+          <small>La categoría es obligatoria.</small>
+        </div>
+      </div>
+
+      <div>
+        <label for="responsable">Responsable:</label>
+        <select id="responsable" formControlName="responsable">
+          <option value="" disabled>Seleccione un responsable</option>
+          <option *ngFor="let responsable of responsables" [value]="responsable.titulo">{{ responsable.titulo }}</option>
+        </select>
+        <div *ngIf="expenseForm.get('responsable')?.invalid && expenseForm.get('responsable')?.touched">
+          <small>El responsable es obligatorio.</small>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="expenseForm.invalid">Guardar</button>
+        <button type="button" (click)="onCancel()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+

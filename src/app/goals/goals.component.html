@@ -1,2 +1,116 @@
-<p>goals works!</p>
+<div class="goals-container">
+  <div class="header-container">
+    <button class="btn-home" (click)="goToHome()">← Home</button>
+    <h1>Metas</h1>
+    <p class="subtitle">Gestión de metas</p>
+    <p class="description">Crea, edita y consulta tus metas de ahorro. Filtra por categoría según lo necesites.</p>
+  </div>
 
+  <div class="filters-section">
+    <label>Categoría</label>
+
+    <select [(ngModel)]="selectedCategoryFilter" (change)="applyFilters()">
+      <option value="">Todas</option>
+      <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+    </select>
+
+    <button class="btn-view-all" (click)="selectedCategoryFilter=''; applyFilters()">📋 Ver todas</button>
+    <button class="btn-create" (click)="showCreateGoalForm()">+ Crear Meta</button>
+  </div>
+
+  <div class="table-container" *ngIf="filteredGoals.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Categoría</th>
+          <th>Tope</th>
+          <th>Meta diaria</th>
+          <th>Fecha límite</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let goal of filteredGoals">
+          <td>{{ goal.name }}</td>
+          <td>{{ goal.description }}</td>
+          <td>{{ getCategoryName(goal.categoryId) }}</td>
+          <td>{{ goal.savingsCap | number:'1.0-0' }}</td>
+          <td>{{ goal.dailyGoal | number:'1.0-2' }}</td>
+          <td>{{ goal.deadline | date:'dd/MM/yyyy, h:mm a' }}</td>
+          <td class="actions-cell">
+            <button class="btn-edit" (click)="showEditGoalForm(goal)">Editar</button>
+            <button class="btn-delete" (click)="confirmDelete(goal.id)">Borrar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredGoals.length === 0">
+    <p>No tienes metas aún con esta categoria.</p>
+    <button class="btn-create" (click)="showCreateGoalForm()">Crear Meta</button>
+  </div>
+
+  <div class="form-modal" *ngIf="showFormModal">
+    <div class="modal-content">
+      <h2>{{ selectedGoal ? 'Editar Meta' : 'Crear Meta' }}</h2>
+      <form (ngSubmit)="selectedGoal ? updateGoal() : createGoal()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" [(ngModel)]="formGoal.name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="category">Categoría:</label>
+            <select id="category" [(ngModel)]="formGoal.categoryId" name="category" required>
+              <option value="">Selecciona una categoría</option>
+              <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="description">Descripción:</label>
+          <textarea id="description" [(ngModel)]="formGoal.description" name="description" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="savingsCap">Tope:</label>
+            <input type="number" id="savingsCap" [(ngModel)]="formGoal.savingsCap" name="savingsCap" required>
+          </div>
+          <div class="form-group">
+            <label for="dailyGoal">Meta Diaria:</label>
+            <input type="number" id="dailyGoal" [(ngModel)]="formGoal.dailyGoal" name="dailyGoal" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="deadline">Fecha Límite:</label>
+          <input type="datetime-local" id="deadline" [(ngModel)]="formGoal.deadline" name="deadline" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">{{ selectedGoal ? 'Actualizar Meta' : 'Crear Meta' }}</button>
+          <button type="button" class="btn-cancel" (click)="cancelForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="notification-modal" *ngIf="showNotification">
+    <div class="notification-content" [ngClass]="notificationType">
+      <h3>{{ notificationTitle }}</h3>
+      <p>{{ notificationMessage }}</p>
+      <button class="btn-notification-ok" (click)="closeNotification()">Aceptar</button>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" *ngIf="showConfirmation">
+    <div class="confirmation-content">
+      <h3>{{ confirmationTitle }}</h3>
+      <p>{{ confirmationMessage }}</p>
+      <div class="confirmation-actions">
+        <button class="btn-confirm" (click)="onConfirm()">Aceptar</button>
+        <button class="btn-cancel-confirm" (click)="onCancelConfirm()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

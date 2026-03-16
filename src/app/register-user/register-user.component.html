@@ -1,0 +1,235 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="header">
+      <h1>Crear Cuenta</h1>
+      <p>Únete a Family Spences y comienza a gestionar tus gastos familiares</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+      <!-- Fila 1 -->
+      <div class="form-row">
+        <div class="form-field"
+             [class.has-value]="hasValue('firstName')"
+             [class.has-error]="field('firstName')?.touched && field('firstName')?.invalid"
+             [class.valid]="field('firstName')?.valid && field('firstName')?.touched">
+          <input id="firstName" type="text" formControlName="firstName" required (input)="formatOnlyLetters($event, 'firstName')" />
+          <label for="firstName">Nombre</label>
+          <span class="error-message" *ngIf="field('firstName')?.touched && field('firstName')?.invalid">
+            <span *ngIf="field('firstName')?.errors?.['required']">Campo requerido</span>
+            <span *ngIf="field('firstName')?.errors?.['invalidName']">Nombre inválido (solo letras)</span>
+          </span>
+        </div>
+
+        <div class="form-field"
+             [class.has-value]="hasValue('lastName')"
+             [class.has-error]="field('lastName')?.touched && field('lastName')?.invalid"
+             [class.valid]="field('lastName')?.valid && field('lastName')?.touched">
+          <input id="lastName" type="text" formControlName="lastName" required (input)="formatOnlyLetters($event, 'lastName')" />
+          <label for="lastName">Apellido</label>
+          <span class="error-message" *ngIf="field('lastName')?.touched && field('lastName')?.invalid">
+            <span *ngIf="field('lastName')?.errors?.['required']">Campo requerido</span>
+            <span *ngIf="field('lastName')?.errors?.['invalidName']">Apellido inválido (solo letras)</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Fila 2 -->
+      <div class="form-row">
+        <div class="form-field"
+             [class.has-value]="hasValue('documentTypeId')"
+             [class.has-error]="field('documentTypeId')?.touched && field('documentTypeId')?.invalid"
+             [class.valid]="field('documentTypeId')?.valid && field('documentTypeId')?.touched">
+          <select id="documentTypeId" formControlName="documentTypeId" required>
+            <option value=""></option>
+            <option *ngFor="let d of documentTypes" [value]="d.id">{{ d.type }}</option>
+          </select>
+          <label for="documentTypeId">Tipo de Documento</label>
+          <span class="error-message" *ngIf="field('documentTypeId')?.touched && field('documentTypeId')?.invalid">
+            Campo requerido
+          </span>
+        </div>
+
+        <div class="form-field"
+             [class.has-value]="hasValue('document')"
+             [class.has-error]="field('document')?.touched && field('document')?.invalid"
+             [class.valid]="field('document')?.valid && field('document')?.touched">
+          <input id="document" type="text" formControlName="document" required (input)="formatOnlyDigits($event, 'document', 15)" />
+          <label for="document">Documento</label>
+          <span class="error-message" *ngIf="field('document')?.touched && field('document')?.invalid">
+            <span *ngIf="field('document')?.errors?.['required']">Campo requerido</span>
+            <span *ngIf="field('document')?.errors?.['invalidDocument']">Documento inválido (solo números)</span>
+            <span *ngIf="field('document')?.errors?.['invalidLength']">Documento debe tener entre 6 y 15 dígitos</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Fila 3 -->
+      <div class="form-row">
+        <div class="form-field"
+             [class.has-value]="hasValue('email')"
+             [class.has-error]="field('email')?.touched && field('email')?.invalid"
+             [class.valid]="field('email')?.valid && field('email')?.touched">
+          <input id="email" type="email" formControlName="email" required />
+          <label for="email">Correo</label>
+          <span class="error-message" *ngIf="field('email')?.touched && field('email')?.invalid">
+            Correo inválido
+          </span>
+        </div>
+
+        <div class="form-field"
+             [class.has-value]="hasValue('phone')"
+             [class.has-error]="field('phone')?.touched && field('phone')?.invalid"
+             [class.valid]="field('phone')?.valid && field('phone')?.touched">
+          <input id="phone" type="tel" formControlName="phone" required (input)="formatOnlyDigits($event, 'phone', 10)" />
+          <label for="phone">Teléfono</label>
+          <span class="error-message" *ngIf="field('phone')?.touched && field('phone')?.invalid">
+            Campo requerido
+          </span>
+        </div>
+      </div>
+
+      <!-- Fila 4 -->
+      <div class="form-row">
+
+        <!-- Relación -->
+        <div class="form-field"
+             [class.has-value]="hasValue('relationshipId')"
+             [class.has-error]="field('relationshipId')?.touched && field('relationshipId')?.invalid"
+             [class.valid]="field('relationshipId')?.valid && field('relationshipId')?.touched">
+          <select id="relationshipId" formControlName="relationshipId" required>
+            <option value=""></option>
+            <option *ngFor="let r of relationships" [value]="r.id">{{ r.type }}</option>
+          </select>
+          <label for="relationshipId">Parentesco</label>
+          <span class="error-message" *ngIf="field('relationshipId')?.touched && field('relationshipId')?.invalid">
+            Campo requerido
+          </span>
+        </div>
+
+        <!-- Fecha de nacimiento -->
+        <div class="form-field date-field"
+             [class.has-value]="hasValue('birthDate')"
+             [class.has-error]="field('birthDate')?.touched && field('birthDate')?.invalid"
+             [class.valid]="field('birthDate')?.valid && field('birthDate')?.touched">
+          <label for="birthDate">Fecha de nacimiento</label>
+          
+          <div class="date-input-wrapper">
+            <input
+              id="birthDate"
+              type="date"
+              formControlName="birthDate"
+              [attr.max]="maxDate"
+              class="date-native-input"
+            />
+          </div>
+          
+          <span class="error-message" *ngIf="field('birthDate')?.touched && field('birthDate')?.invalid">
+            Fecha requerida
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Fila 5 -->
+      <div class="form-row">
+        <div class="form-field password-field"
+             [class.has-value]="hasValue('creditCard')"
+             [class.has-error]="field('creditCard')?.touched && field('creditCard')?.invalid"
+             [class.valid]="field('creditCard')?.valid && field('creditCard')?.touched">
+          <input id="creditCard" [type]="showCreditCard ? 'text' : 'password'" formControlName="creditCard" (input)="formatCreditCard($event)" required />
+          <label for="creditCard">Tarjeta de Crédito</label>
+          
+          <button type="button" class="toggle-password" (click)="showCreditCard = !showCreditCard" tabindex="-1">
+            <span *ngIf="!showCreditCard">👁️‍🗨️</span>
+            <span *ngIf="showCreditCard">👁️</span>
+          </button>
+          
+          <span class="error-message" *ngIf="field('creditCard')?.touched && field('creditCard')?.invalid">
+            <span *ngIf="field('creditCard')?.errors?.['required']">Campo requerido</span>
+            <span *ngIf="field('creditCard')?.errors?.['invalidCreditCard']">Tarjeta inválida (solo números)</span>
+            <span *ngIf="field('creditCard')?.errors?.['invalidCreditCardLength']">Tarjeta debe tener entre 13 y 19 dígitos</span>
+          </span>
+        </div>
+
+        <div class="form-field"
+             [class.has-value]="hasValue('address')"
+             [class.has-error]="field('address')?.touched && field('address')?.invalid"
+             [class.valid]="field('address')?.valid && field('address')?.touched">
+          <input id="address" type="text" formControlName="address" required />
+          <label for="address">Dirección</label>
+          <span class="error-message" *ngIf="field('address')?.touched && field('address')?.invalid">
+            Campo requerido
+          </span>
+        </div>
+      </div>
+
+      <!-- Fila 6 -->
+      <div class="form-row">
+        <div class="form-field password-field"
+             [class.has-value]="hasValue('password')"
+             [class.has-error]="field('password')?.touched && field('password')?.invalid"
+             [class.valid]="field('password')?.valid && field('password')?.touched">
+
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" required />
+          <label for="password">Contraseña</label>
+
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility('password')" tabindex="-1">
+            <span *ngIf="!showPassword">👁️‍🗨️</span>
+            <span *ngIf="showPassword">👁️</span>
+          </button>
+
+          <div class="strength-bar-container" *ngIf="hasValue('password')">
+            <div class="strength-bar"
+                 [style.width]="getStrengthWidth()"
+                 [style.backgroundColor]="getStrengthColor()"></div>
+          </div>
+
+          <span class="strength-text" *ngIf="hasValue('password')">{{ getStrengthText() }}</span>
+
+          <span class="error-message" *ngIf="field('password')?.touched && field('password')?.invalid">
+            Mínimo 6 caracteres
+          </span>
+        </div>
+
+        <div class="form-field password-field"
+             [class.has-value]="hasValue('confirmPassword')"
+             [class.has-error]="(field('confirmPassword')?.touched && field('confirmPassword')?.invalid) || (form.hasError('passwordsMismatch') && field('confirmPassword')?.touched)"
+             [class.valid]="field('confirmPassword')?.valid && !form.hasError('passwordsMismatch') && field('confirmPassword')?.touched">
+
+          <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" required />
+          <label for="confirmPassword">Repetir Contraseña</label>
+
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')" tabindex="-1">
+            <span *ngIf="!showConfirmPassword">👁️‍🗨️</span>
+            <span *ngIf="showConfirmPassword">👁️</span>
+          </button>
+
+          <span class="error-message" *ngIf="form.hasError('passwordsMismatch') && field('confirmPassword')?.touched">
+            Las contraseñas no coinciden
+          </span>
+        </div>
+      </div>
+
+      <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-button" [disabled]="form.invalid || loading">
+          <span *ngIf="!loading">Crear mi cuenta</span>
+          <span *ngIf="loading">Creando...</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Modal éxito -->
+  <div class="modal-overlay" *ngIf="showSuccessModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-icon">✓</div>
+      <h2>¡Bienvenido {{ userName }} a Family Spences!</h2>
+      <p>Su usuario ha sido registrado exitosamente</p>
+      <button class="modal-button" (click)="closeModal()">Cerrar</button>
+    </div>
+  </div>
+</div>

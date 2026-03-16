@@ -1,0 +1,182 @@
+/* === VARIABLES LOCALES === */
+:host {
+  --primary: #7c3aed;           /* Violeta principal */
+  --primary-foreground: #f8fafc; /* Texto blanco */
+  --primary-soft: rgba(124, 58, 237, 0.1); /* Fondo suave para botón secundario */
+}
+
+/* === LAYOUT BASE === */
+.ios-container {
+  min-height: 100vh;
+  background-color: #F2F2F7;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === HEADER FLOTANTE === */
+.ios-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 16px; z-index: 100;
+}
+
+.nav-btn {
+  background: none; border: none; 
+  color: var(--primary); /* CAMBIO: Color Violeta */
+  font-size: 17px; cursor: pointer; padding: 8px 0;
+  display: flex; align-items: center;
+}
+.back-arrow { font-size: 24px; margin-right: 4px; margin-top: -3px; }
+.header-title { font-weight: 600; font-size: 17px; color: #000; }
+.nav-placeholder { width: 50px; }
+
+/* === CONTENEDOR PRINCIPAL === */
+.ios-content {
+  margin-top: 70px; width: 100%; max-width: 450px;
+  padding: 20px; box-sizing: border-box;
+}
+
+/* === TARJETA DE CONFIGURACIÓN === */
+.card-settings { display: flex; flex-direction: column; align-items: center; }
+.card-icon { font-size: 40px; margin-bottom: 10px; }
+h2 { margin: 0; font-size: 22px; color: #000; }
+.desc { margin: 5px 0 25px; color: #8E8E93; font-size: 15px; text-align: center; }
+
+/* === LISTA TIPO iOS (FORMULARIO) === */
+.ios-list {
+  width: 100%; background: #fff; border-radius: 10px;
+  overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+}
+
+.list-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; background: #fff;
+}
+.separator { height: 1px; background: #C6C6C8; margin-left: 16px; }
+.list-item label { font-size: 17px; color: #000; }
+
+/* Estilo para el Select limpio */
+.select-wrapper { display: flex; align-items: center; }
+.list-item select {
+  appearance: none; -webkit-appearance: none;
+  border: none; background: transparent;
+  font-size: 17px; 
+  color: var(--primary); /* CAMBIO: Color Violeta */
+  text-align: right; padding-right: 5px; outline: none;
+  cursor: pointer; direction: rtl;
+}
+.chevron { color: #C7C7CC; font-size: 20px; margin-left: 5px; pointer-events: none; }
+
+/* === BOTONES === */
+.actions-group { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+
+.btn-apple {
+  width: 100%; border: none; border-radius: 12px; padding: 14px;
+  font-size: 17px; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: center; align-items: center;
+  transition: opacity 0.2s;
+}
+.btn-apple:active { opacity: 0.7; }
+
+/* Botón Primario (Calcular) */
+.btn-apple.primary { 
+  background-color: var(--primary); /* CAMBIO: Fondo Violeta */
+  color: var(--primary-foreground); 
+}
+
+/* Botón Secundario (Consultar) */
+.btn-apple.secondary { 
+  background-color: var(--primary-soft); /* CAMBIO: Fondo Violeta muy suave */
+  color: var(--primary); /* Texto Violeta */
+}
+
+/* LOADER */
+.loader {
+  width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ALERTAS */
+.alert { margin-top: 20px; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; }
+.alert.success { background: #E0F8E0; color: #2E7D32; }
+.alert.error { background: #FFEBEE; color: #C62828; }
+
+/* === PODIO ANIMADO === */
+.podium-stage {
+  display: flex; 
+  justify-content: center; 
+  align-items: flex-end;
+  height: 240px; 
+  margin-bottom: 30px; 
+  gap: 8px;
+}
+.column { display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 80px; }
+
+.bar {
+  width: 100%; border-radius: 8px 8px 0 0;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  padding-bottom: 5px; color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  
+  transform-origin: bottom;
+  transform: scaleY(0);
+  animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes grow { to { transform: scaleY(1); } }
+
+/* Colores del Podio (Mantenemos Oro, Plata, Bronce) */
+.rank-1 .bar { background: linear-gradient(180deg, #FFD700, #FDB931); height: 150px; }
+.rank-2 .bar { background: linear-gradient(180deg, #C0C0C0, #E0E0E0); height: 110px; animation-delay: 0.1s; }
+.rank-3 .bar { background: linear-gradient(180deg, #CD7F32, #A0522D); height: 80px; animation-delay: 0.2s; }
+
+.bubble {
+  width: 36px; height: 36px; background: #E5E5EA; color: #8E8E93;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: bold; font-size: 14px; margin-bottom: 8px;
+  border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+.bubble.winner { background: #FFF9C4; color: #FBC02D; border-color: #FFD700; }
+.crown { font-size: 20px; margin-bottom: -10px; z-index: 11; animation: float 2s infinite ease-in-out; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+.value { font-size: 11px; font-weight: bold; margin-bottom: 2px; }
+.pos { font-size: 20px; font-weight: 700; opacity: 0.8; }
+.u-name { 
+    font-size: 12px; 
+    font-weight: 600; 
+    margin-top: 6px; 
+    color: #000; 
+    text-align: center; 
+    white-space: nowrap; 
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+/* === LISTA DETALLE === */
+.list-header {
+  padding: 10px 16px; background: #F2F2F7; color: #8E8E93;
+  text-transform: uppercase; font-size: 12px; font-weight: 600;
+}
+.detail-row { padding: 12px 16px; border-bottom: 1px solid #C6C6C8; }
+.detail-row:last-child { border-bottom: none; }
+.idx { width: 25px; font-weight: 600; color: #8E8E93; }
+.info { flex: 1; display: flex; flex-direction: column; }
+.main-text { font-size: 16px; font-weight: 500; color: #000; }
+.sub-text { font-size: 13px; color: #8E8E93; }
+.money { font-weight: 600; color: #000; }

@@ -1,20 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
-interface ResponsibleDto {
-  id: string;
-  fullName: string;
-}
-
-interface IncomeDto {
-  id?: string;
-  title: string;
-  description: string;
-  period: string;
-  total: number;
-  responsible: any;
-  family: string;
-}
+import { Income, Responsible } from './income.model';
+import { IncomeService } from '../service/income/income.service';
+import { FamilymemberService } from 'src/app/service/familymember/familymember';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-income',
@@ -23,104 +15,157 @@ interface IncomeDto {
 })
 export class IncomeComponent implements OnInit {
 
-  incomes: IncomeDto[] = [];
-  income: IncomeDto = this.createEmptyIncome();
+  @ViewChild('incomeForm') form!: NgForm;
 
-  responsibles: ResponsibleDto[] = [];
-
+ 
+  incomes: Income[] = [];
+  income: Income = this.createEmptyIncome();
+  responsibles: Responsible[] = [];
   loading = false;
-
+  isSaving = false;
+  showEditModal = false;
+  currentUserId = '';
   currentUserName = '';
   familyName = '';
 
-  // ENDPOINTS DEL BACKEND
-  private incomeApiUrl   = 'http://localhost:8080/api/income';
-  private profileApiUrl  = 'http://localhost:8080/api/users/profile';
-  private membersApiUrl  = 'http://localhost:8080/api/v1/family/members';
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private incomeService: IncomeService,
+    private familymemberService: FamilymemberService,
+    private authService: AuthService,
+    private router: Router          
+  ) {}
 
   ngOnInit(): void {
     this.loadCurrentUser();
   }
 
+  private createEmptyIncome(): Income {
+    const currentPeriod = this.getCurrentPeriod();
 
-
-  private createEmptyIncome(): IncomeDto {
     return {
       title: '',
       description: '',
-      period: '',
+      period: currentPeriod,
       total: 0,
       responsible: { id: '' },
       family: ''
     };
   }
 
+  private getCurrentPeriod(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+  }
 
+ 
 
   loadCurrentUser(): void {
+    this.loading = true;
 
-    const storedEmail = localStorage.getItem('currentUserEmail') || '';
+    const token = this.authService.getToken();
+    if (!token) {
+      console.error('No se encontró token JWT. No se puede cargar información de usuario.');
+      this.loading = false;
+      return;
+    }
 
-    const email = storedEmail || 'elmune21@gmail.com';
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
 
+      this.currentUserId = payload.userId || payload.id || payload.sub || '';
+      this.currentUserName =
+        payload.fullName ||
+        `${payload.firstName ?? ''} ${payload.lastName ?? ''}`.trim();
 
-    this.http
-      .get<any>(`${this.profileApiUrl}?email=${encodeURIComponent(email)}`)
-      .subscribe({
-        next: user => {
-          this.currentUserName =
-            user.fullName ||
-            `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
+      const familyIdFromService = this.authService.getFamilyId();
+      const familyIdFromToken =
+        payload.familyId || (payload.family && payload.family.id) || '';
 
-          const familyId = user.familyId || user.family?.id || '';
-          this.familyName =
-            user.family?.familyName ||
-            (familyId ? `Familia ${familyId.substring(0, 8)}...` : '');
+      const familyId = familyIdFromService || familyIdFromToken;
 
-          if (familyId) {
-            this.income.family = familyId;
-            this.loadFamilyMembers(familyId);
+      if (familyId) {
+        
+        this.income.family = familyId;
+        this.familyName =
+          payload.familyName ||
+          (payload.family && payload.family.familyName) ||
+          '';
+        console.log('Family ID obtenido del token/servicio:', familyId);
+        this.loadFamilyMembers(familyId);
+      } else {
+        
+        console.warn('Usuario sin Family ID (no pertenece a una familia).');
+
+        this.familyName = '';
+
+        this.responsibles = [
+          {
+            id: this.currentUserId,
+            fullName: this.currentUserName || 'Usuario actual'
           }
+        ];
 
-          this.loadIncomes();
-        },
-        error: error => {
-          console.error('Error al cargar perfil de usuario', error);
-
-          this.loadIncomes();
+        if (!this.income.id) {
+          this.income.responsible.id = this.currentUserId;
         }
-      });
+
+        this.income.family = '';
+        this.incomes = [];
+        this.loading = false;
+      }
+    } catch (e) {
+      console.error('Error al decodificar el token JWT', e);
+      this.loading = false;
+    }
   }
-
-
 
   loadFamilyMembers(familyId: string): void {
-    this.http
-      .get<any[]>(`${this.membersApiUrl}?familyId=${familyId}`)
-      .subscribe({
-        next: members => {
-          this.responsibles = members.map(m => ({
-            id: m.id,
-            fullName:
-              m.fullName ||
-              `${m.firstName ?? ''} ${m.lastName ?? ''}`.trim()
-          }));
-        },
-        error: error => {
-          console.error('Error al cargar miembros de la familia', error);
+    console.log('3. Llamando a loadFamilyMembers para ID:', familyId);
+
+    this.familymemberService.getFamilyMembers().subscribe({
+      next: (members: any[]) => {
+        this.responsibles = members.map((m: any) => ({
+          id: m.id,
+          fullName: m.fullName ?? `${m.firstName ?? ''} ${m.lastName ?? ''}`.trim()
+        }));
+
+        console.log('4. Responsables cargados. Cantidad:', this.responsibles.length);
+
+        if (this.responsibles.length > 0) {
+          if (!this.income.id && this.income.responsible.id === '') {
+            this.income.responsible.id = this.responsibles[0].id;
+            console.log('5. Responsable preseleccionado:', this.responsibles[0].fullName);
+          }
+        } else {
+          console.warn(
+            'Advertencia: La API devolvió una lista de responsables vacía (200 OK, pero []).'
+          );
         }
-      });
+
+        this.loadIncomes();
+      },
+      error: (error: any) => {
+        console.error('ERROR CRÍTICO: Fallo en la llamada a getFamilyMembers.', error);
+        this.loadIncomes();
+      }
+    });
   }
 
-
-
   loadIncomes(): void {
-    this.loading = true;
-    this.http.get<IncomeDto[]>(this.incomeApiUrl).subscribe({
+    if (!this.income.family) {
+      this.incomes = [];
+      this.loading = false;
+      return;
+    }
+
+    this.incomeService.getAllIncomesByFamily(this.income.family).subscribe({
       next: incomes => {
         this.incomes = incomes;
+        console.log('6. Ingresos cargados. Proceso de carga finalizado.');
         this.loading = false;
       },
       error: error => {
@@ -131,53 +176,123 @@ export class IncomeComponent implements OnInit {
   }
 
   saveIncome(): void {
-    this.http.post<IncomeDto>(this.incomeApiUrl, this.income).subscribe({
+    if (!this.income.id && this.form?.invalid) {
+      alert('Por favor, complete todos los campos requeridos correctamente en el formulario principal.');
+      return;
+    }
+
+    if (!this.income.responsible.id) {
+      alert('Debe seleccionar un responsable.');
+      return;
+    }
+
+    this.isSaving = true;
+
+    const action = this.income.id
+      ? this.incomeService.updateIncome(this.income)
+      : this.incomeService.createIncome(this.income);
+
+    const successMsg = this.income.id ? 'Ingreso actualizado con éxito.' : 'Ingreso creado con éxito.';
+
+    action.subscribe({
       next: () => {
-        this.resetForm(false); // mantenemos la familia
+        alert(successMsg);
+        this.resetForm(false);
         this.loadIncomes();
+        this.closeModal();
       },
-      error: error => {
-        console.error('Error al crear ingreso', error);
+      error: (error: HttpErrorResponse) => {
+        console.error(`Error al ${this.income.id ? 'actualizar' : 'crear'} ingreso`, error);
+        alert(`Fallo en la operación: ${error.error?.message || error.message}`);
+        this.isSaving = false;
+      },
+      complete: () => {
+        this.isSaving = false;
       }
     });
   }
 
   deleteIncome(id?: string): void {
     if (!id) return;
-    if (!confirm('¿Seguro que deseas eliminar este ingreso?')) return;
+    if (!confirm('¿Seguro que deseas eliminar este ingreso? Esta acción es permanente.')) return;
 
-    this.http.delete<void>(`${this.incomeApiUrl}/${id}`).subscribe({
-      next: () => this.loadIncomes(),
+    this.loading = true;
+
+    this.incomeService.deleteIncome(id).subscribe({
+      next: () => {
+        alert('Ingreso eliminado. Se envió el mensaje DELETE a RabbitMQ.');
+        this.incomes = this.incomes.filter(inc => inc.id !== id);
+        this.loading = false;
+      },
       error: error => {
         console.error('Error al eliminar ingreso', error);
+        alert(`Fallo al eliminar: ${error.error?.message || error.message}`);
+        this.loading = false;
       }
     });
   }
-
+  
   resetForm(resetFamily: boolean = false): void {
     const currentFamily = this.income.family;
     this.income = this.createEmptyIncome();
+
     if (!resetFamily) {
       this.income.family = currentFamily;
     }
-    this.income.responsible.id = '';
 
+    if (this.form && !this.showEditModal) {
+      this.form.resetForm(this.income);
+    }
+
+    if (this.responsibles.length > 0) {
+      this.income.responsible.id = this.responsibles[0].id;
+    }
+
+    this.closeModal();
   }
 
+  editIncome(income: Income): void {
+    this.income = {
+      ...income,
+      responsible: { id: income.responsible.id }
+    };
+    this.showEditModal = true;
+  }
 
+  closeModal(): void {
+    this.showEditModal = false;
+    if (this.income.id) {
+      this.income = this.createEmptyIncome();
+    }
+    if (this.form) {
+      this.form.resetForm(this.income);
+    }
+  }
+  goDashboard(): void {
+    this.router.navigate(['/dashboard']);   
+  }
 
-  get latestFamilyIncomes(): IncomeDto[] {
+ 
+
+  getResponsibleFullName(responsibleId: string): string {
+    if (!responsibleId) {
+      return 'N/A';
+    }
+
+    const member = this.responsibles.find(r => r.id === responsibleId);
+
+    return member ? member.fullName : 'ID no encontrado';
+  }
+
+  get latestFamilyIncomes(): Income[] {
     if (!this.incomes || this.incomes.length === 0) {
       return [];
     }
 
-    const familyId = this.income.family;
-    if (!familyId) {
-      return [];
-    }
-
-    const source = this.incomes.filter(i => i.family === familyId);
-    const last = source.slice(-5);
+    const sorted = [...this.incomes].sort((a, b) =>
+      a.id && b.id ? a.id.localeCompare(b.id) : 0
+    );
+    const last = sorted.slice(-5);
     return last.reverse();
   }
 }

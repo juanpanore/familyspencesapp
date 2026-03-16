@@ -1,0 +1,207 @@
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast" [class.toast-success]="toastType === 'success'" [class.toast-error]="toastType === 'error'">
+    <div class="toast-header">
+      <svg *ngIf="toastType === 'success'" class="toast-icon" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <svg *ngIf="toastType === 'error'" class="toast-icon" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="toast-title">{{ toastTitle }}</span>
+    </div>
+    <p class="toast-message">{{ toastMessage }}</p>
+  </div>
+</div>
+
+<div class="dialog-overlay" *ngIf="showDeleteDialog" (click)="closeDeleteDialog()">
+  <div class="dialog-content" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3 class="dialog-title">¿Eliminar tarea?</h3>
+      <p class="dialog-description">
+        Esta acción no se puede deshacer. La tarea será eliminada permanentemente.
+      </p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-outline" (click)="closeDeleteDialog()">Cancelar</button>
+      <button class="btn btn-destructive" (click)="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-content">
+    <div class="card-header">
+      <h3 class="card-title">Crear Nueva Tarea</h3>
+      <p class="card-description">Complete el formulario para agregar una nueva tarea al sistema</p>
+    </div>
+    <form [formGroup]="taskForm" (ngSubmit)="createTask()" class="form-grid">
+      <div class="form-group">
+        <label>Nombre de la Tarea <span class="text-destructive">*</span></label>
+        <input formControlName="name" placeholder="Ej: Revisar presupuesto mensual" />
+        <div class="error-msg" *ngIf="taskForm.get('name')?.touched && taskForm.get('name')?.invalid">
+          El nombre es obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descripción <span class="text-destructive">*</span></label>
+        <textarea formControlName="description" placeholder="Proporcione detalles sobre la tarea..." rows="4">
+        </textarea>
+        <div class="error-msg" *ngIf="taskForm.get('description')?.touched && taskForm.get('description')?.invalid">
+          La descripción es obligatoria
+        </div>
+      </div>
+      <div class="grid-cols-2">
+        <div class="form-group">
+          <label>Gasto Asociado</label>
+          <select formControlName="idExpenseve">
+            <option value="">Seleccionar gasto</option>
+            <option *ngFor="let e of expenses" [value]="e.id">
+              {{ e.title }} | ${{ e.value }}
+            </option>
+          </select>
+          <p class="card-description" style="margin: 4px 0 0 0; font-size: 0.75rem;" *ngIf="isVacationSelected">
+            Deshabilitado porque se seleccionó una vacación
+          </p>
+        </div>
+        <div class="form-group">
+          <label>Vacaciones</label>
+          <select formControlName="idVacation">
+            <option value="">Seleccionar vacaciones</option>
+            <option *ngFor="let v of vacations" [value]="v.id">
+              {{ v.titulo }}
+            </option>
+          </select>
+          <p class="card-description" style="margin: 4px 0 0 0; font-size: 0.75rem;" *ngIf="isExpenseSelected">
+            Deshabilitado porque se seleccionó un gasto
+          </p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Fecha de Creación <span class="text-destructive">*</span></label>
+        <input type="date" formControlName="creationDate" />
+        <div class="error-msg" *ngIf="taskForm.get('creationDate')?.touched && taskForm.get('creationDate')?.invalid">
+          La fecha es obligatoria
+        </div>
+      </div>
+      <div class="toggle-container">
+        <div class="toggle-wrapper">
+          <div class="form-group">
+            <label style="font-size: 1rem; cursor: pointer;">Estado de la Tarea</label>
+            <p class="card-description" style="margin: 0;">
+              {{ taskForm.get('status')?.value ? "Marcada como completada" : "Pendiente de completar" }}
+            </p>
+          </div>
+          <button type="button" class="toggle-btn" [class.active]="taskForm.get('status')?.value"
+            (click)="taskForm.patchValue({status: !taskForm.get('status')?.value})">
+            <span class="toggle-thumb">
+              <svg *ngIf="taskForm.get('status')?.value" class="h-6 w-6"
+                style="width: 24px; height: 24px; color: var(--success);" fill="none" stroke="currentColor"
+                stroke-width="3" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <svg *ngIf="!taskForm.get('status')?.value" class="h-6 w-6"
+                style="width: 24px; height: 24px; color: var(--muted-foreground);" fill="none" stroke="currentColor"
+                stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid || isLoading">
+          {{ isLoading ? 'Creando...' : 'Crear Tarea' }}
+        </button>
+        <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="isLoading">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="tasks-container">
+  <div class="header-row">
+    <h2> Mis Tareas</h2>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="task-count">{{ tasks.length }} {{ tasks.length === 1 ? 'tarea' : 'tareas' }}</span>
+      <button class="btn-create-top" (click)="openModal()">➕ Nueva tarea</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading && tasks.length === 0" class="loading-spinner">
+    ⏳ Cargando tareas...
+  </div>
+
+  <div *ngIf="!isLoading && tasks.length === 0" class="no-tasks">
+    <div class="no-tasks-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <p style="font-size: 18px; font-weight: 600; margin: 0 0 8px 0; color: var(--foreground);">No hay tareas</p>
+    <p style="font-size: 14px; margin: 0;">Crea tu primera tarea usando el botón "Nueva tarea"</p>
+  </div>
+
+  <div class="task-list" *ngIf="!isLoading && tasks.length > 0">
+    <div *ngFor="let task of tasks" class="task-card" [class.completed]="task.status">
+      <div class="task-content">
+        <button class="status-btn" [class.completed]="task.status" (click)="toggleStatus(task)"
+          [attr.aria-label]="task.status ? 'Marcar como pendiente' : 'Marcar como completada'">
+          <svg *ngIf="task.status" class="status-icon" fill="none" stroke="currentColor" stroke-width="3"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          <svg *ngIf="!task.status" class="status-icon" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+        </button>
+
+        <div class="task-info">
+          <h3 class="task-title">{{ task.name }}</h3>
+          <p class="task-description">{{ task.description }}</p>
+
+          <div class="task-meta">
+            <div class="meta-item">
+              <svg class="meta-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ task.creationDate }}</span>
+            </div>
+
+            <div class="meta-badge" *ngIf="task.idExpenseve">
+              <svg class="meta-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>{{ task.idExpenseve.title }} (${{ task.idExpenseve.value }})</span>
+            </div>
+
+            <div class="meta-badge" *ngIf="task.idVacations">
+              <svg class="meta-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+              </svg>
+              <span>{{ task.idVacations.titulo }}</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="delete-btn" (click)="openDeleteDialog(task)" aria-label="Eliminar tarea">
+          <svg class="delete-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
