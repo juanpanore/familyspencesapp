@@ -11,6 +11,10 @@ export interface AccountProfile {
   email: string;
   phone: string;
   address: string;
+  birthDate: string;
+  document: string;
+  documentType: { id: string; type: string } | null;
+  creditCardLast4: string | null;
   relationship: { id: string; type: string } | null;
   family: { id: string; familyName: string } | null;
 }
@@ -65,6 +69,13 @@ export class AccountService {
     return this.http.post<{ message: string }>(
       `${this.apiUrl}/${encodeURIComponent(email)}/change-password`,
       payload,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  deleteAccount(email: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(
+      `${this.apiUrl}/${encodeURIComponent(email)}`,
       { headers: this.getHeaders() }
     );
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from "@angular/forms";
 import { Router } from "@angular/router";
 import { RegisterUserService, DocumentType, Relationship } from "../service/user/register-user.service";
 
@@ -19,10 +19,29 @@ export class RegisterUserComponent implements OnInit {
   showPassword = false;
   showConfirmPassword = false;
   showCreditCard = false;
-  displayCreditCard = "";
   showSuccessModal = false;
   userName = "";
   maxDate: string = "";
+
+  readonly documentRules: Record<string, { pattern: RegExp, message: string }> = {
+    'Cédula de ciudadanía':               { pattern: /^\d{6,10}$/,          message: 'Debe tener entre 6 y 10 dígitos numéricos' },
+    'Cédula de extranjería':              { pattern: /^\d{6,10}$/,          message: 'Debe tener entre 6 y 10 dígitos numéricos' },
+    'Tarjeta de identidad':               { pattern: /^\d{10,11}$/,         message: 'Debe tener entre 10 y 11 dígitos numéricos' },
+    'Registro civil':                     { pattern: /^\d{10,11}$/,         message: 'Debe tener entre 10 y 11 dígitos numéricos' },
+    'Pasaporte':                          { pattern: /^[a-zA-Z0-9]{5,9}$/,  message: 'Debe tener entre 5 y 9 caracteres alfanuméricos' },
+    'Número de Identificación Tributaria':{ pattern: /^\d{9,10}$/,          message: 'El NIT debe tener entre 9 y 10 dígitos numéricos' },
+    'Permiso especial de permanencia':    { pattern: /^[a-zA-Z0-9]{4,16}$/, message: 'Debe tener entre 4 y 16 caracteres alfanuméricos' },
+  };
+
+  readonly documentMaxLength: Record<string, number> = {
+    'Cédula de ciudadanía':                10,
+    'Cédula de extranjería':               10,
+    'Tarjeta de identidad':                11,
+    'Registro civil':                      11,
+    'Pasaporte':                            9,
+    'Número de Identificación Tributaria': 10,
+    'Permiso especial de permanencia':     16,
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -39,21 +58,33 @@ export class RegisterUserComponent implements OnInit {
   buildForm() {
     this.form = this.fb.group(
       {
-        firstName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this)]],
-        lastName: ["", [Validators.required, Validators.maxLength(50), this.onlyLettersValidator.bind(this)]],
+        firstName: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+)*$/)]],
+        lastName: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+)*$/)]],
         birthDate: ["", Validators.required],
         documentTypeId: ["", Validators.required],
-        document: ["", [Validators.required, this.onlyNumbersValidator.bind(this)]],
+        document: ["", [Validators.required, Validators.pattern(/\S/)]],
         email: ["", [Validators.required, Validators.email]],
         relationshipId: ["", Validators.required],
-        creditCard: ["", [Validators.required, Validators.minLength(13), Validators.maxLength(19), this.onlyCreditCardNumbers.bind(this)]],
-        phone: ["", [Validators.required, this.onlyPhoneNumbersValidator.bind(this)]],
-        address: ["", [Validators.required, Validators.maxLength(200)]],
-        password: ["", [Validators.required, Validators.minLength(6)]],
+        creditCard: ["", [Validators.required, Validators.pattern(/^\d{13,19}$/)]],
+        phone: ["", [Validators.required, Validators.pattern(/^3\d{9}$/)]],
+        address: ["", [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
+        password: ["", [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*¿?&._-]).{8,}$/)]],
         confirmPassword: ["", Validators.required],
       },
       { validators: this.passwordsMatch },
     );
+
+    // Dynamic document validation based on document type
+    this.form.get('documentTypeId')?.valueChanges.subscribe(selectedId => {
+      const selected = this.documentTypes.find(dt => dt.id === selectedId);
+      const rule = selected ? this.documentRules[selected.type] : null;
+      const control = this.form.get('document');
+      control?.setValidators(rule
+        ? [Validators.required, Validators.pattern(rule.pattern)]
+        : [Validators.required]
+      );
+      control?.updateValueAndValidity();
+    });
   }
 
   loadSelects() {
@@ -70,64 +101,6 @@ export class RegisterUserComponent implements OnInit {
     });
   }
 
-  /** Validador personalizado: solo permite letras y espacios */
-  onlyLettersValidator(control: any) {
-    if (!control.value) {
-      return null;
-    }
-    const isValid = /^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]*$/.test(control.value);
-    return isValid ? null : { invalidName: true };
-  }
-
-  /** Validador personalizado: solo permite números entre 6 y 15 dígitos */
-  onlyNumbersValidator(control: any) {
-    if (!control.value) {
-      return null;
-    }
-    const isValid = /^[0-9]*$/.test(control.value) && control.value.length >= 6 && control.value.length <= 15;
-    if (!isValid) {
-      if (!/^[0-9]*$/.test(control.value)) {
-        return { invalidDocument: true };
-      }
-      if (control.value.length < 6 || control.value.length > 15) {
-        return { invalidLength: true };
-      }
-    }
-    return null;
-  }
-
-  /** Validador personalizado: solo permite números entre 7 y 10 dígitos para teléfono */
-  onlyPhoneNumbersValidator(control: any) {
-    if (!control.value) {
-      return null;
-    }
-    const isValid = /^[0-9]*$/.test(control.value) && control.value.length >= 7 && control.value.length <= 10;
-    if (!isValid) {
-      if (!/^[0-9]*$/.test(control.value)) {
-        return { invalidPhoneFormat: true };
-      }
-      if (control.value.length < 7 || control.value.length > 10) {
-        return { invalidPhoneLength: true };
-      }
-    }
-    return null;
-  }
-
-  /** Validador personalizado: solo números para tarjeta de crédito (13-19 dígitos) */
-  onlyCreditCardNumbers(control: any) {
-    if (!control.value) {
-      return null;
-    }
-    const cleanValue = String(control.value).replace(/\D/g, '');
-    if (!/^[0-9]*$/.test(cleanValue)) {
-      return { invalidCreditCard: true };
-    }
-    if (cleanValue.length < 13 || cleanValue.length > 19) {
-      return { invalidCreditCardLength: true };
-    }
-    return null;
-  }
-
   passwordsMatch(group: FormGroup) {
     const p = group.get("password")?.value;
     const c = group.get("confirmPassword")?.value;
@@ -137,11 +110,11 @@ export class RegisterUserComponent implements OnInit {
   strengthScore(): number {
     const pw = this.form.get("password")?.value || "";
     let score = 0;
-    if (pw.length >= 6) score++;
-    if (pw.length >= 10) score++;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
     if (/[A-Z]/.test(pw)) score++;
     if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (/[@$!#%*¿?&._-]/.test(pw)) score++;
     return score;
   }
 
@@ -168,24 +141,49 @@ export class RegisterUserComponent implements OnInit {
     return "Muy fuerte";
   }
 
-  /** Filtrar solo números en tarjeta de crédito (máx 19 dígitos) */
+  /** Format credit card: only digits, max 19 */
   formatCreditCard(event: any) {
     let value = event.target.value.replace(/\D/g, '').slice(0, 19);
     this.form.get('creditCard')?.setValue(value, { emitEvent: false });
   }
 
-  /** Sanear entrada: permitir solo letras (incluye tildes y espacios) */
+  /** Sanitize input: only letters and spaces */
   formatOnlyLetters(event: any, fieldName: string) {
     const value = event.target.value || '';
     const clean = String(value).replace(/[^a-zA-ZÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
     this.form.get(fieldName)?.setValue(clean, { emitEvent: false });
   }
 
-  /** Sanear entrada: permitir solo dígitos, opcionalmente limitar longitud */
+  /** Sanitize input: only digits */
   formatOnlyDigits(event: any, fieldName: string, maxLen: number = 19) {
     const value = event.target.value || '';
     const clean = String(value).replace(/\D/g, '').slice(0, maxLen);
     this.form.get(fieldName)?.setValue(clean, { emitEvent: false });
+  }
+
+  /** Keypress filter for document field based on type */
+  onDocumentKeypress(event: KeyboardEvent): boolean {
+    const selectedId = this.form.get('documentTypeId')?.value;
+    const selected = this.documentTypes.find(dt => dt.id === selectedId);
+    if (!selected) return true;
+
+    const alphanumericTypes = ['Pasaporte', 'Permiso especial de permanencia'];
+    if (alphanumericTypes.includes(selected.type)) {
+      return /^[a-zA-Z0-9]$/.test(event.key);
+    }
+    return /^\d$/.test(event.key);
+  }
+
+  get currentDocumentMaxLength(): number {
+    const selectedId = this.form.get('documentTypeId')?.value;
+    const selected = this.documentTypes.find(dt => dt.id === selectedId);
+    return selected ? (this.documentMaxLength[selected.type] ?? 15) : 15;
+  }
+
+  get documentErrorMessage(): string {
+    const selectedId = this.form.get('documentTypeId')?.value;
+    const selected = this.documentTypes.find(dt => dt.id === selectedId);
+    return selected ? (this.documentRules[selected.type]?.message ?? 'Documento inválido') : 'Documento debe tener entre 6 y 15 dígitos';
   }
 
   togglePasswordVisibility(field: string) {
@@ -194,6 +192,44 @@ export class RegisterUserComponent implements OnInit {
     } else {
       this.showConfirmPassword = !this.showConfirmPassword;
     }
+  }
+
+  /** Validate age vs document type */
+  private getAgeValidationError(): string | null {
+    const birthDate = this.form.get('birthDate')?.value;
+    const docTypeId = this.form.get('documentTypeId')?.value;
+    if (!birthDate || !docTypeId) return null;
+
+    const selected = this.documentTypes.find(dt => dt.id === docTypeId);
+    if (!selected) return null;
+
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    const isAdult = age >= 18;
+    if (selected.type === 'Tarjeta de identidad' && isAdult) {
+      return 'Una persona mayor de edad no puede registrarse con Tarjeta de identidad.';
+    }
+    if (selected.type === 'Cédula de ciudadanía' && !isAdult) {
+      return 'Una persona menor de edad no puede registrarse con Cédula de ciudadanía.';
+    }
+    return null;
+  }
+
+  /** Validate forbidden name */
+  private getForbiddenNameError(): string | null {
+    const first = (this.form.get('firstName')?.value || '').trim().toLowerCase();
+    const last = (this.form.get('lastName')?.value || '').trim().toLowerCase();
+    if (first.includes('cuenta') || first.includes('eliminada') ||
+        last.includes('cuenta') || last.includes('eliminada')) {
+      return 'El nombre "Cuenta Eliminada" no está permitido.';
+    }
+    return null;
   }
 
   submit() {
@@ -205,18 +241,32 @@ export class RegisterUserComponent implements OnInit {
       return;
     }
 
+    // Validate forbidden name
+    const nameError = this.getForbiddenNameError();
+    if (nameError) {
+      this.errorMessage = nameError;
+      return;
+    }
+
+    // Validate age vs document type
+    const ageError = this.getAgeValidationError();
+    if (ageError) {
+      this.errorMessage = ageError;
+      return;
+    }
+
     this.loading = true;
     const v = this.form.value;
 
     const payload = {
-      firstName: v.firstName,
-      lastName: v.lastName,
+      firstName: v.firstName.trim(),
+      lastName: v.lastName.trim(),
       birthDate: v.birthDate,
-      document: v.document,
-      email: v.email,
+      document: v.document.trim(),
+      email: v.email.trim(),
       creditCard: v.creditCard,
       phone: v.phone,
-      address: v.address,
+      address: v.address.trim(),
       password: v.password,
       documentType: { id: v.documentTypeId },
       relationship: { id: v.relationshipId },
