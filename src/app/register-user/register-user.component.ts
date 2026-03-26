@@ -65,7 +65,7 @@ export class RegisterUserComponent implements OnInit {
         document: ["", [Validators.required, Validators.pattern(/\S/)]],
         email: ["", [Validators.required, Validators.email]],
         relationshipId: ["", Validators.required],
-        creditCard: ["", [Validators.required, Validators.pattern(/^\d{13,19}$/)]],
+        creditCard: ["", [Validators.pattern(/^\d{13,19}$/)]],
         phone: ["", [Validators.required, Validators.pattern(/^3\d{9}$/)]],
         address: ["", [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
         password: ["", [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*¿?&._-]).{8,}$/)]],
@@ -258,19 +258,21 @@ export class RegisterUserComponent implements OnInit {
     this.loading = true;
     const v = this.form.value;
 
-    const payload = {
+    const payload: any = {
       firstName: v.firstName.trim(),
       lastName: v.lastName.trim(),
       birthDate: v.birthDate,
       document: v.document.trim(),
       email: v.email.trim(),
-      creditCard: v.creditCard,
       phone: v.phone,
       address: v.address.trim(),
       password: v.password,
       documentType: { id: v.documentTypeId },
       relationship: { id: v.relationshipId },
     };
+    if (v.creditCard) {
+      payload.creditCard = v.creditCard;
+    }
 
     this.srv.registerUser(payload).subscribe({
       next: () => {

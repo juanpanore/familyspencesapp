@@ -133,8 +133,8 @@
              [class.has-value]="hasValue('creditCard')"
              [class.has-error]="field('creditCard')?.touched && field('creditCard')?.invalid"
              [class.valid]="field('creditCard')?.valid && field('creditCard')?.touched">
-          <input id="creditCard" [type]="showCreditCard ? 'text' : 'password'" formControlName="creditCard" (input)="formatCreditCard($event)" required />
-          <label for="creditCard">Tarjeta de Crédito</label>
+          <input id="creditCard" [type]="showCreditCard ? 'text' : 'password'" formControlName="creditCard" (input)="formatCreditCard($event)" />
+          <label for="creditCard">Tarjeta de Crédito (opcional)</label>
 
           <button type="button" class="toggle-password" (click)="showCreditCard = !showCreditCard" tabindex="-1">
             <span *ngIf="!showCreditCard">&#128065;&#65039;&#8205;&#128488;&#65039;</span>
@@ -142,7 +142,6 @@
           </button>
 
           <span class="error-message" *ngIf="field('creditCard')?.touched && field('creditCard')?.invalid">
-            <span *ngIf="field('creditCard')?.errors?.['required']">Campo requerido</span>
             <span *ngIf="field('creditCard')?.errors?.['pattern']">Tarjeta debe tener entre 13 y 19 dígitos</span>
           </span>
         </div>
