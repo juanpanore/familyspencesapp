@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { AuthService } from '../services/auth.service';
 
 export interface Product {
@@ -15,7 +15,7 @@ export interface Product {
 })
 export class ProductService {
 
-  private baseUrl = `${environment.apiUrl}/product`;
+  private baseUrl = `${environment.apiUrl}/api/product`;
 
   constructor(
     private http: HttpClient,

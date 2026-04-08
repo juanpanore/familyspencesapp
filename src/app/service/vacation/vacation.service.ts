@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface Vacation {
   id?: string;
@@ -29,7 +30,7 @@ export interface VacationRequest {
 })
 export class VacationService {
 
-  private apiUrl = 'http://localhost:8080/api/vacations';
+  private apiUrl = `${environment.apiUrl}/api/vacations`;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

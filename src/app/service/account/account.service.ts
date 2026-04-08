@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 export interface AccountProfile {
   id: string;
@@ -31,7 +32,7 @@ export interface ChangePasswordPayload {
   providedIn: 'root'
 })
 export class AccountService {
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = `${environment.apiUrl}/api/users`;
 
   constructor(
     private http: HttpClient,

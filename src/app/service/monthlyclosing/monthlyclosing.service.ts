@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface MonthlyClosing {
     id: string;
@@ -22,7 +23,7 @@ export interface ClosingResponse {
 })
 export class MonthlyClosingService {
 
-    private apiUrl = 'http://localhost:8080/api/home/balances/monthlyclosings';
+    private apiUrl = `${environment.apiUrl}/api/home/balances/monthlyclosings`;
 
     constructor(private http: HttpClient, private authService: AuthService) { }
 

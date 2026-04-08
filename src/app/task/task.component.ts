@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TaskService } from '../services/task.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 import { ExpenseService } from '../service/expense/expense.service';
 import { Task, Expense, CreateTaskDTO } from '../models/task.model';
 
@@ -128,7 +129,7 @@ export class TaskComponent implements OnInit {
     });
 
     // Usamos el endpoint correcto que devuelve todas las vacaciones
-    this.http.get<Vacation[]>('http://localhost:8080/api/vacations', { headers })
+    this.http.get<Vacation[]>(`${environment.apiUrl}/api/vacations`, { headers })
       .subscribe({
         next: (data) => this.vacations = data,
         error: (err) => {

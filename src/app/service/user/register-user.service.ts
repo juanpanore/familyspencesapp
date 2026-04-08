@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface DocumentType {
   id: string;
@@ -17,7 +18,7 @@ export interface Relationship {
 })
 export class RegisterUserService {
 
-  private readonly base = 'http://localhost:8080/api';
+  private readonly base = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 

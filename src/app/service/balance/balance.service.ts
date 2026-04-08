@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface GeneralBalance {
   totalIncome: number;
@@ -14,7 +15,7 @@ export interface GeneralBalance {
 })
 export class BalanceService {
 
-  private apiUrl = 'http://localhost:8080/api/home/balances';
+  private apiUrl = `${environment.apiUrl}/api/home/balances`;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

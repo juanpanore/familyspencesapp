@@ -3,8 +3,9 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Income, Responsible, UserProfile } from '../../income/income.model';
-import { AuthService } from '../../services/auth.service'; 
-const API_BASE_URL = 'http://localhost:8080/api'; 
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
+const API_BASE_URL = `${environment.apiUrl}/api`;
 
 @Injectable({
   providedIn: 'root'

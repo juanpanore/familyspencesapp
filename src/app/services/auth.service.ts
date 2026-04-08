@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CookieService } from './cookie.service';
+import { environment } from '../../environments/environment';
 
 export interface LoginUser {
   email: string;
@@ -18,7 +19,7 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/users'; // ← Sin el "1"
+  private apiUrl = `${environment.apiUrl}/api/users`;
 
   constructor(
     private http: HttpClient,
