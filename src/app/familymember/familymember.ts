@@ -233,7 +233,7 @@ const payload: FamilyMember = {
       this.uiState = 'list';
       this.passwordStrength = null;
       this.form.reset();
-      this.showAlert('success', '¡Miembro registrado exitosamente!');
+      this.showAlert('success', 'Cuenta creada con éxito');
       this.autoDismissAlert(4000);
       setTimeout(() => this.loadList(), 1000); 
     },
