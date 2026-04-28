@@ -1,7 +1,15 @@
 // src/app/models/notification.model.ts
 
-export type NotificationType = 'GENERAL' | 'REMINDER' | 'ALERT';
-export type NotificationPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type NotificationType =
+  | 'INFO'
+  | 'WARNING'
+  | 'ERROR'
+  | 'SUCCESS'
+  | 'EXPENSE_ADDED'
+  | 'BUDGET_EXCEEDED'
+  | 'PAYMENT_DUE';
+
+export type NotificationPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
 
 export interface FsNotification {
   id: string;
@@ -22,6 +30,6 @@ export interface FsNotificationCreateRequest {
 }
 
 export interface FsNotificationBulkUpdateResponse {
-  updatedCount: number;
-  deletedCount?: number;
+  count: number;
+  message: string;
 }
