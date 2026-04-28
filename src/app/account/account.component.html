@@ -123,6 +123,14 @@
 
         <div class="form-row">
           <div class="form-group">
+            <label>Fecha de nacimiento</label>
+            <input type="date" formControlName="birthDate" [max]="today"
+              [class.invalid]="f['birthDate'].invalid && f['birthDate'].touched" />
+            <span class="field-error" *ngIf="f['birthDate'].invalid && f['birthDate'].touched">
+              Fecha requerida.
+            </span>
+          </div>
+          <div class="form-group">
             <label>Teléfono</label>
             <input type="tel" formControlName="phone" placeholder="3XXXXXXXXX"
               [class.invalid]="f['phone'].invalid && f['phone'].touched" />
@@ -130,6 +138,9 @@
               Número colombiano: 3 seguido de 9 dígitos.
             </span>
           </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-group">
             <label>Dirección</label>
             <input type="text" formControlName="address" placeholder="Tu dirección"
