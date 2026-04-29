@@ -48,6 +48,10 @@
       </label>
     </div>
 
+    <div *ngIf="successMessage" class="alert success-backend">
+      {{ successMessage }}
+    </div>
+
     <div *ngIf="errorMessage" class="alert error-backend">
       {{ errorMessage }}
     </div>
