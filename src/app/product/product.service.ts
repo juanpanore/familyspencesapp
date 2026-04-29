@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment.prod';
 import { AuthService } from '../services/auth.service';
 
 export interface Product {
+  id?: string;
   producto: string;
   precio: number;
   negocio: string;
@@ -45,6 +46,27 @@ export class ProductService {
     });
 
     return this.http.post(`${this.baseUrl}/product`, producto, { headers });
+  }
+
+  // Actualizar un producto existente
+  updateProduct(id: string, producto: Product): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.put(`${this.baseUrl}/product/${id}`, producto, { headers });
+  }
+
+  // Eliminar un producto
+  deleteProduct(id: string): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.delete(`${this.baseUrl}/${id}`, { headers });
   }
 }
 
