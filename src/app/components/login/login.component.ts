@@ -1,7 +1,7 @@
 // src/app/components/login/login.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
@@ -13,16 +13,22 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   errorMessage: string = '';
+  successMessage: string = '';
   isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.initForm();
+
+    if (this.route.snapshot.queryParamMap.get('deleted') === 'true') {
+      this.successMessage = 'Tu cuenta ha sido eliminada correctamente.';
+    }
 
     // Si ya está autenticado, redirigir a home
     if (this.authService.isAuthenticated()) {
