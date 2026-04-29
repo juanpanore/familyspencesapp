@@ -1,9 +1,16 @@
 <div class="page">
+  <!-- Toast -->
+  <div class="toast-container" *ngIf="toast" [class.success]="toast.type === 'success'" [class.error]="toast.type === 'error'">
+    <span class="toast-icon">{{ toast.type === 'success' ? '✓' : '✕' }}</span>
+    <span class="toast-msg">{{ toast.message }}</span>
+    <button class="toast-close" (click)="dismissToast()">✕</button>
+  </div>
+
   <div class="page-header">
     <div class="heading">
       <p class="eyebrow">Finanzas | Familia</p>
       <h1>Presupuestos</h1>
-      <p class="subtitle">Consulta, crea y revisa cada presupuesto sin salir de esta vista.</p>
+      <p class="subtitle">Consulta, crea y gestiona cada presupuesto familiar sin salir de esta vista.</p>
     </div>
 
     <div class="header-actions">
@@ -13,9 +20,20 @@
       </button>
       <button class="primary" type="button" (click)="openCreateModal()">
         <span class="icon">＋</span>
-        Crear budget
+        Crear presupuesto
       </button>
     </div>
+  </div>
+
+  <!-- Filtro por período (HU6) -->
+  <div class="filter-bar" *ngIf="availablePeriods.length > 0">
+    <label class="filter-label" for="filterPeriod">Filtrar por período:</label>
+    <select id="filterPeriod" class="filter-select" [(ngModel)]="filterPeriod" (ngModelChange)="onFilterChange()">
+      <option value="">Todos los períodos</option>
+      <option *ngFor="let p of availablePeriods" [value]="p">{{ formatPeriod(p) }}</option>
+    </select>
+    <button class="filter-clear" type="button" *ngIf="filterPeriod" (click)="clearFilter()">Limpiar filtro</button>
+    <span class="filter-count">{{ filteredBudgets.length }} de {{ budgets.length }} presupuestos</span>
   </div>
 
   <div *ngIf="error" class="alert error">
@@ -25,13 +43,13 @@
 
   <div *ngIf="loading" class="loading">
     <div class="spinner"></div>
-    <p>Cargando budgets de la familia…</p>
+    <p>Cargando presupuestos de la familia…</p>
   </div>
 
-  <div *ngIf="!loading && budgets.length" class="budget-grid">
+  <div *ngIf="!loading && filteredBudgets.length" class="budget-grid">
     <article
-        class="budget-card"
-      *ngFor="let budget of budgets"
+      class="budget-card"
+      *ngFor="let budget of filteredBudgets"
       (click)="openDetailModal(budget.budgetId)"
     >
       <div class="card-header">
@@ -39,7 +57,18 @@
           <p class="label">Periodo</p>
           <h3>{{ formatPeriod(budget.periodo || budget.period) }}</h3>
         </div>
-        <div class="pill">{{ getResponsibleName(budget) }}</div>
+        <div class="card-header-actions">
+          <div class="pill">{{ getResponsibleName(budget) }}</div>
+          <button
+            class="delete-btn"
+            type="button"
+            title="Eliminar presupuesto"
+            aria-label="Eliminar presupuesto"
+            (click)="confirmDelete($event, budget)"
+          >
+            🗑
+          </button>
+        </div>
       </div>
 
       <div class="amount-row">
@@ -50,6 +79,24 @@
         <div class="balance" [class.positive]="getBalance(budget) >= 0" [class.negative]="getBalance(budget) < 0">
           <p class="label">Balance</p>
           <p class="amount">{{ getBalance(budget) | currency:'COP':'symbol-narrow':'1.0-0' }}</p>
+        </div>
+      </div>
+
+      <!-- Barra de uso del presupuesto -->
+      <div class="usage-bar-wrapper">
+        <div class="usage-bar-header">
+          <span class="label">Uso del presupuesto</span>
+          <span class="usage-percent" [class.warning]="getUsagePercent(budget) >= 80" [class.danger]="getUsagePercent(budget) >= 100">
+            {{ getUsagePercent(budget) }}%
+          </span>
+        </div>
+        <div class="usage-bar">
+          <div
+            class="usage-bar-fill"
+            [style.width.%]="getUsagePercent(budget)"
+            [class.warning]="getUsagePercent(budget) >= 80"
+            [class.danger]="getUsagePercent(budget) >= 100"
+          ></div>
         </div>
       </div>
 
@@ -72,12 +119,21 @@
     </article>
   </div>
 
+  <div *ngIf="!loading && !filteredBudgets.length && filterPeriod" class="empty">
+    <div class="empty-card">
+      <div class="icon-circle">🔍</div>
+      <h3>Sin resultados</h3>
+      <p>No hay presupuestos para el período seleccionado.</p>
+      <button class="ghost" type="button" (click)="clearFilter()">Limpiar filtro</button>
+    </div>
+  </div>
+
   <div *ngIf="!loading && !budgets.length" class="empty">
     <div class="empty-card">
       <div class="icon-circle">📊</div>
-      <h3>Aún no hay budgets</h3>
+      <h3>Aún no hay presupuestos</h3>
       <p>Empieza creando el primer presupuesto para tu familia.</p>
-      <button class="primary" type="button" (click)="openCreateModal()">Crear budget</button>
+      <button class="primary" type="button" (click)="openCreateModal()">Crear presupuesto</button>
     </div>
   </div>
 </div>
@@ -98,6 +154,29 @@
     <app-budget-details
       [budgetId]="selectedBudgetId"
       (closed)="closeDetailModal()"
+      (budgetDeleted)="handleBudgetDeleted()"
     ></app-budget-details>
+  </div>
+</div>
+
+<!-- Modal Confirmar Eliminación -->
+<div class="modal-backdrop" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
+  <div class="modal delete-modal" (click)="$event.stopPropagation()">
+    <div class="delete-modal-content">
+      <div class="delete-icon-circle">🗑</div>
+      <h3>Eliminar presupuesto</h3>
+      <p>
+        ¿Estás seguro de que deseas eliminar el presupuesto de
+        <strong>{{ formatPeriod(budgetToDelete?.periodo || budgetToDelete?.period) }}</strong>?
+      </p>
+      <p class="delete-warning">Esta acción no se puede deshacer.</p>
+      <div class="delete-actions">
+        <button class="ghost" type="button" (click)="cancelDelete()" [disabled]="deleting">Cancelar</button>
+        <button class="danger" type="button" (click)="executeDelete()" [disabled]="deleting">
+          <span *ngIf="deleting" class="dot-loader"></span>
+          {{ deleting ? 'Eliminando…' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
   </div>
 </div>
