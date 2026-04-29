@@ -10,9 +10,9 @@
         <div class="create-form">
             <label for="month">Mes a cerrar:</label>
             <div class="form-row">
-                <input type="month" id="month" [(ngModel)]="selectedMonth" class="month-input" [disabled]="isLoading" />
-                <button (click)="createClosing()" class="btn-create" [disabled]="isLoading">
-                    {{ isLoading ? 'Procesando...' : 'Crear Cierre Mensual' }}
+                <input type="month" id="month" [(ngModel)]="selectedMonth" class="month-input" [disabled]="isProcessing" />
+                <button (click)="createClosing()" class="btn-create" [disabled]="isProcessing || selectedMonthAlreadyClosed">
+                    {{ isPolling ? 'Confirmando...' : (isLoading ? 'Procesando...' : (selectedMonthAlreadyClosed ? 'Mes Cerrado' : 'Crear Cierre Mensual')) }}
                 </button>
             </div>
         </div>
@@ -30,8 +30,8 @@
     <section class="history-section">
         <div class="history-header">
             <h2>Historial de Cierres</h2>
-            <button (click)="loadClosingHistory()" class="btn-refresh" [disabled]="isLoading">
-                🔄 Actualizar
+            <button (click)="loadClosingHistory()" class="btn-refresh" [disabled]="isProcessing">
+                Actualizar
             </button>
         </div>
         <div *ngIf="isLoading && closingHistory.length === 0" class="loading">
@@ -50,7 +50,7 @@
                 <tbody>
                     <tr *ngFor="let closing of closingHistory" [class.positive]="closing.balance > 0"
                         [class.negative]="closing.balance < 0">
-                        <td>{{ closing.month }}</td>
+                        <td>{{ formatClosingMonth(closing) }}</td>
                         <td class="income">{{ closing.totalIncome | currency }}</td>
                         <td class="expense">{{ closing.totalExpenses | currency }}</td>
                         <td class="balance">{{ closing.balance | currency }}</td>

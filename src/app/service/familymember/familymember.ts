@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FamilyMember, Relationship , DocumentType } from 'src/app/familymember/familymember';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FamilymemberService {
-  private baseUrl = 'http://localhost:8080';
+  private baseUrl = environment.apiUrl;
   private membersUrl = `${this.baseUrl}/api/v1/family/members`;
   private documentTypesUrl = `${this.baseUrl}/api/document-types`;
   private relationshipsUrl = `${this.baseUrl}/api/relationships`;

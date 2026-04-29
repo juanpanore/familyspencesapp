@@ -111,7 +111,7 @@ export class GoalsComponent implements OnInit {
           alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
           this.router.navigate(['/login']);
         } else if (error.status === 0) {
-          alert('No se puede conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080');
+          alert('No se puede conectar con el servidor. Verifica tu conexión.');
         } else {
           alert(`Error al cargar metas: ${error.message}`);
         }

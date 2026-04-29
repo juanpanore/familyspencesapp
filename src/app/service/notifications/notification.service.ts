@@ -11,12 +11,13 @@ import {
   NotificationType,
 } from '../../models/notification.model';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  private apiUrl = 'http://localhost:8080/api/v1/notifications';
+  private apiUrl = `${environment.apiUrl}/api/v1/notifications`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 /* You can add global styles to this file, and also import other style files */
+/* Inter font loaded via index.html <link> tag */
 :root {
     /* Colores Base */
     --background: #ffffff;

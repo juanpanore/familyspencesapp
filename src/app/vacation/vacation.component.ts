@@ -3,6 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 interface Vacation {
   id?: string;
@@ -29,7 +30,7 @@ export class VacationComponent implements OnInit {
   formData: Vacation = this.getEmptyVacation();
   submitted: boolean = false;
 
-  private apiUrl = 'http://localhost:8080/api/vacations';
+  private apiUrl = `${environment.apiUrl}/api/vacations`;
 
   constructor(
     private http: HttpClient,

@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service'; 
+import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PetService {
 
-  private apiUrl = 'http://localhost:8080/api/pets';
+  private apiUrl = `${environment.apiUrl}/api/pets`;
   private readonly token = this.authService.getToken(); 
 
   constructor(

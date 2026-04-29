@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {map} from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface RankingApiResponse {
   ranking: Record<string, number>;
@@ -14,7 +15,7 @@ interface RankingApiResponse {
 })
 export class RankingService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/family';
+  private readonly apiUrl = `${environment.apiUrl}/api/family`;
 
   constructor(
     private http: HttpClient,
