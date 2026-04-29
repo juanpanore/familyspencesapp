@@ -14,15 +14,15 @@
       <h2>Bienvenido de nuevo</h2>
       <p class="subtitle">Inicia sesión para gestionar tu familia</p>
 
+      <div *ngIf="successMessage" class="alert success-backend">
+        {{ successMessage }}
+      </div>
+
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
         <div class="form-group">
           <label for="email">Correo electrónico</label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            placeholder="tu@email.com">
+          <input type="email" id="email" formControlName="email" placeholder="tu@email.com">
           <div *ngIf="emailControl?.invalid && (emailControl?.dirty || emailControl?.touched)" class="error-message">
             <span *ngIf="emailControl?.errors?.['required']">El correo es obligatorio.</span>
             <span *ngIf="emailControl?.errors?.['email']">El formato del correo no es válido.</span>
@@ -31,11 +31,7 @@
 
         <div class="form-group">
           <label for="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            placeholder="Tu contraseña">
+          <input type="password" id="password" formControlName="password" placeholder="Tu contraseña">
           <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)" class="error-message">
             <span *ngIf="passwordControl?.errors?.['required']">La contraseña es obligatoria.</span>
             <span *ngIf="passwordControl?.errors?.['minlength']">Debe tener al menos 6 caracteres.</span>
@@ -69,24 +65,53 @@
     </div>
   </div>
 
-    <div *ngIf="successMessage" class="alert success-backend">
-      {{ successMessage }}
-    </div>
-
-    <div *ngIf="errorMessage" class="alert error-backend">
-      {{ errorMessage }}
-    </div>
-
-        <!-- Hearts -->
+  <!-- Right: Image panel -->
+  <div class="image-panel">
+    <div class="image-content">
+      <svg class="family-illustration" viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 200 L200 90 L340 200 L340 310 L60 310 Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+        <path d="M60 200 L200 90 L340 200" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+        <rect x="170" y="245" width="60" height="65" rx="4" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <circle cx="225" cy="280" r="3" fill="rgba(255,255,255,0.8)"/>
+        <rect x="90" y="220" width="50" height="45" rx="4" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <line x1="115" y1="220" x2="115" y2="265" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <line x1="90" y1="242" x2="140" y2="242" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <rect x="260" y="220" width="50" height="45" rx="4" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <line x1="285" y1="220" x2="285" y2="265" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <line x1="260" y1="242" x2="310" y2="242" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <circle cx="148" cy="148" r="18" fill="rgba(255,255,255,0.9)"/>
+        <ellipse cx="148" cy="198" rx="22" ry="30" fill="rgba(255,255,255,0.85)"/>
+        <line x1="126" y1="175" x2="108" y2="210" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="170" y1="175" x2="188" y2="210" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="136" y1="228" x2="130" y2="270" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="160" y1="228" x2="166" y2="270" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M132 140 Q148 128 164 140 Q164 130 148 128 Q132 130 132 140Z" fill="rgba(255,255,255,0.7)"/>
+        <circle cx="252" cy="148" r="18" fill="rgba(255,255,255,0.9)"/>
+        <ellipse cx="252" cy="198" rx="22" ry="30" fill="rgba(255,255,255,0.85)"/>
+        <line x1="230" y1="175" x2="212" y2="210" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="274" y1="175" x2="292" y2="210" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="240" y1="228" x2="234" y2="270" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <line x1="264" y1="228" x2="270" y2="270" stroke="rgba(255,255,255,0.8)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M234 140 Q252 125 270 140 Q272 150 270 155 Q252 125 234 140Z" fill="rgba(255,255,255,0.7)"/>
+        <circle cx="108" cy="215" r="13" fill="rgba(255,255,255,0.88)"/>
+        <ellipse cx="108" cy="250" rx="14" ry="20" fill="rgba(255,255,255,0.82)"/>
+        <line x1="94" y1="237" x2="82" y2="260" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="122" y1="237" x2="134" y2="260" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="99" y1="270" x2="95" y2="300" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="117" y1="270" x2="121" y2="300" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="292" cy="215" r="13" fill="rgba(255,255,255,0.88)"/>
+        <ellipse cx="292" cy="250" rx="14" ry="20" fill="rgba(255,255,255,0.82)"/>
+        <line x1="278" y1="237" x2="266" y2="260" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="306" y1="237" x2="318" y2="260" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="283" y1="270" x2="279" y2="300" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
+        <line x1="301" y1="270" x2="305" y2="300" stroke="rgba(255,255,255,0.75)" stroke-width="6" stroke-linecap="round"/>
         <path d="M192 120 C192 116 188 112 184 116 C180 112 176 116 176 120 C176 126 184 132 184 132 C184 132 192 126 192 120Z" fill="rgba(255,255,255,0.6)"/>
         <path d="M226 120 C226 116 222 112 218 116 C214 112 210 116 210 120 C210 126 218 132 218 132 C218 132 226 126 226 120Z" fill="rgba(255,255,255,0.6)"/>
       </svg>
-
       <div class="image-text">
         <h2>Tu hogar, en orden</h2>
         <p>Gestiona presupuestos, gastos, tareas y metas familiares en un solo lugar.</p>
       </div>
-
       <div class="decorative-dots">
         <span></span><span></span><span></span>
       </div>
