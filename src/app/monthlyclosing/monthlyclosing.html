@@ -1,0 +1,67 @@
+<div class="monthly-closing-container">
+    <div class="header">
+        <h1>Cierres Mensuales</h1>
+        <button (click)="goBack()" class="btn-back">← Volver al Inicio</button>
+    </div>
+
+    <!-- Create Closing Section -->
+    <section class="create-closing-section">
+        <h2>Crear Nuevo Cierre</h2>
+        <div class="create-form">
+            <label for="month">Mes a cerrar:</label>
+            <div class="form-row">
+                <input type="month" id="month" [(ngModel)]="selectedMonth" class="month-input" [disabled]="isLoading" />
+                <button (click)="createClosing()" class="btn-create" [disabled]="isLoading">
+                    {{ isLoading ? 'Procesando...' : 'Crear Cierre Mensual' }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div *ngIf="successMessage" class="alert alert-success">
+            {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-error">
+            {{ errorMessage }}
+        </div>
+    </section>
+
+    <!-- History Section -->
+    <section class="history-section">
+        <div class="history-header">
+            <h2>Historial de Cierres</h2>
+            <button (click)="loadClosingHistory()" class="btn-refresh" [disabled]="isLoading">
+                🔄 Actualizar
+            </button>
+        </div>
+        <div *ngIf="isLoading && closingHistory.length === 0" class="loading">
+            Cargando historial...
+        </div>
+        <div class="table-responsive">
+            <table class="closings-table">
+                <thead>
+                    <tr>
+                        <th>Mes</th>
+                        <th>Ingresos Totales</th>
+                        <th>Gastos Totales</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let closing of closingHistory" [class.positive]="closing.balance > 0"
+                        [class.negative]="closing.balance < 0">
+                        <td>{{ closing.month }}</td>
+                        <td class="income">{{ closing.totalIncome | currency }}</td>
+                        <td class="expense">{{ closing.totalExpenses | currency }}</td>
+                        <td class="balance">{{ closing.balance | currency }}</td>
+                    </tr>
+                    <tr *ngIf="closingHistory.length === 0 && !isLoading">
+                        <td colspan="4" class="text-center empty-state">
+                            No se encontraron cierres mensuales para esta familia.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

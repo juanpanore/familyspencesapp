@@ -8,7 +8,17 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { TaskComponent } from './task/task.component';
 import { ProductComponent } from './product/product.component';
+import { FamilymemberComponent } from './familymember/familymember';
 import { GoalsComponent } from './goals/goals.component';
+import { RegisterUserComponent } from './register-user/register-user.component';
+import { PetComponent } from './pet/pet.component';
+import { VacationComponent } from './vacation/vacation.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { IncomeComponent } from './income/income.component';
+import { CategoryComponent } from './category/category.component';
+import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
+import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
+import { AccountComponent } from './account/account.component';
 
 const routes: Routes = [
   {
@@ -19,10 +29,6 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
-  },
-  {
-    path: 'register',  // ← NUEVA RUTA
-    component: LoginComponent  // ← Temporal, luego creas RegisterComponent
   },
   {
     path: 'home',
@@ -37,6 +43,10 @@ const routes: Routes = [
     component: ProductComponent
   },
   {
+    path: 'family-members',
+    component: FamilymemberComponent
+  },
+  {
     path: 'goals',
     component: GoalsComponent
   },
@@ -47,6 +57,42 @@ const routes: Routes = [
   {
     path: 'ranking',
     component: RankingComponent
+  },
+  {
+    path: 'register',
+    component: RegisterUserComponent
+  },
+  {
+    path: 'pet',
+    component: PetComponent
+  },
+  {
+    path: 'vacation',
+    component: VacationComponent
+  },
+  {
+    path: 'notifications',
+    component: NotificationsComponent
+  },
+  {
+    path: 'income',
+    component: IncomeComponent
+  },
+  {
+    path: 'categories',
+    component: CategoryComponent
+  },
+  {
+    path: 'budget',
+    component: BudgetListComponent
+  },
+  {
+    path: 'monthly-closings',
+    component: MonthlyClosingComponent
+  },
+  {
+    path: 'account',
+    component: AccountComponent
   },
   {
     path: '**',

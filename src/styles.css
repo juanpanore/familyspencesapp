@@ -1,1 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 /* You can add global styles to this file, and also import other style files */
+:root {
+    /* Colores Base */
+    --background: #ffffff;
+    /* Fondo principal blanco */
+    --foreground: #020817;
+    /* Texto principal oscuro */
+
+    /* Tarjetas */
+    --card: #ffffff;
+    /* Fondo de tarjetas */
+    --card-foreground: #020817;
+    /* Texto en tarjetas */
+
+    /* Color Primario (Violeta) */
+    --primary: #7c3aed;
+    /* Violeta principal */
+    --primary-foreground: #f8fafc;
+    /* Texto sobre primario */
+
+    /* Color Secundario (Gris claro) */
+    --secondary: #f1f5f9;
+    /* Gris claro */
+    --secondary-foreground: #0f172a;
+    /* Texto sobre secundario */
+
+    /* Muted (Apagado) */
+    --muted: #f1f5f9;
+    /* Gris suave */
+    --muted-foreground: #64748b;
+    /* Texto apagado */
+
+    /* Destructivo (Rojo) */
+    --destructive: #ef4444;
+    /* Rojo para eliminar */
+    --destructive-foreground: #f8fafc;
+    /* Texto sobre rojo */
+
+    /* Success (Verde) */
+    --success: #22c55e;
+    /* Verde para éxito */
+    --success-foreground: #ffffff;
+    /* Texto sobre verde */
+
+    /* Bordes e Inputs */
+    --border: #e2e8f0;
+    /* Bordes grises claros */
+    --input: #e2e8f0;
+    /* Bordes de inputs */
+    --ring: #7c3aed;
+    /* Anillo de foco (violeta) */
+
+    /* Border Radius */
+    --radius: 0.625rem;
+    /* 10px - Bordes redondeados */
+}
+
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

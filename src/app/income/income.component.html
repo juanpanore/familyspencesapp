@@ -1,0 +1,291 @@
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<div class="income-wrapper" *ngIf="!loading">
+
+  <section class="card">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div>
+        <h1>{{ income.id ? 'Editar ingreso' : 'Nuevo ingreso' }}</h1>
+
+        <p *ngIf="currentUserName">
+          Usuario: {{ currentUserName }} — Familia:
+          <ng-container *ngIf="familyName; else noFamilyLabel">
+            {{ familyName }}
+          </ng-container>
+          <ng-template #noFamilyLabel>Sin familia</ng-template>
+        </p>
+      </div>
+
+     
+      <button
+        type="button"
+        class="secondary"
+        (click)="goDashboard()"
+      >
+        ← Volver al inicio
+      </button>
+    </div>
+
+    <form class="form" (ngSubmit)="saveIncome()" #incomeForm="ngForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="title">Título</label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            [(ngModel)]="income.title"
+            required
+            placeholder="Ej: Salario Octubre"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="period">Período</label>
+          <input
+            id="period"
+            name="period"
+            type="text"
+            [(ngModel)]="income.period"
+            required
+            placeholder="Ej: 2024-10 o octubre"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="total">Total</label>
+          <input
+            id="total"
+            name="total"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="income.total"
+            required
+          />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label for="description">Descripción</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            [(ngModel)]="income.description"
+            required
+            maxlength="500"
+            placeholder="Ej: Pago mensual, bonificaciones, etc."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="responsible">Responsable</label>
+          <select
+            id="responsible"
+            name="responsibleId"
+            [(ngModel)]="income.responsible.id"
+            required
+          >
+            <option value="" disabled>Selecciona un responsable</option>
+            <option *ngFor="let r of responsibles" [value]="r.id">
+              {{ r.fullName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="family">Familia</label>
+          <input
+            id="family"
+            type="text"
+            [value]="familyName || 'Sin familia'"
+            readonly
+          />
+        </div>
+
+        <div class="form-group"></div>
+
+        <div class="buttons form-group--full">
+          <button type="submit" [disabled]="incomeForm.invalid || isSaving">
+            {{ isSaving ? 'Guardando...' : (income.id ? 'Actualizar ingreso' : 'Guardar ingreso') }}
+          </button>
+          <button type="button" class="secondary" (click)="resetForm()">
+            Limpiar
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="list-header">
+      <div>
+        <h2 class="card-title">Ingresos registrados</h2>
+        <p class="card-subtitle">
+          Mostrando los últimos {{ latestFamilyIncomes.length }} ingresos
+          <span *ngIf="familyName">de {{ familyName }}</span>.
+        </p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table
+        class="income-table"
+        *ngIf="latestFamilyIncomes.length > 0; else emptyState"
+      >
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Período</th>
+            <th>Total</th>
+            <th>Responsable</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inc of latestFamilyIncomes">
+            <td>
+              <div class="cell-main">
+                <span class="cell-title">{{ inc.title }}</span>
+              </div>
+            </td>
+            <td>{{ inc.description }}</td>
+            <td>{{ inc.period }}</td>
+            <td>{{ inc.total | number: '1.2-2' }}</td>
+
+            <td>
+              {{ getResponsibleFullName(inc.responsible.id) }}
+            </td>
+
+            <td>
+              <div class="cell-actions">
+                <button
+                  type="button"
+                  class="primary action-btn"
+                  (click)="editIncome(inc)"
+                  [disabled]="isSaving || loading"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button
+                  type="button"
+                  class="danger action-btn"
+                  (click)="deleteIncome(inc.id)"
+                  [disabled]="isSaving || loading"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <p class="empty">
+          No hay ingresos registrados para esta familia.
+        </p>
+      </ng-template>
+    </div>
+  </section>
+
+</div>
+
+<div
+  *ngIf="loading"
+  class="income-wrapper"
+  style="text-align: center; margin-top: 50px;"
+>
+  <span class="badge badge--loading">Cargando datos de la familia...</span>
+  <p style="color: #6b7280; margin-top: 15px;">
+    Esperando la respuesta del servidor para cargar los responsables.
+  </p>
+</div>
+
+<div class="modal" *ngIf="showEditModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="closeModal()">&times;</span>
+    <h2>Editar Ingreso: {{ income.title }}</h2>
+
+    <form (ngSubmit)="saveIncome()" #editForm="ngForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="editTitle">Título</label>
+          <input
+            id="editTitle"
+            [(ngModel)]="income.title"
+            name="editTitle"
+            required
+            placeholder="Título del ingreso"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editTotal">Total</label>
+          <input
+            id="editTotal"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="income.total"
+            name="editTotal"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editPeriod">Período</label>
+          <input
+            id="editPeriod"
+            [(ngModel)]="income.period"
+            name="editPeriod"
+            required
+            placeholder="YYYY-MM o mes"
+          />
+        </div>
+
+        <div class="form-group form-group--full">
+          <label for="editResponsible">Responsable</label>
+          <select
+            id="editResponsible"
+            name="editResponsibleId"
+            [(ngModel)]="income.responsible.id"
+            required
+          >
+            <option value="" disabled>Selecciona un responsable</option>
+            <option *ngFor="let r of responsibles" [value]="r.id">
+              {{ r.fullName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group form-group--full">
+          <label for="editDescription">Descripción</label>
+          <textarea
+            id="editDescription"
+            [(ngModel)]="income.description"
+            name="editDescription"
+            rows="3"
+            required
+            maxlength="500"
+            placeholder="Detalles del ingreso"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="buttons form-group--full">
+        <button type="submit" [disabled]="editForm.invalid || isSaving">
+          {{ isSaving ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+        <button type="button" class="secondary" (click)="closeModal()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -133,8 +133,18 @@ input[type="password"].ng-invalid.ng-touched {
   font-size: 13px;
 }
 
-/* Submit button */
-.btn-submit {
+.success-backend {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #43a047;
+  font-size: 14px;
+}
+
+/* Botón principal */
+button[type="submit"] {
   width: 100%;
   padding: 13px;
   background: linear-gradient(135deg, #4a5cf0 0%, #3a4cd0 100%);

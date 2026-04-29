@@ -1,0 +1,125 @@
+<!-- Toast Notifications -->
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast" [class.toast-success]="toastType === 'success'" [class.toast-error]="toastType === 'error'">
+    <div class="toast-header">
+      <svg *ngIf="toastType === 'success'" class="toast-icon" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <svg *ngIf="toastType === 'error'" class="toast-icon" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="toast-title">{{ toastTitle }}</span>
+    </div>
+    <p class="toast-message">{{ toastMessage }}</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Título -->
+  <h2 class="title">Gestión de Mascotas</h2>
+
+  <!-- Botón para mostrar/ocultar formulario -->
+  <button class="btn-primary" (click)="toggleForm()">
+    {{ showForm ? 'Cerrar formulario' : 'Agregar Mascota' }}
+  </button>
+
+  <!-- Formulario (Crear o Editar) -->
+  <div *ngIf="showForm" class="form-card">
+    <!-- Título dinámico según el modo -->
+    <h3 class="form-title">{{ isEditMode ? 'Editar Mascota' : 'Nueva Mascota' }}</h3>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="savePet()">
+      <div class="form-grid">
+        <div>
+          <label>Nombre</label>
+          <input [(ngModel)]="newPet.fullName" name="fullName" required />
+        </div>
+
+        <div>
+          <label>Tipo</label>
+          <input [(ngModel)]="newPet.petType" name="petType" required />
+        </div>
+
+        <div>
+          <label>Raza</label>
+          <input [(ngModel)]="newPet.breed" name="breed" required />
+        </div>
+
+        <div>
+          <label>Fecha Nacimiento</label>
+          <input type="date" [(ngModel)]="newPet.birthDate" name="birthDate" required />
+        </div>
+      </div>
+
+      <!-- Botón dinámico según el modo -->
+      <button type="submit" class="btn-success">
+        {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+      </button>
+      
+      <!-- Botón cancelar en modo edición -->
+      <button type="button" class="btn-secondary" *ngIf="isEditMode" (click)="toggleForm()">
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+  <!-- Tabla de Mascotas -->
+  <table class="pet-table" *ngIf="pets.length > 0">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Raza</th>
+        <th>Nacimiento</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let pet of pets">
+        <td>{{ pet.fullName }}</td>
+        <td>{{ pet.petType }}</td>
+        <td>{{ pet.breed }}</td>
+        <td>{{ pet.birthDate }}</td>
+        <td>
+          <!-- Botón de Editar -->
+          <button class="btn-warning" (click)="editPet(pet)">Editar</button>
+          <button class="btn-danger" (click)="confirmDelete(pet)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Mensaje cuando no hay mascotas -->
+  <div *ngIf="pets.length === 0" class="no-pets">
+    <div class="no-pets-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+      </svg>
+    </div>
+    <p class="no-pets-title">No hay mascotas registradas</p>
+    <p class="no-pets-description">Agrega tu primera mascota usando el botón "Agregar Mascota"</p>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal-backdrop" *ngIf="petToDelete">
+    <div class="modal">
+      <h3>¿Seguro que quieres eliminar esta mascota?</h3>
+      <p><strong>{{ petToDelete.fullName }}</strong></p>
+
+      <div class="modal-actions">
+        <button class="btn-danger" (click)="deletePetConfirmed()">Sí, eliminar</button>
+        <button class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+</div>

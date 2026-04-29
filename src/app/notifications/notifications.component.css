@@ -1,0 +1,164 @@
+/* src/app/notifications/notifications.component.css */
+
+.notifications-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.notifications-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.notifications-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-toggle {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-toggle.active {
+  background: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
+
+.badge {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.badge-unread {
+  background: #fff8e1;
+  color: #8d6e63;
+}
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 0.75rem;
+  flex-direction: column;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+}
+
+.notification-unread {
+  border-color: #1976d2;
+  background: #e3f2fd;
+}
+
+.notification-main {
+  flex: 1;
+}
+
+.notification-title {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+.notification-message {
+  margin: 0.25rem 0;
+}
+
+.notification-meta {
+  font-size: 0.75rem;
+  color: #616161;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.btn {
+  border-radius: 0.35rem;
+  border: none;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.btn-small {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.btn-secondary {
+  background: #eeeeee;
+}
+
+.btn-danger {
+  background: #e53935;
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #bdbdbd;
+}
+
+.state-message {
+  margin-top: 1rem;
+  color: #616161;
+}
+
+.state-error {
+  margin-top: 1rem;
+  color: #c62828;
+}
+
+/* extras para el tipo/prioridad, opcional */
+.type-label {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #e0f7fa;
+  font-size: 0.75rem;
+}
+
+.priority-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #f3e5f5;
+  font-size: 0.75rem;
+}

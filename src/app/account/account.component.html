@@ -1,0 +1,216 @@
+<div class="account-layout">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="logo">FamilySpences</span>
+    </div>
+    <div class="navbar-right">
+      <button (click)="goHome()" class="btn-back">&larr; Inicio</button>
+      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-wrapper">
+    <div class="spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <!-- Error crítico -->
+  <div *ngIf="!loading && error" class="error-banner">
+    {{ error }}
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!loading && !error && profile" class="account-container">
+
+    <!-- Cabecera del perfil -->
+    <div class="profile-header">
+      <div class="avatar">
+        {{ profile.firstName.charAt(0).toUpperCase() }}{{ profile.lastName.charAt(0).toUpperCase() }}
+      </div>
+      <div class="profile-header-info">
+        <h1 class="profile-name">{{ profile.firstName }} {{ profile.lastName }}</h1>
+        <p class="profile-meta">
+          <span class="badge-relationship" *ngIf="profile.relationship">
+            {{ profile.relationship.type }}
+          </span>
+          <span class="profile-family" *ngIf="profile.family">
+            Familia {{ profile.family.familyName }}
+          </span>
+        </p>
+        <p class="profile-email">{{ profile.email }}</p>
+      </div>
+    </div>
+
+    <!-- Sección: Datos personales (solo lectura) -->
+    <div class="card">
+      <h2 class="card-title">Datos del Registro</h2>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Nombre</span>
+          <span class="info-value">{{ profile.firstName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Apellido</span>
+          <span class="info-value">{{ profile.lastName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Fecha de nacimiento</span>
+          <span class="info-value">{{ formatBirthDate(profile.birthDate) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tipo de documento</span>
+          <span class="info-value">{{ profile.documentType?.type || 'No disponible' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Número de documento</span>
+          <span class="info-value">{{ profile.document }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Correo electrónico</span>
+          <span class="info-value">{{ profile.email }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Parentesco</span>
+          <span class="info-value">{{ profile.relationship?.type || 'No disponible' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tarjeta de crédito</span>
+          <span class="info-value credit-card-value">
+            {{ visibleCreditCard }}
+            <button type="button" class="toggle-cc" (click)="showCreditCard = !showCreditCard"
+                    *ngIf="profile.creditCardLast4">
+              {{ showCreditCard ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Teléfono</span>
+          <span class="info-value">{{ profile.phone }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección: Editar información -->
+    <div class="card">
+      <h2 class="card-title">Editar Información Personal</h2>
+
+      <div *ngIf="profileSuccess" class="alert alert-success">{{ profileSuccess }}</div>
+      <div *ngIf="profileError"   class="alert alert-error">{{ profileError }}</div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="requestSave()" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" formControlName="firstName" placeholder="Tu nombre"
+              [class.invalid]="f['firstName'].invalid && f['firstName'].touched" />
+            <span class="field-error" *ngIf="f['firstName'].invalid && f['firstName'].touched">
+              Solo letras, mínimo 3 caracteres.
+            </span>
+          </div>
+          <div class="form-group">
+            <label>Apellido</label>
+            <input type="text" formControlName="lastName" placeholder="Tu apellido"
+              [class.invalid]="f['lastName'].invalid && f['lastName'].touched" />
+            <span class="field-error" *ngIf="f['lastName'].invalid && f['lastName'].touched">
+              Solo letras, mínimo 3 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha de nacimiento</label>
+            <input type="date" formControlName="birthDate" [max]="today"
+              [class.invalid]="f['birthDate'].invalid && f['birthDate'].touched" />
+            <span class="field-error" *ngIf="f['birthDate'].invalid && f['birthDate'].touched">
+              Fecha requerida.
+            </span>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" formControlName="phone" placeholder="3XXXXXXXXX"
+              [class.invalid]="f['phone'].invalid && f['phone'].touched" />
+            <span class="field-error" *ngIf="f['phone'].invalid && f['phone'].touched">
+              Número colombiano: 3 seguido de 9 dígitos.
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dirección</label>
+            <input type="text" formControlName="address" placeholder="Tu dirección"
+              [class.invalid]="f['address'].invalid && f['address'].touched" />
+            <span class="field-error" *ngIf="f['address'].invalid && f['address'].touched">
+              Mínimo 5 caracteres.
+            </span>
+          </div>
+        </div>
+
+        <!-- Campos de solo lectura -->
+        <div class="form-row readonly-row">
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="text" [value]="profile.email" disabled />
+          </div>
+          <div class="form-group" *ngIf="profile.relationship">
+            <label>Parentesco</label>
+            <input type="text" [value]="profile.relationship.type" disabled />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary"
+            [disabled]="profileForm.invalid || savingProfile">
+            {{ savingProfile ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Sección: Eliminar cuenta -->
+    <div class="card card-danger">
+      <h2 class="card-title card-title-danger">Zona de peligro</h2>
+      <p class="danger-text">
+        Al eliminar tu cuenta, ya no podrás acceder a la aplicación. Tus gastos y demás información
+        asociada aparecerán como "Cuenta Eliminada".
+      </p>
+      <button type="button" class="btn-danger" (click)="requestDelete()">
+        Eliminar mi cuenta
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Modal confirmación guardar -->
+  <div class="modal-overlay" *ngIf="showConfirmSave" (click)="cancelSave()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Confirmar cambios</h2>
+      <p>¿Estás seguro de que deseas actualizar tu información personal?</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelSave()">Cancelar</button>
+        <button class="btn-primary" (click)="confirmSave()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmación eliminar -->
+  <div class="modal-overlay" *ngIf="showConfirmDelete" (click)="cancelDelete()">
+    <div class="modal-content modal-danger" (click)="$event.stopPropagation()">
+      <h2>Eliminar cuenta</h2>
+      <p>Esta acción es irreversible. Tu cuenta será desactivada y tu información aparecerá como "Cuenta Eliminada". ¿Deseas continuar?</p>
+      <div *ngIf="deleteError" class="alert alert-error">{{ deleteError }}</div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelDelete()" [disabled]="deleting">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+          {{ deleting ? 'Eliminando...' : 'Sí, eliminar mi cuenta' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
