@@ -1,11 +1,16 @@
 <div class="details-wrapper">
   <div class="header">
     <div>
-      <p class="eyebrow">Detalle de budget</p>
-      <h2>{{ formatPeriod(budget?.period) || 'Budget' }}</h2>
+      <p class="eyebrow">Detalle de presupuesto</p>
+      <h2>{{ formatPeriod(budget?.period) || 'Presupuesto' }}</h2>
       <p class="subtitle" *ngIf="budget">Responsable: {{ budget.responsible?.name }}</p>
     </div>
-    <button class="icon-btn" type="button" (click)="close()">✕</button>
+    <div class="header-actions">
+      <button class="delete-outline" type="button" (click)="confirmDelete()" *ngIf="budget" title="Eliminar presupuesto">
+        🗑 Eliminar
+      </button>
+      <button class="icon-btn" type="button" (click)="close()">✕</button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading">
@@ -30,6 +35,24 @@
         Ingresos: {{ budget.summary?.familyTotalIncome | currency:'COP':'symbol-narrow':'1.0-0' }} ·
         Gastos: {{ budget.summary?.totalExpenses | currency:'COP':'symbol-narrow':'1.0-0' }}
       </p>
+    </div>
+
+    <!-- Barra de uso -->
+    <div class="usage-section">
+      <div class="usage-header">
+        <span class="label">Uso del presupuesto</span>
+        <span class="usage-percent" [class.warning]="getUsagePercent() >= 80" [class.danger]="getUsagePercent() >= 100">
+          {{ getUsagePercent() }}%
+        </span>
+      </div>
+      <div class="usage-bar">
+        <div
+          class="usage-bar-fill"
+          [style.width.%]="getUsagePercent()"
+          [class.warning]="getUsagePercent() >= 80"
+          [class.danger]="getUsagePercent() >= 100"
+        ></div>
+      </div>
     </div>
 
     <div class="grid">
@@ -61,4 +84,19 @@
       </div>
     </div>
   </ng-container>
+</div>
+
+<!-- Confirm delete inline -->
+<div class="delete-confirm-overlay" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
+  <div class="delete-confirm-box" (click)="$event.stopPropagation()">
+    <div class="delete-confirm-icon">🗑</div>
+    <h4>¿Eliminar este presupuesto?</h4>
+    <p>El presupuesto de <strong>{{ formatPeriod(budget?.period) }}</strong> será eliminado permanentemente.</p>
+    <div class="delete-confirm-actions">
+      <button class="ghost-sm" type="button" (click)="cancelDelete()" [disabled]="deleting">Cancelar</button>
+      <button class="danger-sm" type="button" (click)="executeDelete()" [disabled]="deleting">
+        {{ deleting ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    </div>
+  </div>
 </div>

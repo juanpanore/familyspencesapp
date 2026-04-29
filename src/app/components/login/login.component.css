@@ -88,6 +88,16 @@ input[type="password"].ng-invalid.ng-touched {
   font-size: 14px;
 }
 
+.success-backend {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #43a047;
+  font-size: 14px;
+}
+
 /* Botón principal */
 button[type="submit"] {
   width: 100%;

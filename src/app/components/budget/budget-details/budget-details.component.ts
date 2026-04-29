@@ -3,7 +3,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { BudgetService } from '../../../service/budget/budget.service';
 
-
 @Component({
   selector: 'app-budget-details',
   templateUrl: './budget-details.component.html',
@@ -13,10 +12,14 @@ export class BudgetDetailsComponent implements OnChanges {
 
   @Input() budgetId: string | null = null;
   @Output() closed = new EventEmitter<void>();
+  @Output() budgetDeleted = new EventEmitter<void>();
 
   loading = false;
   error: string | null = null;
   budget: any = null;
+
+  showDeleteConfirm = false;
+  deleting = false;
 
   constructor(private budgetService: BudgetService) {}
 
@@ -37,9 +40,8 @@ export class BudgetDetailsComponent implements OnChanges {
         this.budget = resp;
         this.loading = false;
       },
-      error: err => {
-        console.error(err);
-        this.error = 'No pudimos cargar el detalle del budget.';
+      error: () => {
+        this.error = 'No pudimos cargar el detalle del presupuesto.';
         this.loading = false;
       }
     });
@@ -49,6 +51,33 @@ export class BudgetDetailsComponent implements OnChanges {
     this.closed.emit();
   }
 
+  confirmDelete(): void {
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm = false;
+  }
+
+  executeDelete(): void {
+    if (!this.budgetId || this.deleting) return;
+
+    this.deleting = true;
+    this.budgetService.deleteBudget(this.budgetId).subscribe({
+      next: () => {
+        this.deleting = false;
+        this.showDeleteConfirm = false;
+        this.budgetDeleted.emit();
+        this.close();
+      },
+      error: () => {
+        this.error = 'No se pudo eliminar el presupuesto. Intenta de nuevo.';
+        this.deleting = false;
+        this.showDeleteConfirm = false;
+      }
+    });
+  }
+
   formatPeriod(period: string): string {
     if (!period) return '';
     const normalized = period.length === 7 ? `${period}-01` : period;
@@ -56,5 +85,12 @@ export class BudgetDetailsComponent implements OnChanges {
     return isNaN(date.getTime())
       ? period
       : date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  }
+
+  getUsagePercent(): number {
+    const amount = this.budget?.budgetAmount ?? 0;
+    const expenses = this.budget?.summary?.totalExpenses ?? 0;
+    if (amount <= 0) return 0;
+    return Math.min(Math.round((expenses / amount) * 100), 100);
   }
 }

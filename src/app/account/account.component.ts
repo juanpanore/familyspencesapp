@@ -20,6 +20,12 @@ export class AccountComponent implements OnInit {
   profileSuccess = '';
   profileError = '';
 
+  showCreditCard = false;
+  showConfirmSave = false;
+  showConfirmDelete = false;
+  deleting = false;
+  deleteError = '';
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -31,6 +37,7 @@ export class AccountComponent implements OnInit {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{3,100}$')]],
       lastName:  ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{3,100}$')]],
+      birthDate: ['', Validators.required],
       phone:     ['', [Validators.required, Validators.pattern('^3\\d{9}$')]],
       address:   ['', [Validators.required, Validators.minLength(5)]]
     });
@@ -52,36 +59,105 @@ export class AccountComponent implements OnInit {
         this.profileForm.patchValue({
           firstName: profile.firstName,
           lastName:  profile.lastName,
+          birthDate: profile.birthDate,
           phone:     profile.phone,
           address:   profile.address
         });
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'No se pudo cargar el perfil. Intenta de nuevo.';
         this.loading = false;
       }
     });
   }
 
-  saveProfile(): void {
+  requestSave(): void {
     if (this.profileForm.invalid || !this.profile) return;
 
+    // Validate forbidden name "Cuenta Eliminada"
+    const first = (this.profileForm.value.firstName || '').trim().toLowerCase();
+    const last = (this.profileForm.value.lastName || '').trim().toLowerCase();
+    if (first.includes('cuenta') || first.includes('eliminada') ||
+        last.includes('cuenta') || last.includes('eliminada')) {
+      this.profileError = 'El nombre del usuario no es válido.';
+      return;
+    }
+
+    this.showConfirmSave = true;
+  }
+
+  confirmSave(): void {
+    this.showConfirmSave = false;
     this.savingProfile = true;
     this.profileSuccess = '';
     this.profileError = '';
 
-    this.accountService.updateProfile(this.profile.email, this.profileForm.value).subscribe({
-      next: (updated) => {
-        this.profile = updated;
+    this.accountService.updateProfile(this.profile!.id, this.profileForm.value).subscribe({
+      next: () => {
         this.profileSuccess = 'Perfil actualizado correctamente.';
         this.savingProfile = false;
+        this.loadProfile();
       },
       error: (err) => {
-        this.profileError = err.error?.message || 'Error al actualizar el perfil.';
+        this.profileError = err.error?.message || err.error?.error || 'Error al actualizar el perfil.';
         this.savingProfile = false;
       }
     });
+  }
+
+  cancelSave(): void {
+    this.showConfirmSave = false;
+  }
+
+  requestDelete(): void {
+    this.deleteError = '';
+    this.showConfirmDelete = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.profile) return;
+    this.deleting = true;
+    this.deleteError = '';
+
+    this.accountService.deleteAccount(this.profile.id).subscribe({
+      next: () => {
+        this.showConfirmDelete = false;
+        this.authService.logout();
+        this.router.navigate(['/login'], { queryParams: { deleted: 'true' } });
+      },
+      error: (err) => {
+        this.deleting = false;
+        this.deleteError = err.error?.message || err.error?.error || 'Error al eliminar la cuenta.';
+      }
+    });
+  }
+
+  cancelDelete(): void {
+    this.showConfirmDelete = false;
+    this.deleteError = '';
+  }
+
+  get maskedCreditCard(): string {
+    if (!this.profile?.creditCardLast4) return 'No disponible';
+    return '**** **** **** ' + this.profile.creditCardLast4;
+  }
+
+  get visibleCreditCard(): string {
+    if (!this.profile?.creditCardLast4) return 'No disponible';
+    if (this.showCreditCard) {
+      return '**** **** **** ' + this.profile.creditCardLast4;
+    }
+    return '**** **** **** ****';
+  }
+
+  formatBirthDate(date: string): string {
+    if (!date) return 'No disponible';
+    const parts = date.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return date;
   }
 
   logout(): void {
@@ -94,4 +170,8 @@ export class AccountComponent implements OnInit {
   }
 
   get f() { return this.profileForm.controls; }
+
+  get today(): string {
+    return new Date().toISOString().split('T')[0];
+  }
 }
