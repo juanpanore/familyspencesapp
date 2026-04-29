@@ -24,6 +24,7 @@ export interface ProfileUpdate {
   lastName?: string;
   phone?: string;
   address?: string;
+  birthDate?: string;
 }
 
 export interface ChangePasswordPayload {
@@ -57,9 +58,9 @@ export class AccountService {
     );
   }
 
-  updateProfile(email: string, data: ProfileUpdate): Observable<AccountProfile> {
-    return this.http.patch<AccountProfile>(
-      `${this.apiUrl}/${encodeURIComponent(email)}`,
+  updateProfile(id: string, data: ProfileUpdate): Observable<AccountProfile> {
+    return this.http.put<AccountProfile>(
+      `${this.apiUrl}/by-id/${id}`,
       data,
       { headers: this.getHeaders() }
     );
@@ -73,9 +74,9 @@ export class AccountService {
     );
   }
 
-  deleteAccount(email: string): Observable<{ message: string }> {
+  deleteAccount(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(
-      `${this.apiUrl}/${encodeURIComponent(email)}`,
+      `${this.apiUrl}/by-id/${id}`,
       { headers: this.getHeaders() }
     );
   }

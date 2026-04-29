@@ -1,68 +1,96 @@
-<div class="login-container">
-  <h2>Iniciar Sesión</h2>
+<div class="login-page">
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <!-- Left: Form panel -->
+  <div class="login-panel">
+    <div class="login-card">
 
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input
-        type="email"
-        id="email"
-        formControlName="email"
-        placeholder="tu@email.com">
-
-      <div *ngIf="emailControl?.invalid && (emailControl?.dirty || emailControl?.touched)"
-           class="error-message">
-        <div *ngIf="emailControl?.errors?.['required']">
-          El correo es obligatorio.
-        </div>
-        <div *ngIf="emailControl?.errors?.['email']">
-          El formato del correo no es válido.
-        </div>
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 14L16 4L28 14V28H20V20H12V28H4V14Z" fill="#4a5cf0" stroke="#3a4cd0" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">FamilySpences</span>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="password">Contraseña</label>
-      <input
-        type="password"
-        id="password"
-        formControlName="password"
-        placeholder="Tu contraseña">
+      <h2>Bienvenido de nuevo</h2>
+      <p class="subtitle">Inicia sesión para gestionar tu familia</p>
 
-      <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)"
-           class="error-message">
-        <div *ngIf="passwordControl?.errors?.['required']">
-          La contraseña es obligatoria.
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="tu@email.com">
+          <div *ngIf="emailControl?.invalid && (emailControl?.dirty || emailControl?.touched)" class="error-message">
+            <span *ngIf="emailControl?.errors?.['required']">El correo es obligatorio.</span>
+            <span *ngIf="emailControl?.errors?.['email']">El formato del correo no es válido.</span>
+          </div>
         </div>
-        <div *ngIf="passwordControl?.errors?.['minlength']">
-          Debe tener al menos 6 caracteres.
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="Tu contraseña">
+          <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)" class="error-message">
+            <span *ngIf="passwordControl?.errors?.['required']">La contraseña es obligatoria.</span>
+            <span *ngIf="passwordControl?.errors?.['minlength']">Debe tener al menos 6 caracteres.</span>
+          </div>
         </div>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Recordarme por 7 días</span>
+          </label>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert error-backend">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-submit">
+          <span *ngIf="!isLoading">Entrar</span>
+          <span *ngIf="isLoading" class="loading-dots">Cargando...</span>
+        </button>
+      </form>
+
+      <div class="register-section">
+        <p>¿No tienes cuenta?</p>
+        <button type="button" class="btn-register" (click)="goToRegister()">
+          Crear cuenta nueva
+        </button>
       </div>
-    </div>
 
-    <div class="form-group-checkbox">
-      <label class="checkbox-label">
-        <input type="checkbox" formControlName="rememberMe">
-        <span>Recordarme por 7 días</span>
-      </label>
+    </div>
+  </div>
+
+    <div *ngIf="successMessage" class="alert success-backend">
+      {{ successMessage }}
     </div>
 
     <div *ngIf="errorMessage" class="alert error-backend">
       {{ errorMessage }}
     </div>
 
-    <button type="submit" [disabled]="loginForm.invalid || isLoading">
-      <span *ngIf="!isLoading">Entrar</span>
-      <span *ngIf="isLoading">Cargando...</span>
-    </button>
-  </form>
+        <!-- Hearts -->
+        <path d="M192 120 C192 116 188 112 184 116 C180 112 176 116 176 120 C176 126 184 132 184 132 C184 132 192 126 192 120Z" fill="rgba(255,255,255,0.6)"/>
+        <path d="M226 120 C226 116 222 112 218 116 C214 112 210 116 210 120 C210 126 218 132 218 132 C218 132 226 126 226 120Z" fill="rgba(255,255,255,0.6)"/>
+      </svg>
 
-  <!-- NUEVO: Botón de registro -->
-  <div class="register-section">
-    <p>¿No tienes cuenta?</p>
-    <button type="button" class="btn-register" (click)="goToRegister()">
-      Crear cuenta nueva
-    </button>
+      <div class="image-text">
+        <h2>Tu hogar, en orden</h2>
+        <p>Gestiona presupuestos, gastos, tareas y metas familiares en un solo lugar.</p>
+      </div>
+
+      <div class="decorative-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
   </div>
+
 </div>

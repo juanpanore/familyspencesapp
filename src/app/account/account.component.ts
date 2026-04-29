@@ -37,6 +37,7 @@ export class AccountComponent implements OnInit {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{3,100}$')]],
       lastName:  ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{3,100}$')]],
+      birthDate: ['', Validators.required],
       phone:     ['', [Validators.required, Validators.pattern('^3\\d{9}$')]],
       address:   ['', [Validators.required, Validators.minLength(5)]]
     });
@@ -58,6 +59,7 @@ export class AccountComponent implements OnInit {
         this.profileForm.patchValue({
           firstName: profile.firstName,
           lastName:  profile.lastName,
+          birthDate: profile.birthDate,
           phone:     profile.phone,
           address:   profile.address
         });
@@ -91,11 +93,11 @@ export class AccountComponent implements OnInit {
     this.profileSuccess = '';
     this.profileError = '';
 
-    this.accountService.updateProfile(this.profile!.email, this.profileForm.value).subscribe({
-      next: (updated) => {
-        this.profile = updated;
+    this.accountService.updateProfile(this.profile!.id, this.profileForm.value).subscribe({
+      next: () => {
         this.profileSuccess = 'Perfil actualizado correctamente.';
         this.savingProfile = false;
+        this.loadProfile();
       },
       error: (err) => {
         this.profileError = err.error?.message || err.error?.error || 'Error al actualizar el perfil.';
@@ -118,11 +120,11 @@ export class AccountComponent implements OnInit {
     this.deleting = true;
     this.deleteError = '';
 
-    this.accountService.deleteAccount(this.profile.email).subscribe({
+    this.accountService.deleteAccount(this.profile.id).subscribe({
       next: () => {
         this.showConfirmDelete = false;
         this.authService.logout();
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], { queryParams: { deleted: 'true' } });
       },
       error: (err) => {
         this.deleting = false;
@@ -168,4 +170,8 @@ export class AccountComponent implements OnInit {
   }
 
   get f() { return this.profileForm.controls; }
+
+  get today(): string {
+    return new Date().toISOString().split('T')[0];
+  }
 }
