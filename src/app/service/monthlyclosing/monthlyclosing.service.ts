@@ -34,7 +34,7 @@ export class MonthlyClosingService {
         });
 
         const url = month
-            ? `${this.apiUrl}/${familyId}?month=${month}`
+            ? `${this.apiUrl}/${familyId}?month=${encodeURIComponent(month)}`
             : `${this.apiUrl}/${familyId}`;
 
         return this.http.put<ClosingResponse>(url, {}, { headers });
