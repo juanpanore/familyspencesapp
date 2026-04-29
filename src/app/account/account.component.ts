@@ -124,7 +124,7 @@ export class AccountComponent implements OnInit {
       next: () => {
         this.showConfirmDelete = false;
         this.authService.logout();
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], { queryParams: { deleted: 'true' } });
       },
       error: (err) => {
         this.deleting = false;
