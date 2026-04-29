@@ -3,6 +3,9 @@
 </header>
 <div class="container">
   <h2>Buscar productos</h2>
+  <div class="jump-to-add">
+    <button type="button" (click)="scrollToAddProduct()">Ir a Agregar producto</button>
+  </div>
 
   <!-- 🔍 BARRA DE BÚSQUEDA -->
   <div class="search-bar">
@@ -16,10 +19,29 @@
 
   <!-- 📋 LISTA DE PRODUCTOS -->
   <ul *ngIf="products.length > 0; else noResults">
-    <li *ngFor="let p of products" class="producto-item">
-      <strong>{{ p.producto }}</strong><br />
-      💵 {{ p.precio | currency:'USD':'symbol':'1.0-0' }}<br />
-      🏪 {{ p.negocio }}
+    <li *ngFor="let p of products; trackBy: trackByProduct" class="producto-item">
+      <div *ngIf="editingProduct?.id !== p.id" class="product-content">
+        <div class="product-info">
+          <strong>{{ p.producto }}</strong><br />
+          💵 {{ p.precio | currency:'USD':'symbol':'1.0-0' }}<br />
+          🏪 {{ p.negocio }}<br />
+        </div>
+        <div class="buttons-container">
+          <button (click)="editProduct(p)">Editar</button>
+          <button (click)="deleteProduct(p)">Eliminar</button>
+        </div>
+      </div>
+      <div *ngIf="editingProduct && editingProduct.id === p.id" class="edit-form">
+        <div class="edit-inputs">
+          <input type="text" placeholder="Nombre del producto" [(ngModel)]="editingProduct.producto" />
+          <input type="number" placeholder="Precio" [(ngModel)]="editingProduct.precio" />
+          <input type="text" placeholder="Nombre del negocio" [(ngModel)]="editingProduct.negocio" />
+        </div>
+        <div class="edit-buttons">
+          <button (click)="cancelEdit()">Cancelar</button>
+          <button (click)="updateProduct()">Guardar</button>
+        </div>
+      </div>
     </li>
   </ul>
 
@@ -30,9 +52,10 @@
   <hr />
 
   <!-- ➕ FORMULARIO PARA AGREGAR PRODUCTO -->
-  <h3>Agregar producto</h3>
+  <div id="add-product-section">
+    <h3>Agregar producto</h3>
 
-  <div class="add-form">
+    <div class="add-form">
     <input
       type="text"
       placeholder="Nombre del producto"
@@ -52,5 +75,6 @@
     />
 
     <button (click)="agregarProducto()">Agregar</button>
+    </div>
   </div>
 </div>
