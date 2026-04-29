@@ -226,23 +226,19 @@ button.danger:hover {
   color: #6b7280;
 }
 
-
-/* --- NUEVAS REGLAS: ACCIONES EN LÍNEA --- */
-
 .cell-actions {
   display: flex;
-  gap: 0.5rem; /* Espacio entre el botón de editar y eliminar */
+  gap: 0.5rem; 
 }
 
 .action-btn {
-  /* Anula el padding normal de los botones grandes */
   padding: 0.35rem;
-  width: 30px; /* Tamaño fijo para que sean cuadrados */
+  width: 30px; 
   height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 6px; /* Bordes menos redondeados */
+  border-radius: 6px; 
   font-size: 0.9rem;
   box-shadow: none !important;
   transform: none !important;
@@ -254,7 +250,7 @@ button.danger:hover {
   box-shadow: none;
 }
 
-/* Estilo para el botón de editar */
+
 .action-btn.primary {
   background: #eef2ff;
   color: #2563eb;
@@ -263,8 +259,6 @@ button.danger:hover {
 .action-btn.primary:hover {
   background: #c7d2fe;
 }
-
-/* --- ESTILOS PARA LA VENTANA MODAL --- */
 
 .modal {
   display: flex;

@@ -26,6 +26,7 @@ import { BudgetListComponent } from './components/budget/budget-list/budget-list
 import { BudgetCreateComponent } from './components/budget/budget-create/budget-create.component';
 import { BudgetDetailsComponent } from './components/budget/budget-details/budget-details.component';
 import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
     BudgetListComponent,
     BudgetCreateComponent,
     BudgetDetailsComponent,
-    MonthlyClosingComponent
+    MonthlyClosingComponent,
+    AccountComponent
   ],
   imports: [
     BrowserModule,
@@ -59,6 +61,7 @@ import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

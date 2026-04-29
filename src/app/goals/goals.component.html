@@ -1,33 +1,27 @@
 <div class="goals-container">
   <div class="header-container">
     <button class="btn-home" (click)="goToHome()">← Home</button>
-    <h1>Goals</h1>
+    <h1>Metas</h1>
     <p class="subtitle">Gestión de metas</p>
     <p class="description">Crea, edita y consulta tus metas de ahorro. Filtra por categoría según lo necesites.</p>
   </div>
 
   <div class="filters-section">
     <label>Categoría</label>
+
     <select [(ngModel)]="selectedCategoryFilter" (change)="applyFilters()">
       <option value="">Todas</option>
       <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
     </select>
 
     <button class="btn-view-all" (click)="selectedCategoryFilter=''; applyFilters()">📋 Ver todas</button>
-  </div>
-
-  <div class="uuid-section" *ngIf="familyId">
-    <label>UUID de la meta (búsqueda exacta)</label>
-    <input type="text" placeholder="Pega aquí el UUID..." [(ngModel)]="uuidSearch" />
-    <button class="btn-modify" (click)="searchByUuid()">✏️ Modificar</button>
-    <button class="btn-create" (click)="showCreateGoalForm()">+ Crear</button>
+    <button class="btn-create" (click)="showCreateGoalForm()">+ Crear Meta</button>
   </div>
 
   <div class="table-container" *ngIf="filteredGoals.length > 0">
     <table>
       <thead>
         <tr>
-          <th>UUID</th>
           <th>Nombre</th>
           <th>Descripción</th>
           <th>Categoría</th>
@@ -39,10 +33,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let goal of filteredGoals">
-          <td class="uuid-cell">{{ goal.id }}</td>
           <td>{{ goal.name }}</td>
           <td>{{ goal.description }}</td>
-          <td>{{ goal.categoryId }}</td>
+          <td>{{ getCategoryName(goal.categoryId) }}</td>
           <td>{{ goal.savingsCap | number:'1.0-0' }}</td>
           <td>{{ goal.dailyGoal | number:'1.0-2' }}</td>
           <td>{{ goal.deadline | date:'dd/MM/yyyy, h:mm a' }}</td>

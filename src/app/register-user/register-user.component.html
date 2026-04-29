@@ -7,7 +7,7 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
-      <!-- Fila 1 -->
+      <!-- Fila 1: Nombre y Apellido -->
       <div class="form-row">
         <div class="form-field"
              [class.has-value]="hasValue('firstName')"
@@ -17,7 +17,7 @@
           <label for="firstName">Nombre</label>
           <span class="error-message" *ngIf="field('firstName')?.touched && field('firstName')?.invalid">
             <span *ngIf="field('firstName')?.errors?.['required']">Campo requerido</span>
-            <span *ngIf="field('firstName')?.errors?.['invalidName']">Nombre inválido (solo letras)</span>
+            <span *ngIf="field('firstName')?.errors?.['pattern'] || field('firstName')?.errors?.['minlength']">Entre 3 y 50 caracteres. Solo letras y espacios.</span>
           </span>
         </div>
 
@@ -29,12 +29,12 @@
           <label for="lastName">Apellido</label>
           <span class="error-message" *ngIf="field('lastName')?.touched && field('lastName')?.invalid">
             <span *ngIf="field('lastName')?.errors?.['required']">Campo requerido</span>
-            <span *ngIf="field('lastName')?.errors?.['invalidName']">Apellido inválido (solo letras)</span>
+            <span *ngIf="field('lastName')?.errors?.['pattern'] || field('lastName')?.errors?.['minlength']">Entre 3 y 50 caracteres. Solo letras y espacios.</span>
           </span>
         </div>
       </div>
 
-      <!-- Fila 2 -->
+      <!-- Fila 2: Tipo doc y Documento -->
       <div class="form-row">
         <div class="form-field"
              [class.has-value]="hasValue('documentTypeId')"
@@ -54,17 +54,18 @@
              [class.has-value]="hasValue('document')"
              [class.has-error]="field('document')?.touched && field('document')?.invalid"
              [class.valid]="field('document')?.valid && field('document')?.touched">
-          <input id="document" type="text" formControlName="document" required (input)="formatOnlyDigits($event, 'document', 15)" />
+          <input id="document" type="text" formControlName="document" required
+                 (keypress)="onDocumentKeypress($event)"
+                 [maxlength]="currentDocumentMaxLength" />
           <label for="document">Documento</label>
           <span class="error-message" *ngIf="field('document')?.touched && field('document')?.invalid">
             <span *ngIf="field('document')?.errors?.['required']">Campo requerido</span>
-            <span *ngIf="field('document')?.errors?.['invalidDocument']">Documento inválido (solo números)</span>
-            <span *ngIf="field('document')?.errors?.['invalidLength']">Documento debe tener entre 6 y 15 dígitos</span>
+            <span *ngIf="field('document')?.errors?.['pattern']">{{ documentErrorMessage }}</span>
           </span>
         </div>
       </div>
 
-      <!-- Fila 3 -->
+      <!-- Fila 3: Email y Teléfono -->
       <div class="form-row">
         <div class="form-field"
              [class.has-value]="hasValue('email')"
@@ -81,18 +82,17 @@
              [class.has-value]="hasValue('phone')"
              [class.has-error]="field('phone')?.touched && field('phone')?.invalid"
              [class.valid]="field('phone')?.valid && field('phone')?.touched">
-          <input id="phone" type="tel" formControlName="phone" required (input)="formatOnlyDigits($event, 'phone', 10)" />
+          <input id="phone" type="tel" formControlName="phone" required
+                 (input)="formatOnlyDigits($event, 'phone', 10)" maxlength="10" />
           <label for="phone">Teléfono</label>
           <span class="error-message" *ngIf="field('phone')?.touched && field('phone')?.invalid">
-            Campo requerido
+            Debe empezar con 3 y tener 10 dígitos.
           </span>
         </div>
       </div>
 
-      <!-- Fila 4 -->
+      <!-- Fila 4: Parentesco y Fecha de nacimiento -->
       <div class="form-row">
-
-        <!-- Relación -->
         <div class="form-field"
              [class.has-value]="hasValue('relationshipId')"
              [class.has-error]="field('relationshipId')?.touched && field('relationshipId')?.invalid"
@@ -107,13 +107,11 @@
           </span>
         </div>
 
-        <!-- Fecha de nacimiento -->
         <div class="form-field date-field"
              [class.has-value]="hasValue('birthDate')"
              [class.has-error]="field('birthDate')?.touched && field('birthDate')?.invalid"
              [class.valid]="field('birthDate')?.valid && field('birthDate')?.touched">
           <label for="birthDate">Fecha de nacimiento</label>
-          
           <div class="date-input-wrapper">
             <input
               id="birthDate"
@@ -123,32 +121,28 @@
               class="date-native-input"
             />
           </div>
-          
           <span class="error-message" *ngIf="field('birthDate')?.touched && field('birthDate')?.invalid">
             Fecha requerida
           </span>
         </div>
-
       </div>
 
-      <!-- Fila 5 -->
+      <!-- Fila 5: Tarjeta y Dirección -->
       <div class="form-row">
         <div class="form-field password-field"
              [class.has-value]="hasValue('creditCard')"
              [class.has-error]="field('creditCard')?.touched && field('creditCard')?.invalid"
              [class.valid]="field('creditCard')?.valid && field('creditCard')?.touched">
-          <input id="creditCard" [type]="showCreditCard ? 'text' : 'password'" formControlName="creditCard" (input)="formatCreditCard($event)" required />
-          <label for="creditCard">Tarjeta de Crédito</label>
-          
+          <input id="creditCard" [type]="showCreditCard ? 'text' : 'password'" formControlName="creditCard" (input)="formatCreditCard($event)" />
+          <label for="creditCard">Tarjeta de Crédito (opcional)</label>
+
           <button type="button" class="toggle-password" (click)="showCreditCard = !showCreditCard" tabindex="-1">
-            <span *ngIf="!showCreditCard">👁️‍🗨️</span>
-            <span *ngIf="showCreditCard">👁️</span>
+            <span *ngIf="!showCreditCard">&#128065;&#65039;&#8205;&#128488;&#65039;</span>
+            <span *ngIf="showCreditCard">&#128065;&#65039;</span>
           </button>
-          
+
           <span class="error-message" *ngIf="field('creditCard')?.touched && field('creditCard')?.invalid">
-            <span *ngIf="field('creditCard')?.errors?.['required']">Campo requerido</span>
-            <span *ngIf="field('creditCard')?.errors?.['invalidCreditCard']">Tarjeta inválida (solo números)</span>
-            <span *ngIf="field('creditCard')?.errors?.['invalidCreditCardLength']">Tarjeta debe tener entre 13 y 19 dígitos</span>
+            <span *ngIf="field('creditCard')?.errors?.['pattern']">Tarjeta debe tener entre 13 y 19 dígitos</span>
           </span>
         </div>
 
@@ -159,12 +153,12 @@
           <input id="address" type="text" formControlName="address" required />
           <label for="address">Dirección</label>
           <span class="error-message" *ngIf="field('address')?.touched && field('address')?.invalid">
-            Campo requerido
+            Dirección requerida (mínimo 5 caracteres).
           </span>
         </div>
       </div>
 
-      <!-- Fila 6 -->
+      <!-- Fila 6: Contraseña -->
       <div class="form-row">
         <div class="form-field password-field"
              [class.has-value]="hasValue('password')"
@@ -175,8 +169,8 @@
           <label for="password">Contraseña</label>
 
           <button type="button" class="toggle-password" (click)="togglePasswordVisibility('password')" tabindex="-1">
-            <span *ngIf="!showPassword">👁️‍🗨️</span>
-            <span *ngIf="showPassword">👁️</span>
+            <span *ngIf="!showPassword">&#128065;&#65039;&#8205;&#128488;&#65039;</span>
+            <span *ngIf="showPassword">&#128065;&#65039;</span>
           </button>
 
           <div class="strength-bar-container" *ngIf="hasValue('password')">
@@ -188,7 +182,7 @@
           <span class="strength-text" *ngIf="hasValue('password')">{{ getStrengthText() }}</span>
 
           <span class="error-message" *ngIf="field('password')?.touched && field('password')?.invalid">
-            Mínimo 6 caracteres
+            Mínimo 8 caracteres, con mayúscula, minúscula, número y carácter especial.
           </span>
         </div>
 
@@ -201,8 +195,8 @@
           <label for="confirmPassword">Repetir Contraseña</label>
 
           <button type="button" class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')" tabindex="-1">
-            <span *ngIf="!showConfirmPassword">👁️‍🗨️</span>
-            <span *ngIf="showConfirmPassword">👁️</span>
+            <span *ngIf="!showConfirmPassword">&#128065;&#65039;&#8205;&#128488;&#65039;</span>
+            <span *ngIf="showConfirmPassword">&#128065;&#65039;</span>
           </button>
 
           <span class="error-message" *ngIf="form.hasError('passwordsMismatch') && field('confirmPassword')?.touched">
@@ -226,7 +220,7 @@
   <!-- Modal éxito -->
   <div class="modal-overlay" *ngIf="showSuccessModal" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-icon">✓</div>
+      <div class="modal-icon">&#10003;</div>
       <h2>¡Bienvenido {{ userName }} a Family Spences!</h2>
       <p>Su usuario ha sido registrado exitosamente</p>
       <button class="modal-button" (click)="closeModal()">Cerrar</button>

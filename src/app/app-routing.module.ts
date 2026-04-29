@@ -18,6 +18,7 @@ import { IncomeComponent } from './income/income.component';
 import { CategoryComponent } from './category/category.component';
 import { BudgetListComponent } from './components/budget/budget-list/budget-list.component';
 import { MonthlyClosingComponent } from './monthlyclosing/monthlyclosing';
+import { AccountComponent } from './account/account.component';
 
 const routes: Routes = [
   {
@@ -88,6 +89,10 @@ const routes: Routes = [
   {
     path: 'monthly-closings',
     component: MonthlyClosingComponent
+  },
+  {
+    path: 'account',
+    component: AccountComponent
   },
   {
     path: '**',
