@@ -99,6 +99,12 @@ export class RegisterUserComponent implements OnInit {
       next: (r) => (this.relationships = r),
       error: () => {}
     });
+
+    // Re-validar documento y fecha cuando el tipo de documento cambia
+    this.form.get('documentTypeId')?.valueChanges.subscribe(() => {
+      this.form.get('document')?.updateValueAndValidity();
+      this.form.get('birthDate')?.updateValueAndValidity();
+    });
   }
 
   passwordsMatch(group: FormGroup) {
@@ -140,6 +146,25 @@ export class RegisterUserComponent implements OnInit {
     if (score === 4) return "Fuerte";
     return "Muy fuerte";
   }
+
+
+getPasswordErrors(): string[] {
+  const pw: string = this.form.get('password')?.value || '';
+  const errors: string[] = [];
+
+  if (pw.length < 8)
+    errors.push('Mínimo 8 caracteres');
+  if (!/[A-Z]/.test(pw))
+    errors.push('Al menos una letra mayúscula');
+  if (!/[a-z]/.test(pw))
+    errors.push('Al menos una letra minúscula');
+  if (!/\d/.test(pw))
+    errors.push('Al menos un número');
+  if (!/[@$!#%*¿?&._-]/.test(pw))
+    errors.push('Al menos un carácter especial (@$!#%*¿?&._-)');
+
+  return errors;
+}
 
   /** Format credit card: only digits, max 19 */
   formatCreditCard(event: any) {
@@ -290,7 +315,7 @@ export class RegisterUserComponent implements OnInit {
   closeModal() {
     this.showSuccessModal = false;
     this.form.reset();
-    this.router.navigate(["/"]);
+    this.router.navigate(["/login"]);
   }
 
   field(name: string) {

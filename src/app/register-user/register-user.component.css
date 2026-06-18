@@ -54,9 +54,9 @@
   width: 100%;
   max-width: 900px;
   background: var(--card);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * 2);
   padding: 3rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   animation: slideIn 0.4s ease-out;
 }
 
@@ -101,7 +101,7 @@
 .form-field input,
 .form-field select {
   width: 100%;
-  padding: 1rem 1rem 0.5rem 1rem;
+  padding: 1rem 1rem 0.75rem 1rem;
   border: 2px solid var(--input);
   border-radius: var(--radius);
   font-size: 1rem;
@@ -109,6 +109,8 @@
   background: var(--background);
   transition: all 0.3s ease;
   outline: none;
+  height: 3.5rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .form-field label {
@@ -122,52 +124,58 @@
   transition: all 0.3s ease;
   background: var(--background);
   padding: 0 0.25rem;
+  z-index: 2;
 }
 
-/* Floating label when focused or has value */
-.form-field input:focus + label,
-.form-field select:focus + label,
+/* Floating label only when has value */
 .form-field.has-value label {
-  top: 0;
+  top: 0.25rem;
   font-size: 0.75rem;
   color: var(--primary);
   transform: translateY(0);
+}
+
+/* Color change on focus */
+.form-field input:focus + label,
+.form-field select:focus + label {
+  color: var(--primary);
 }
 
 /* Focus effect with glow */
 .form-field input:focus,
 .form-field select:focus {
   border-color: var(--ring);
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 /* Error state */
 .form-field.has-error input,
 .form-field.has-error select {
   border-color: var(--destructive);
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
   background-color: #fef2f2;
 }
 
 .form-field.valid input,
 .form-field.valid select {
   border-color: var(--success);
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.08);
   background-color: #f0fdf4;
 }
 
 .error-message {
   font-size: 0.75rem;
   color: var(--destructive);
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   margin-left: 0.25rem;
   display: block;
+  line-height: 1.4;
 }
 
 /* Password field */
 .password-field { position: relative; }
 .password-field input { 
-  padding-right: 3rem;
+  padding-right: 2.5rem;
 }
 
 /* Ocultar crédito enmascarado */
@@ -177,20 +185,30 @@
 
 .toggle-password {
   position: absolute;
-  right: 1rem;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.25rem;
-  padding: 0.25rem;
-  opacity: 1;
+  font-size: 1rem;
+  padding: 0.5rem;
+  opacity: 0.6;
   transition: opacity 0.2s;
   z-index: 3;
   pointer-events: auto;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  line-height: 1;
 }
-.toggle-password:hover { opacity: 0.7; }
+
+.toggle-password:hover { 
+  opacity: 1; 
+}
 
 /* Strength bar */
 .strength-bar-container {
@@ -198,17 +216,39 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 4px;
   background: var(--secondary);
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: 0 0 var(--radius) var(--radius);
   overflow: hidden;
+  margin-top: 0.5rem;
 }
-.strength-bar { height: 100%; transition: all 0.3s ease; border-radius: var(--radius) var(--radius) 0 0; }
-.strength-text { font-size: 0.75rem; margin-top: 0.5rem; margin-left: 0.25rem; font-weight: 500; display: block; }
+.strength-bar { 
+  height: 100%; 
+  transition: all 0.3s ease; 
+  border-radius: 0 0 var(--radius) var(--radius); 
+}
+.strength-text { 
+  font-size: 0.75rem; 
+  margin-top: 0.75rem; 
+  margin-left: 0.25rem; 
+  font-weight: 500; 
+  display: block; 
+  color: var(--muted-foreground);
+}
 
 /* Date field styles */
 .date-field {
   position: relative;
+}
+
+.date-field label {
+  position: static !important;
+  transform: none !important;
+  top: auto !important;
+  font-size: 0.75rem !important;
+  color: var(--muted-foreground) !important;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .date-input-wrapper {
@@ -237,6 +277,26 @@
 
 /* Submit button */
 .form-actions { margin-top: 2rem; }
+
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-error {
+  background-color: #fef2f2;
+  color: var(--destructive);
+  border: 1px solid #fecaca;
+}
+
 .submit-button {
   width: 100%;
   padding: 1rem;
@@ -256,7 +316,6 @@
 }
 .submit-button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Modal de éxito */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -278,7 +337,7 @@
 
 .modal-content {
   background: var(--card);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * 2);
   padding: 2.5rem;
   max-width: 450px;
   width: 90%;

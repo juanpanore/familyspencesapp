@@ -122,7 +122,10 @@
             />
           </div>
           <span class="error-message" *ngIf="field('birthDate')?.touched && field('birthDate')?.invalid">
-            Fecha requerida
+            <span *ngIf="field('birthDate')?.errors?.['required']">Fecha de nacimiento requerida</span>
+            <span *ngIf="field('birthDate')?.errors?.['invalidBirthDate']">Fecha de nacimiento inválida</span>
+            <span *ngIf="field('birthDate')?.errors?.['adultCannotUseIDCard']">Adultos no pueden registrarse con Tarjeta de Identidad</span>
+            <span *ngIf="field('birthDate')?.errors?.['minorCannotUseCitizenshipCard']">Menores de edad no pueden registrarse con Cédula de Ciudadanía</span>
           </span>
         </div>
       </div>
@@ -182,7 +185,7 @@
           <span class="strength-text" *ngIf="hasValue('password')">{{ getStrengthText() }}</span>
 
           <span class="error-message" *ngIf="field('password')?.touched && field('password')?.invalid">
-            Mínimo 8 caracteres, con mayúscula, minúscula, número y carácter especial.
+            <span *ngFor="let err of getPasswordErrors()">• {{ err }}<br></span>
           </span>
         </div>
 
@@ -208,7 +211,7 @@
       <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
       <div class="form-actions">
-        <button type="submit" class="submit-button" [disabled]="form.invalid || loading">
+        <button type="submit" class="submit-button" [disabled]="loading">
           <span *ngIf="!loading">Crear mi cuenta</span>
           <span *ngIf="loading">Creando...</span>
         </button>
